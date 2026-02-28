@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Camera,
@@ -12,18 +12,57 @@ import {
   Check,
   Sparkles,
   ImageIcon,
+  Loader2,
+  AlertCircle,
+  X,
 } from "lucide-react";
 import SessionProvider from "@/components/SessionProvider";
 
 type OnboardingStep = "photos" | "voice" | "brand" | "complete";
 
+interface UploadedPhoto {
+  id: string;
+  filename: string;
+  url: string;
+}
+
+interface VoiceSampleData {
+  id: string;
+  filename: string;
+  url: string;
+  duration: number;
+}
+
 function OnboardingFlow() {
   const router = useRouter();
   const [step, setStep] = useState<OnboardingStep>("photos");
-  const [uploadedPhotos, setUploadedPhotos] = useState(0);
-  const [hasVoice, setHasVoice] = useState(false);
+
+  // Photo state
+  const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Voice state
+  const [voiceSample, setVoiceSample] = useState<VoiceSampleData | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordTime, setRecordTime] = useState(0);
+  const [voiceUploading, setVoiceUploading] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Brand state
+  const [brandName, setBrandName] = useState("");
+  const [brandDescription, setBrandDescription] = useState("");
+  const [targetAudience, setTargetAudience] = useState("");
+  const [selectedTone, setSelectedTone] = useState("");
+  const [brandSaving, setBrandSaving] = useState(false);
+  const [brandError, setBrandError] = useState<string | null>(null);
+
+  // Completing state
+  const [completing, setCompleting] = useState(false);
 
   const steps = [
     { key: "photos", label: "Upload Photos", icon: Camera },
@@ -33,6 +72,233 @@ function OnboardingFlow() {
   ];
 
   const currentIndex = steps.findIndex((s) => s.key === step);
+
+  // --- Photo Upload Logic ---
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setPhotoError(null);
+    setPhotoUploading(true);
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+          setPhotoError(`${file.name} is not an image file`);
+          continue;
+        }
+
+        // Validate file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          setPhotoError(`${file.name} exceeds 10MB limit`);
+          continue;
+        }
+
+        // Generate a placeholder URL for the photo reference
+        // The actual S3 upload is handled by another system; we store the reference
+        const filename = `${Date.now()}-${file.name}`;
+        const url = `/uploads/photos/${filename}`;
+
+        // Save photo metadata to the database
+        const res = await fetch("/api/photos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filename,
+            url,
+            isPrimary: uploadedPhotos.length === 0 && i === 0,
+          }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Failed to save photo");
+        }
+
+        const savedPhoto = await res.json();
+        setUploadedPhotos((prev) => [...prev, savedPhoto]);
+      }
+    } catch (err: any) {
+      setPhotoError(err.message || "Failed to upload photos");
+    } finally {
+      setPhotoUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  }, [uploadedPhotos.length]);
+
+  // --- Voice Recording Logic ---
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+      mediaRecorderRef.current.stop();
+    }
+    if (recordTimerRef.current) {
+      clearInterval(recordTimerRef.current);
+      recordTimerRef.current = null;
+    }
+    setRecording(false);
+  }, []);
+
+  const uploadVoiceSample = useCallback(async (audioBlob: Blob, duration: number) => {
+    setVoiceUploading(true);
+    setVoiceError(null);
+
+    try {
+      const extension = audioBlob.type.includes("webm") ? "webm" : "mp4";
+      const filename = `voice-${Date.now()}.${extension}`;
+      const url = `/uploads/voices/${filename}`;
+
+      // Save voice sample metadata to the database
+      const res = await fetch("/api/voices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename,
+          url,
+          duration,
+          isDefault: true,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to save voice sample");
+      }
+
+      const savedVoice = await res.json();
+      setVoiceSample(savedVoice);
+    } catch (err: any) {
+      setVoiceError(err.message || "Failed to upload voice sample");
+    } finally {
+      setVoiceUploading(false);
+    }
+  }, []);
+
+  const startRecording = useCallback(async () => {
+    setVoiceError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported("audio/webm")
+          ? "audio/webm"
+          : "audio/mp4",
+      });
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      let currentDuration = 0;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        // Stop all tracks from the stream
+        stream.getTracks().forEach((track) => track.stop());
+
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: mediaRecorder.mimeType,
+        });
+
+        // Upload the voice sample
+        await uploadVoiceSample(audioBlob, currentDuration);
+      };
+
+      mediaRecorder.start(1000); // Collect data every second
+      setRecording(true);
+      setRecordTime(0);
+
+      // Timer to track recording duration
+      recordTimerRef.current = setInterval(() => {
+        setRecordTime((t) => {
+          const next = t + 1;
+          currentDuration = next;
+          if (next >= 60) {
+            // Auto-stop at 60 seconds
+            stopRecording();
+            return 60;
+          }
+          return next;
+        });
+      }, 1000);
+    } catch (err: any) {
+      if (err.name === "NotAllowedError") {
+        setVoiceError("Microphone access denied. Please allow microphone access and try again.");
+      } else {
+        setVoiceError("Failed to access microphone. Please check your browser settings.");
+      }
+    }
+  }, [stopRecording, uploadVoiceSample]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (recordTimerRef.current) {
+        clearInterval(recordTimerRef.current);
+      }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+        mediaRecorderRef.current.stop();
+      }
+    };
+  }, []);
+
+  // --- Brand Profile Logic ---
+  const saveBrandProfile = async () => {
+    setBrandSaving(true);
+    setBrandError(null);
+
+    try {
+      const res = await fetch("/api/brand-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brandName: brandName || null,
+          tagline: brandDescription || null,
+          toneOfVoice: selectedTone || null,
+          targetAudience: targetAudience || null,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to save brand profile");
+      }
+
+      // Move to complete step
+      setStep("complete");
+    } catch (err: any) {
+      setBrandError(err.message || "Failed to save brand profile");
+    } finally {
+      setBrandSaving(false);
+    }
+  };
+
+  // --- Complete Onboarding ---
+  const completeOnboarding = async () => {
+    setCompleting(true);
+    try {
+      const res = await fetch("/api/onboarding/complete", {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        console.error("Failed to mark onboarding complete");
+      }
+
+      router.push("/dashboard/overview");
+    } catch (err) {
+      console.error("Failed to complete onboarding:", err);
+      // Still redirect even if the flag update fails
+      router.push("/dashboard/overview");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20">
@@ -71,39 +337,68 @@ function OnboardingFlow() {
                 </p>
               </div>
 
+              {/* Photo error */}
+              {photoError && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm max-w-md mx-auto">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  {photoError}
+                  <button onClick={() => setPhotoError(null)} className="ml-auto">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+
               <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 max-w-md mx-auto">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <button
+                  <div
                     key={i}
-                    onClick={() => setUploadedPhotos(Math.max(uploadedPhotos, i + 1))}
                     className={`aspect-square rounded-xl border-2 border-dashed flex items-center justify-center transition-all ${
-                      i < uploadedPhotos
+                      i < uploadedPhotos.length
                         ? "border-green-500/30 bg-green-500/10"
-                        : "border-white/10 hover:border-white/20"
+                        : "border-white/10"
                     }`}
                   >
-                    {i < uploadedPhotos ? (
+                    {i < uploadedPhotos.length ? (
                       <Check className="w-5 h-5 text-green-400" />
                     ) : (
                       <ImageIcon className="w-5 h-5 text-white/20" />
                     )}
-                  </button>
+                  </div>
                 ))}
               </div>
 
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+
               <button
-                className="btn-secondary gap-2 mx-auto"
-                onClick={() => setUploadedPhotos(5)}
+                className="btn-secondary gap-2 mx-auto disabled:opacity-50"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={photoUploading}
               >
-                <Upload className="w-4 h-4" /> Upload from Device
+                {photoUploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4" /> Upload from Device
+                  </>
+                )}
               </button>
 
-              <p className="text-xs text-white/20">{uploadedPhotos}/5 photos uploaded (minimum)</p>
+              <p className="text-xs text-white/20">{uploadedPhotos.length}/5 photos uploaded (minimum)</p>
 
               <div className="flex justify-end pt-4">
                 <button
                   onClick={() => setStep("voice")}
-                  disabled={uploadedPhotos < 1}
+                  disabled={uploadedPhotos.length < 1}
                   className="btn-primary gap-2 disabled:opacity-30"
                 >
                   Next: Record Voice <ArrowRight className="w-4 h-4" />
@@ -125,48 +420,52 @@ function OnboardingFlow() {
                 </p>
               </div>
 
+              {/* Voice error */}
+              {voiceError && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm max-w-md mx-auto">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  {voiceError}
+                  <button onClick={() => setVoiceError(null)} className="ml-auto">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+
               {/* Recording UI */}
               <div className="max-w-sm mx-auto">
                 <div className={`w-24 h-24 rounded-full mx-auto flex items-center justify-center cursor-pointer transition-all ${
                   recording
                     ? "bg-red-500/20 ring-4 ring-red-500/10 animate-pulse"
-                    : hasVoice
+                    : voiceUploading
+                    ? "bg-blue-500/20"
+                    : voiceSample
                     ? "bg-green-500/20"
                     : "bg-white/5 hover:bg-white/10"
                 }`}
                   onClick={() => {
-                    if (hasVoice) return;
+                    if (voiceSample || voiceUploading) return;
                     if (recording) {
-                      setRecording(false);
-                      setHasVoice(true);
+                      stopRecording();
                     } else {
-                      setRecording(true);
-                      setRecordTime(0);
-                      const interval = setInterval(() => {
-                        setRecordTime((t) => {
-                          if (t >= 45) {
-                            clearInterval(interval);
-                            setRecording(false);
-                            setHasVoice(true);
-                            return 45;
-                          }
-                          return t + 1;
-                        });
-                      }, 1000);
+                      startRecording();
                     }
                   }}
                 >
-                  {hasVoice ? (
+                  {voiceUploading ? (
+                    <Loader2 className="w-10 h-10 text-blue-400 animate-spin" />
+                  ) : voiceSample ? (
                     <Check className="w-10 h-10 text-green-400" />
                   ) : (
                     <Mic className={`w-10 h-10 ${recording ? "text-red-400" : "text-white/40"}`} />
                   )}
                 </div>
                 <div className="mt-3 text-sm text-white/40">
-                  {recording
+                  {voiceUploading
+                    ? "Saving voice sample..."
+                    : recording
                     ? `Recording... ${recordTime}s`
-                    : hasVoice
-                    ? "Voice sample recorded!"
+                    : voiceSample
+                    ? `Voice sample recorded! (${voiceSample.duration}s)`
                     : "Tap to start recording"
                   }
                 </div>
@@ -178,7 +477,7 @@ function OnboardingFlow() {
                 </button>
                 <button
                   onClick={() => setStep("brand")}
-                  disabled={!hasVoice}
+                  disabled={!voiceSample}
                   className="btn-primary gap-2 disabled:opacity-30"
                 >
                   Next: Brand Profile <ArrowRight className="w-4 h-4" />
@@ -200,24 +499,60 @@ function OnboardingFlow() {
                 </p>
               </div>
 
+              {/* Brand error */}
+              {brandError && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  {brandError}
+                  <button onClick={() => setBrandError(null)} className="ml-auto">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs text-white/40 mb-1.5">Business / Brand Name</label>
-                  <input type="text" placeholder="e.g., Rockwell Realty Group" className="input-field text-sm" />
+                  <input
+                    type="text"
+                    placeholder="e.g., Rockwell Realty Group"
+                    className="input-field text-sm"
+                    value={brandName}
+                    onChange={(e) => setBrandName(e.target.value)}
+                  />
                 </div>
                 <div>
                   <label className="block text-xs text-white/40 mb-1.5">What do you do?</label>
-                  <textarea placeholder="Brief description of your business and what makes you unique..." className="input-field min-h-[80px] resize-none text-sm" />
+                  <textarea
+                    placeholder="Brief description of your business and what makes you unique..."
+                    className="input-field min-h-[80px] resize-none text-sm"
+                    value={brandDescription}
+                    onChange={(e) => setBrandDescription(e.target.value)}
+                  />
                 </div>
                 <div>
                   <label className="block text-xs text-white/40 mb-1.5">Who is your target audience?</label>
-                  <input type="text" placeholder="e.g., First-time homebuyers in Seattle" className="input-field text-sm" />
+                  <input
+                    type="text"
+                    placeholder="e.g., First-time homebuyers in Seattle"
+                    className="input-field text-sm"
+                    value={targetAudience}
+                    onChange={(e) => setTargetAudience(e.target.value)}
+                  />
                 </div>
                 <div>
                   <label className="block text-xs text-white/40 mb-1.5">Preferred tone</label>
                   <div className="grid grid-cols-2 gap-2">
                     {["Professional", "Friendly", "Educational", "Casual"].map((tone) => (
-                      <button key={tone} className="p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:border-blue-500/30 hover:bg-blue-500/5 text-sm transition-all">
+                      <button
+                        key={tone}
+                        onClick={() => setSelectedTone(tone)}
+                        className={`p-3 rounded-xl bg-white/[0.03] border text-sm transition-all ${
+                          selectedTone === tone
+                            ? "border-blue-500/30 bg-blue-500/10 text-blue-400"
+                            : "border-white/5 hover:border-blue-500/30 hover:bg-blue-500/5"
+                        }`}
+                      >
                         {tone}
                       </button>
                     ))}
@@ -229,8 +564,20 @@ function OnboardingFlow() {
                 <button onClick={() => setStep("voice")} className="btn-secondary gap-2">
                   <ArrowLeft className="w-4 h-4" /> Back
                 </button>
-                <button onClick={() => setStep("complete")} className="btn-primary gap-2">
-                  Complete Setup <ArrowRight className="w-4 h-4" />
+                <button
+                  onClick={saveBrandProfile}
+                  disabled={brandSaving}
+                  className="btn-primary gap-2 disabled:opacity-50"
+                >
+                  {brandSaving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Saving...
+                    </>
+                  ) : (
+                    <>
+                      Complete Setup <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -251,24 +598,35 @@ function OnboardingFlow() {
 
               <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto text-center">
                 <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
-                  <div className="text-lg font-bold gradient-text">5</div>
+                  <div className="text-lg font-bold gradient-text">{uploadedPhotos.length}</div>
                   <div className="text-[10px] text-white/30">Photos</div>
                 </div>
                 <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
-                  <div className="text-lg font-bold gradient-text">1</div>
+                  <div className="text-lg font-bold gradient-text">{voiceSample ? "1" : "0"}</div>
                   <div className="text-[10px] text-white/30">Voice Sample</div>
                 </div>
                 <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
-                  <div className="text-lg font-bold gradient-text">✓</div>
+                  <div className="text-lg font-bold gradient-text">
+                    <Check className="w-5 h-5 mx-auto" />
+                  </div>
                   <div className="text-[10px] text-white/30">Brand Profile</div>
                 </div>
               </div>
 
               <button
-                onClick={() => router.push("/dashboard/overview")}
-                className="btn-primary gap-2 text-lg"
+                onClick={completeOnboarding}
+                disabled={completing}
+                className="btn-primary gap-2 text-lg disabled:opacity-50"
               >
-                Go to Dashboard <ArrowRight className="w-5 h-5" />
+                {completing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" /> Setting up...
+                  </>
+                ) : (
+                  <>
+                    Go to Dashboard <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
               </button>
             </div>
           )}
