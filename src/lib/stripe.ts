@@ -1,13 +1,11 @@
 import Stripe from "stripe";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("STRIPE_SECRET_KEY environment variable is not set");
-}
-
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2026-02-25.clover",
-  typescript: true,
-});
+export const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2026-02-25.clover",
+      typescript: true,
+    })
+  : (null as unknown as Stripe);
 
 /**
  * Plan configuration mapping plan names to Stripe Price IDs.

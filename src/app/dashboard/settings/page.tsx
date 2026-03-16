@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Settings,
@@ -72,6 +72,14 @@ const plans = [
 ];
 
 export default function SettingsPage() {
+  return (
+    <Suspense fallback={<div className="max-w-5xl mx-auto p-6 text-white/40">Loading settings...</div>}>
+      <SettingsContent />
+    </Suspense>
+  );
+}
+
+function SettingsContent() {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") || "profile";
   const successMsg = searchParams.get("success");
