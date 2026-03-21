@@ -16,6 +16,7 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  SlidersHorizontal,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -28,6 +29,7 @@ const navItems = [
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/dashboard/vault", label: "Vault", icon: Shield },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard/admin", label: "Admin", icon: SlidersHorizontal },
 ];
 
 // Mobile bottom nav shows a subset of key items

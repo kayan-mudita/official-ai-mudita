@@ -1,51 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Play,
   Search,
-  Filter,
   MoreVertical,
-  Download,
-  Trash2,
   Eye,
-  Calendar,
   Cpu,
-  Clock,
   Grid3X3,
   List,
   Video,
+  Loader2,
+  Film,
 } from "lucide-react";
 
-const demoVideos = [
-  { id: "1", title: "Weekly Market Update — Downtown Seattle", model: "Kling 2.6", status: "published", contentType: "market_update", date: "Feb 24, 2026", duration: "0:45", views: 2400, platform: "Instagram", color: "from-blue-500/30 to-cyan-500/30" },
-  { id: "2", title: "Client Testimonial — Johnson Family", model: "Seedance 2.0", status: "review", contentType: "testimonial", date: "Feb 23, 2026", duration: "0:30", views: 0, platform: "LinkedIn", color: "from-purple-500/30 to-pink-500/30" },
-  { id: "3", title: "Property Tour — 1234 Oak Lane", model: "Kling 2.6", status: "scheduled", contentType: "listing", date: "Feb 26, 2026", duration: "0:08", views: 0, platform: "Instagram", color: "from-green-500/30 to-emerald-500/30" },
-  { id: "4", title: "Know Your Rights — Tenant Law", model: "Seedance 2.0", status: "published", contentType: "educational", date: "Feb 21, 2026", duration: "1:20", views: 1800, platform: "TikTok", color: "from-orange-500/30 to-red-500/30" },
-  { id: "5", title: "Health Tip — Sleep Quality", model: "Kling 2.6", status: "approved", contentType: "educational", date: "Feb 25, 2026", duration: "0:55", views: 0, platform: "YouTube", color: "from-teal-500/30 to-cyan-500/30" },
-  { id: "6", title: "Google Review — 5 Star Service", model: "Seedance 2.0", status: "published", contentType: "review_video", date: "Feb 20, 2026", duration: "0:30", views: 3200, platform: "Instagram", color: "from-yellow-500/30 to-orange-500/30" },
-  { id: "7", title: "New Listing Alert — Waterfront Condo", model: "Kling 2.6", status: "draft", contentType: "listing", date: "Feb 19, 2026", duration: "0:08", views: 0, platform: "", color: "from-indigo-500/30 to-blue-500/30" },
-  { id: "8", title: "Monthly Market Recap — Jan 2026", model: "Seedance 2.0", status: "published", contentType: "market_update", date: "Feb 1, 2026", duration: "1:15", views: 5600, platform: "LinkedIn", color: "from-pink-500/30 to-rose-500/30" },
-];
+interface VideoItem {
+  id: string;
+  title: string;
+  model: string;
+  status: string;
+  contentType: string;
+  videoUrl: string | null;
+  thumbnailUrl: string | null;
+  duration: number;
+  createdAt: string;
+  schedule?: { platform: string } | null;
+}
 
 const statusStyles: Record<string, string> = {
   published: "bg-green-500/10 text-green-400",
   review: "bg-yellow-500/10 text-yellow-400",
   scheduled: "bg-blue-500/10 text-blue-400",
   approved: "bg-emerald-500/10 text-emerald-400",
-  draft: "bg-gray-500/10 text-gray-400",
+  draft: "bg-white/[0.06] text-white/40",
   generating: "bg-purple-500/10 text-purple-400",
+};
+
+const modelLabels: Record<string, string> = {
+  "kling_2.6": "Kling 2.6",
+  "seedance_2.0": "Seedance 2.0",
+  sora_2: "Sora 2",
 };
 
 const filters = ["All", "Published", "Review", "Scheduled", "Approved", "Draft"];
 
+function formatDuration(seconds: number): string {
+  if (!seconds) return "0:08";
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
 export default function ContentPage() {
+  const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("All");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [search, setSearch] = useState("");
 
-  const filtered = demoVideos.filter((v) => {
+  useEffect(() => {
+    fetchVideos();
+  }, []);
+
+  async function fetchVideos() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/videos");
+      if (res.ok) setVideos(await res.json());
+    } catch {} finally {
+      setLoading(false);
+    }
+  }
+
+  const filtered = videos.filter((v) => {
     if (activeFilter !== "All" && v.status !== activeFilter.toLowerCase()) return false;
     if (search && !v.title.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
@@ -56,7 +88,9 @@ export default function ContentPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Content Library</h1>
-          <p className="text-sm text-white/40 mt-1">{demoVideos.length} videos total</p>
+          <p className="text-sm text-white/40 mt-1">
+            {loading ? "\u00A0" : `${videos.length} video${videos.length !== 1 ? "s" : ""}`}
+          </p>
         </div>
         <Link href="/dashboard/generate" className="btn-primary gap-2 text-sm">
           <Video className="w-4 h-4" /> Create New
@@ -106,58 +140,93 @@ export default function ContentPage() {
         </div>
       </div>
 
-      {/* Content Grid */}
-      {viewMode === "grid" ? (
+      {/* Loading */}
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!loading && videos.length === 0 && (
+        <div className="text-center py-20">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/[0.03] mb-5">
+            <Film className="w-6 h-6 text-white/15" />
+          </div>
+          <h3 className="text-[17px] font-semibold text-white/80 mb-1">No videos yet</h3>
+          <p className="text-[14px] text-white/30 mb-6">Create your first AI video to get started.</p>
+          <Link href="/dashboard/generate" className="btn-primary gap-2 text-sm">
+            <Video className="w-4 h-4" /> Create Video
+          </Link>
+        </div>
+      )}
+
+      {/* No results for filter */}
+      {!loading && videos.length > 0 && filtered.length === 0 && (
+        <div className="text-center py-16">
+          <p className="text-[14px] text-white/30">No videos match this filter.</p>
+        </div>
+      )}
+
+      {/* Grid View */}
+      {!loading && filtered.length > 0 && viewMode === "grid" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filtered.map((video) => (
-            <div key={video.id} className="glass-card-hover overflow-hidden group cursor-pointer">
-              <div className={`aspect-video bg-gradient-to-br ${video.color} relative flex items-center justify-center`}>
-                <div className="absolute inset-0 bg-[#0a0e17]/20" />
-                <div className="relative w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Play className="w-5 h-5 text-white ml-0.5" />
+            <div key={video.id} className="rounded-xl border border-white/[0.04] bg-white/[0.015] overflow-hidden group cursor-pointer hover:border-white/[0.08] transition-all">
+              <div className="aspect-video bg-white/[0.02] relative flex items-center justify-center">
+                {video.thumbnailUrl ? (
+                  <img src={video.thumbnailUrl} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <Film className="w-8 h-8 text-white/[0.06]" />
+                )}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Play className="w-5 h-5 text-white ml-0.5" />
+                  </div>
                 </div>
                 <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur rounded-full">
-                  <Cpu className="w-2.5 h-2.5" />
-                  <span className="text-[10px] font-medium">{video.model}</span>
+                  <Cpu className="w-2.5 h-2.5 text-white/60" />
+                  <span className="text-[10px] font-medium text-white/70">{modelLabels[video.model] || video.model}</span>
                 </div>
-                <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/50 backdrop-blur rounded text-[10px]">
-                  {video.duration}
+                <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/50 backdrop-blur rounded text-[10px] text-white/70">
+                  {formatDuration(video.duration)}
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="text-sm font-medium truncate">{video.title}</h3>
+                <h3 className="text-sm font-medium truncate text-white/90">{video.title}</h3>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-white/30">{video.date}</span>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${statusStyles[video.status]}`}>
+                  <span className="text-xs text-white/25">{formatDate(video.createdAt)}</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${statusStyles[video.status] || statusStyles.draft}`}>
                     {video.status}
                   </span>
                 </div>
-                {video.views > 0 && (
-                  <div className="flex items-center gap-1 mt-2 text-xs text-white/30">
-                    <Eye className="w-3 h-3" /> {video.views.toLocaleString()} views
-                  </div>
-                )}
               </div>
             </div>
           ))}
         </div>
-      ) : (
-        <div className="glass-card overflow-hidden divide-y divide-white/5">
+      )}
+
+      {/* List View */}
+      {!loading && filtered.length > 0 && viewMode === "list" && (
+        <div className="rounded-xl border border-white/[0.04] overflow-hidden divide-y divide-white/[0.03]">
           {filtered.map((video) => (
-            <div key={video.id} className="flex items-center gap-4 px-5 py-3 hover:bg-white/[0.02] transition-colors">
-              <div className={`w-16 h-10 rounded-lg bg-gradient-to-br ${video.color} flex items-center justify-center flex-shrink-0`}>
-                <Play className="w-3 h-3 text-white" />
+            <div key={video.id} className="flex items-center gap-4 px-5 py-3 hover:bg-white/[0.015] transition-colors">
+              <div className="w-16 h-10 rounded-lg bg-white/[0.03] flex items-center justify-center flex-shrink-0 overflow-hidden">
+                {video.thumbnailUrl ? (
+                  <img src={video.thumbnailUrl} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <Play className="w-3 h-3 text-white/15" />
+                )}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium truncate">{video.title}</div>
-                <div className="text-xs text-white/30">{video.model} · {video.duration}</div>
+                <div className="text-sm font-medium truncate text-white/90">{video.title}</div>
+                <div className="text-xs text-white/25">{modelLabels[video.model] || video.model} · {formatDuration(video.duration)}</div>
               </div>
-              <div className="hidden sm:block text-xs text-white/30">{video.date}</div>
-              <div className="hidden sm:block text-xs text-white/30">{video.views > 0 ? `${video.views.toLocaleString()} views` : "—"}</div>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${statusStyles[video.status]}`}>
+              <div className="hidden sm:block text-xs text-white/25">{formatDate(video.createdAt)}</div>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${statusStyles[video.status] || statusStyles.draft}`}>
                 {video.status}
               </span>
-              <button className="p-1 rounded hover:bg-white/5 text-white/30">
+              <button className="p-1 rounded hover:bg-white/5 text-white/20">
                 <MoreVertical className="w-4 h-4" />
               </button>
             </div>

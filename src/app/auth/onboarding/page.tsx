@@ -1,635 +1,446 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Camera,
-  Mic,
-  Palette,
   ArrowRight,
-  ArrowLeft,
   Upload,
   Check,
-  Sparkles,
-  ImageIcon,
   Loader2,
-  AlertCircle,
   X,
+  RefreshCw,
+  Play,
+  Plus,
+  Camera,
 } from "lucide-react";
 import SessionProvider from "@/components/SessionProvider";
 
-type OnboardingStep = "photos" | "voice" | "brand" | "complete";
+type Step = "industry" | "photos" | "character" | "video";
+
+const INDUSTRIES = [
+  { id: "real_estate", label: "Real Estate", sub: "Agents, brokers, property managers" },
+  { id: "legal", label: "Legal", sub: "Attorneys, law firms, paralegals" },
+  { id: "medical", label: "Medical", sub: "Doctors, clinics, health practitioners" },
+  { id: "creator", label: "Creator", sub: "Influencers, coaches, personal brands" },
+  { id: "business", label: "Business", sub: "Consultants, agencies, startups" },
+  { id: "other", label: "Other", sub: "Something different entirely" },
+];
 
 interface UploadedPhoto {
   id: string;
   filename: string;
   url: string;
-}
-
-interface VoiceSampleData {
-  id: string;
-  filename: string;
-  url: string;
-  duration: number;
+  previewUrl?: string;
 }
 
 function OnboardingFlow() {
   const router = useRouter();
-  const [step, setStep] = useState<OnboardingStep>("photos");
-
-  // Photo state
-  const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
-  const [photoUploading, setPhotoUploading] = useState(false);
-  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [step, setStep] = useState<Step>("industry");
+  const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<UploadedPhoto[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Voice state
-  const [voiceSample, setVoiceSample] = useState<VoiceSampleData | null>(null);
-  const [recording, setRecording] = useState(false);
-  const [recordTime, setRecordTime] = useState(0);
-  const [voiceUploading, setVoiceUploading] = useState(false);
-  const [voiceError, setVoiceError] = useState<string | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const recordTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Brand state
-  const [brandName, setBrandName] = useState("");
-  const [brandDescription, setBrandDescription] = useState("");
-  const [targetAudience, setTargetAudience] = useState("");
-  const [selectedTone, setSelectedTone] = useState("");
-  const [brandSaving, setBrandSaving] = useState(false);
-  const [brandError, setBrandError] = useState<string | null>(null);
-
-  // Completing state
+  const [characterSheetUrl, setCharacterSheetUrl] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoGenerating, setVideoGenerating] = useState(false);
   const [completing, setCompleting] = useState(false);
 
-  const steps = [
-    { key: "photos", label: "Upload Photos", icon: Camera },
-    { key: "voice", label: "Record Voice", icon: Mic },
-    { key: "brand", label: "Brand Profile", icon: Palette },
-    { key: "complete", label: "Ready!", icon: Sparkles },
-  ];
+  const stepIndex = ["industry", "photos", "character", "video"].indexOf(step);
 
-  const currentIndex = steps.findIndex((s) => s.key === step);
+  // ─── Industry ──────────────────────────────────────────────────
 
-  // --- Photo Upload Logic ---
-  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  const selectIndustry = (id: string) => {
+    setSelectedIndustry(id);
+    setTimeout(() => setStep("photos"), 250);
+  };
 
-    setPhotoError(null);
-    setPhotoUploading(true);
+  // ─── Photos ────────────────────────────────────────────────────
 
+  const handleFileSelect = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+      setError(null);
+      setUploading(true);
+
+      try {
+        for (let i = 0; i < Math.min(files.length, 3 - photos.length); i++) {
+          const file = files[i];
+          if (!file.type.startsWith("image/")) continue;
+          if (file.size > 10 * 1024 * 1024) { setError("Max 10MB per photo"); continue; }
+
+          const previewUrl = URL.createObjectURL(file);
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("type", "photo");
+
+          const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
+          let photoUrl: string;
+          if (uploadRes.ok) {
+            photoUrl = (await uploadRes.json()).url;
+          } else {
+            photoUrl = `/uploads/photos/${Date.now()}-${file.name}`;
+          }
+
+          const photoRes = await fetch("/api/photos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename: file.name, url: photoUrl, isPrimary: photos.length === 0 && i === 0 }),
+          });
+
+          if (photoRes.ok) {
+            const saved = await photoRes.json();
+            setPhotos((prev) => [...prev, { ...saved, previewUrl }]);
+          }
+        }
+      } catch (err: any) {
+        setError(err.message || "Upload failed");
+      } finally {
+        setUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+    },
+    [photos.length]
+  );
+
+  // ─── Character Sheet ───────────────────────────────────────────
+
+  const generateCharacterSheet = async () => {
+    setGenerating(true);
+    setGenError(null);
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+      const photoUrls = photos.map((p) => p.url).filter((u) => !u.startsWith("/uploads/"));
+      const res = await fetch("/api/character-sheet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photoUrls }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || "Generation failed");
+      const data = await res.json();
+      setCharacterSheetUrl(data.poses.compositeUrl);
+    } catch (err: any) {
+      setGenError(err.message);
+    } finally {
+      setGenerating(false);
+    }
+  };
 
-        // Validate file type
-        if (!file.type.startsWith("image/")) {
-          setPhotoError(`${file.name} is not an image file`);
-          continue;
-        }
+  const enterCharacterStep = () => {
+    setStep("character");
+    if (!characterSheetUrl && !generating) generateCharacterSheet();
+  };
 
-        // Validate file size (max 10MB)
-        if (file.size > 10 * 1024 * 1024) {
-          setPhotoError(`${file.name} exceeds 10MB limit`);
-          continue;
-        }
+  // ─── Video ─────────────────────────────────────────────────────
 
-        // Generate a placeholder URL for the photo reference
-        // The actual S3 upload is handled by another system; we store the reference
-        const filename = `${Date.now()}-${file.name}`;
-        const url = `/uploads/photos/${filename}`;
+  const enterVideoStep = () => {
+    setStep("video");
+    if (!videoUrl && !videoGenerating) generateVideo();
+  };
 
-        // Save photo metadata to the database
-        const res = await fetch("/api/photos", {
+  const generateVideo = async () => {
+    setVideoGenerating(true);
+    try {
+      const res = await fetch("/api/videos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "Your First AI Video", description: "Generated during onboarding", contentType: "onboarding", model: "kling_2.6" }),
+      });
+      if (res.ok) {
+        const vid = await res.json();
+        const gen = await fetch("/api/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            filename,
-            url,
-            isPrimary: uploadedPhotos.length === 0 && i === 0,
-          }),
+          body: JSON.stringify({ videoId: vid.id, model: "kling_2.6", script: "A confident professional speaking directly to camera." }),
         });
-
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || "Failed to save photo");
+        if (gen.ok) {
+          const data = await gen.json();
+          if (data.videoUrl) setVideoUrl(data.videoUrl);
         }
-
-        const savedPhoto = await res.json();
-        setUploadedPhotos((prev) => [...prev, savedPhoto]);
       }
-    } catch (err: any) {
-      setPhotoError(err.message || "Failed to upload photos");
-    } finally {
-      setPhotoUploading(false);
-      // Reset file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  }, [uploadedPhotos.length]);
-
-  // --- Voice Recording Logic ---
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-      mediaRecorderRef.current.stop();
-    }
-    if (recordTimerRef.current) {
-      clearInterval(recordTimerRef.current);
-      recordTimerRef.current = null;
-    }
-    setRecording(false);
-  }, []);
-
-  const uploadVoiceSample = useCallback(async (audioBlob: Blob, duration: number) => {
-    setVoiceUploading(true);
-    setVoiceError(null);
-
-    try {
-      const extension = audioBlob.type.includes("webm") ? "webm" : "mp4";
-      const filename = `voice-${Date.now()}.${extension}`;
-      const url = `/uploads/voices/${filename}`;
-
-      // Save voice sample metadata to the database
-      const res = await fetch("/api/voices", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          filename,
-          url,
-          duration,
-          isDefault: true,
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to save voice sample");
-      }
-
-      const savedVoice = await res.json();
-      setVoiceSample(savedVoice);
-    } catch (err: any) {
-      setVoiceError(err.message || "Failed to upload voice sample");
-    } finally {
-      setVoiceUploading(false);
-    }
-  }, []);
-
-  const startRecording = useCallback(async () => {
-    setVoiceError(null);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: MediaRecorder.isTypeSupported("audio/webm")
-          ? "audio/webm"
-          : "audio/mp4",
-      });
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-
-      let currentDuration = 0;
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = async () => {
-        // Stop all tracks from the stream
-        stream.getTracks().forEach((track) => track.stop());
-
-        const audioBlob = new Blob(audioChunksRef.current, {
-          type: mediaRecorder.mimeType,
-        });
-
-        // Upload the voice sample
-        await uploadVoiceSample(audioBlob, currentDuration);
-      };
-
-      mediaRecorder.start(1000); // Collect data every second
-      setRecording(true);
-      setRecordTime(0);
-
-      // Timer to track recording duration
-      recordTimerRef.current = setInterval(() => {
-        setRecordTime((t) => {
-          const next = t + 1;
-          currentDuration = next;
-          if (next >= 60) {
-            // Auto-stop at 60 seconds
-            stopRecording();
-            return 60;
-          }
-          return next;
-        });
-      }, 1000);
-    } catch (err: any) {
-      if (err.name === "NotAllowedError") {
-        setVoiceError("Microphone access denied. Please allow microphone access and try again.");
-      } else {
-        setVoiceError("Failed to access microphone. Please check your browser settings.");
-      }
-    }
-  }, [stopRecording, uploadVoiceSample]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (recordTimerRef.current) {
-        clearInterval(recordTimerRef.current);
-      }
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-        mediaRecorderRef.current.stop();
-      }
-    };
-  }, []);
-
-  // --- Brand Profile Logic ---
-  const saveBrandProfile = async () => {
-    setBrandSaving(true);
-    setBrandError(null);
-
-    try {
-      const res = await fetch("/api/brand-profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          brandName: brandName || null,
-          tagline: brandDescription || null,
-          toneOfVoice: selectedTone || null,
-          targetAudience: targetAudience || null,
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to save brand profile");
-      }
-
-      // Move to complete step
-      setStep("complete");
-    } catch (err: any) {
-      setBrandError(err.message || "Failed to save brand profile");
-    } finally {
-      setBrandSaving(false);
+    } catch {} finally {
+      setVideoGenerating(false);
     }
   };
 
-  // --- Complete Onboarding ---
   const completeOnboarding = async () => {
     setCompleting(true);
-    try {
-      const res = await fetch("/api/onboarding/complete", {
-        method: "POST",
-      });
-
-      if (!res.ok) {
-        console.error("Failed to mark onboarding complete");
-      }
-
-      router.push("/dashboard/overview");
-    } catch (err) {
-      console.error("Failed to complete onboarding:", err);
-      // Still redirect even if the flag update fails
-      router.push("/dashboard/overview");
-    }
+    try { await fetch("/api/onboarding/complete", { method: "POST" }); } catch {}
+    router.push("/dashboard/overview");
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-20">
-      <div className="absolute inset-0 mesh-gradient" />
+  // ─── Render ────────────────────────────────────────────────────
 
-      <div className="relative z-10 w-full max-w-2xl">
-        {/* Progress */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          {steps.map((s, i) => (
-            <div key={s.key} className="flex items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
-                i < currentIndex ? "bg-green-500 text-white" :
-                i === currentIndex ? "bg-blue-500 text-white" :
-                "bg-white/10 text-white/30"
-              }`}>
-                {i < currentIndex ? <Check className="w-4 h-4" /> : i + 1}
-              </div>
-              {i < steps.length - 1 && (
-                <div className={`w-12 h-0.5 mx-1 ${i < currentIndex ? "bg-green-500" : "bg-white/10"}`} />
-              )}
-            </div>
+  return (
+    <div className="min-h-screen bg-[#050508] flex flex-col">
+      {/* Top bar */}
+      <div className="flex items-center justify-between px-6 py-5">
+        <span className="text-[15px] font-semibold tracking-tight text-white/90">
+          Official <span className="text-blue-400">AI</span>
+        </span>
+        <div className="flex items-center gap-1.5">
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className={`h-1 rounded-full transition-all duration-500 ${
+                i <= stepIndex ? "bg-white w-6" : "bg-white/10 w-4"
+              }`}
+            />
           ))}
         </div>
+      </div>
 
-        <div className="glass-card p-8">
-          {/* Photos step */}
-          {step === "photos" && (
-            <div className="space-y-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-blue-500/15 flex items-center justify-center mx-auto">
-                <Camera className="w-8 h-8 text-blue-400" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold mb-2">Upload your photos</h2>
-                <p className="text-sm text-white/40 max-w-md mx-auto">
-                  Upload 5-10 photos of yourself. These will be used to generate video content featuring your likeness. Phone photos work great!
-                </p>
-              </div>
+      {/* Content */}
+      <div className="flex-1 flex items-center justify-center px-6 pb-12">
+        <div className="w-full max-w-lg">
 
-              {/* Photo error */}
-              {photoError && (
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm max-w-md mx-auto">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  {photoError}
-                  <button onClick={() => setPhotoError(null)} className="ml-auto">
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              )}
+          {/* ════ STEP 1: INDUSTRY ════ */}
+          {step === "industry" && (
+            <div>
+              <p className="text-sm text-white/30 mb-2">Step 1</p>
+              <h1 className="text-[28px] font-semibold tracking-tight text-white leading-tight mb-1">
+                What do you do?
+              </h1>
+              <p className="text-[15px] text-white/40 mb-10">
+                We'll tailor your content to your industry.
+              </p>
 
-              <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 max-w-md mx-auto">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`aspect-square rounded-xl border-2 border-dashed flex items-center justify-center transition-all ${
-                      i < uploadedPhotos.length
-                        ? "border-green-500/30 bg-green-500/10"
-                        : "border-white/10"
+              <div className="space-y-2">
+                {INDUSTRIES.map((ind) => (
+                  <button
+                    key={ind.id}
+                    onClick={() => selectIndustry(ind.id)}
+                    className={`w-full text-left px-5 py-4 rounded-xl border transition-all duration-150 group ${
+                      selectedIndustry === ind.id
+                        ? "border-white/20 bg-white/[0.06]"
+                        : "border-white/[0.04] hover:border-white/10 hover:bg-white/[0.02]"
                     }`}
                   >
-                    {i < uploadedPhotos.length ? (
-                      <Check className="w-5 h-5 text-green-400" />
-                    ) : (
-                      <ImageIcon className="w-5 h-5 text-white/20" />
-                    )}
-                  </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-[15px] font-medium text-white/90">{ind.label}</div>
+                        <div className="text-[13px] text-white/30 mt-0.5">{ind.sub}</div>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-white/10 group-hover:text-white/30 transition-colors" />
+                    </div>
+                  </button>
                 ))}
               </div>
-
-              {/* Hidden file input */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-
-              <button
-                className="btn-secondary gap-2 mx-auto disabled:opacity-50"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={photoUploading}
-              >
-                {photoUploading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" /> Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-4 h-4" /> Upload from Device
-                  </>
-                )}
-              </button>
-
-              <p className="text-xs text-white/20">{uploadedPhotos.length}/5 photos uploaded (minimum)</p>
-
-              <div className="flex justify-end pt-4">
-                <button
-                  onClick={() => setStep("voice")}
-                  disabled={uploadedPhotos.length < 1}
-                  className="btn-primary gap-2 disabled:opacity-30"
-                >
-                  Next: Record Voice <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
             </div>
           )}
 
-          {/* Voice step */}
-          {step === "voice" && (
-            <div className="space-y-6 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-purple-500/15 flex items-center justify-center mx-auto">
-                <Mic className="w-8 h-8 text-purple-400" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold mb-2">Record your voice</h2>
-                <p className="text-sm text-white/40 max-w-md mx-auto">
-                  Record a 30-60 second voice sample. Speak naturally — the AI will learn your unique tone and style.
-                </p>
-              </div>
+          {/* ════ STEP 2: PHOTOS ════ */}
+          {step === "photos" && (
+            <div>
+              <p className="text-sm text-white/30 mb-2">Step 2</p>
+              <h1 className="text-[28px] font-semibold tracking-tight text-white leading-tight mb-1">
+                Upload your photos
+              </h1>
+              <p className="text-[15px] text-white/40 mb-10">
+                1-3 clear photos. Selfies, headshots, or casual shots all work.
+              </p>
 
-              {/* Voice error */}
-              {voiceError && (
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm max-w-md mx-auto">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  {voiceError}
-                  <button onClick={() => setVoiceError(null)} className="ml-auto">
-                    <X className="w-3 h-3" />
-                  </button>
+              {error && (
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/[0.06] border border-red-500/10 text-[13px] text-red-400/80 mb-6">
+                  <span className="flex-1">{error}</span>
+                  <button onClick={() => setError(null)}><X className="w-3.5 h-3.5" /></button>
                 </div>
               )}
 
-              {/* Recording UI */}
-              <div className="max-w-sm mx-auto">
-                <div className={`w-24 h-24 rounded-full mx-auto flex items-center justify-center cursor-pointer transition-all ${
-                  recording
-                    ? "bg-red-500/20 ring-4 ring-red-500/10 animate-pulse"
-                    : voiceUploading
-                    ? "bg-blue-500/20"
-                    : voiceSample
-                    ? "bg-green-500/20"
-                    : "bg-white/5 hover:bg-white/10"
-                }`}
-                  onClick={() => {
-                    if (voiceSample || voiceUploading) return;
-                    if (recording) {
-                      stopRecording();
-                    } else {
-                      startRecording();
-                    }
-                  }}
-                >
-                  {voiceUploading ? (
-                    <Loader2 className="w-10 h-10 text-blue-400 animate-spin" />
-                  ) : voiceSample ? (
-                    <Check className="w-10 h-10 text-green-400" />
-                  ) : (
-                    <Mic className={`w-10 h-10 ${recording ? "text-red-400" : "text-white/40"}`} />
-                  )}
-                </div>
-                <div className="mt-3 text-sm text-white/40">
-                  {voiceUploading
-                    ? "Saving voice sample..."
-                    : recording
-                    ? `Recording... ${recordTime}s`
-                    : voiceSample
-                    ? `Voice sample recorded! (${voiceSample.duration}s)`
-                    : "Tap to start recording"
-                  }
-                </div>
-              </div>
-
-              <div className="flex justify-between pt-4">
-                <button onClick={() => setStep("photos")} className="btn-secondary gap-2">
-                  <ArrowLeft className="w-4 h-4" /> Back
-                </button>
-                <button
-                  onClick={() => setStep("brand")}
-                  disabled={!voiceSample}
-                  className="btn-primary gap-2 disabled:opacity-30"
-                >
-                  Next: Brand Profile <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Brand step */}
-          {step === "brand" && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-2xl bg-green-500/15 flex items-center justify-center mx-auto mb-4">
-                  <Palette className="w-8 h-8 text-green-400" />
-                </div>
-                <h2 className="text-2xl font-bold mb-2">Tell us about your brand</h2>
-                <p className="text-sm text-white/40 max-w-md mx-auto">
-                  Help the AI understand your business so it creates on-brand content.
-                </p>
-              </div>
-
-              {/* Brand error */}
-              {brandError && (
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  {brandError}
-                  <button onClick={() => setBrandError(null)} className="ml-auto">
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              )}
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs text-white/40 mb-1.5">Business / Brand Name</label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Rockwell Realty Group"
-                    className="input-field text-sm"
-                    value={brandName}
-                    onChange={(e) => setBrandName(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-white/40 mb-1.5">What do you do?</label>
-                  <textarea
-                    placeholder="Brief description of your business and what makes you unique..."
-                    className="input-field min-h-[80px] resize-none text-sm"
-                    value={brandDescription}
-                    onChange={(e) => setBrandDescription(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-white/40 mb-1.5">Who is your target audience?</label>
-                  <input
-                    type="text"
-                    placeholder="e.g., First-time homebuyers in Seattle"
-                    className="input-field text-sm"
-                    value={targetAudience}
-                    onChange={(e) => setTargetAudience(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-white/40 mb-1.5">Preferred tone</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {["Professional", "Friendly", "Educational", "Casual"].map((tone) => (
-                      <button
-                        key={tone}
-                        onClick={() => setSelectedTone(tone)}
-                        className={`p-3 rounded-xl bg-white/[0.03] border text-sm transition-all ${
-                          selectedTone === tone
-                            ? "border-blue-500/30 bg-blue-500/10 text-blue-400"
-                            : "border-white/5 hover:border-blue-500/30 hover:bg-blue-500/5"
+              {/* Photo slots */}
+              <div className="flex gap-3 mb-8">
+                {[0, 1, 2].map((i) => {
+                  const photo = photos[i];
+                  return (
+                    <div key={i} className="relative flex-1 aspect-[3/4]">
+                      <div
+                        className={`w-full h-full rounded-2xl overflow-hidden transition-all ${
+                          photo
+                            ? "ring-1 ring-white/10"
+                            : "border border-dashed border-white/[0.08] bg-white/[0.015]"
                         }`}
                       >
-                        {tone}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                        {photo?.previewUrl ? (
+                          <img src={photo.previewUrl} alt="" className="w-full h-full object-cover" />
+                        ) : photo ? (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Check className="w-5 h-5 text-white/20" />
+                          </div>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Camera className="w-5 h-5 text-white/[0.08]" />
+                          </div>
+                        )}
+                      </div>
+                      {photo && (
+                        <button
+                          onClick={() => setPhotos((prev) => prev.filter((_, j) => j !== i))}
+                          className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white/10 backdrop-blur flex items-center justify-center hover:bg-white/20 transition-colors"
+                        >
+                          <X className="w-2.5 h-2.5 text-white/60" />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
 
-              <div className="flex justify-between pt-4">
-                <button onClick={() => setStep("voice")} className="btn-secondary gap-2">
-                  <ArrowLeft className="w-4 h-4" /> Back
-                </button>
-                <button
-                  onClick={saveBrandProfile}
-                  disabled={brandSaving}
-                  className="btn-primary gap-2 disabled:opacity-50"
-                >
-                  {brandSaving ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" /> Saving...
-                    </>
-                  ) : (
-                    <>
-                      Complete Setup <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
+              <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileSelect} className="hidden" />
 
-          {/* Complete step */}
-          {step === "complete" && (
-            <div className="py-8 text-center space-y-6">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mx-auto">
-                <Sparkles className="w-10 h-10 text-blue-400" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold mb-2">You&apos;re all set!</h2>
-                <p className="text-sm text-white/40 max-w-md mx-auto">
-                  Your AI marketing teammate is ready. We&apos;ll start generating your first batch of content using Kling 2.6 and Seedance 2.0.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto text-center">
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
-                  <div className="text-lg font-bold gradient-text">{uploadedPhotos.length}</div>
-                  <div className="text-[10px] text-white/30">Photos</div>
-                </div>
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
-                  <div className="text-lg font-bold gradient-text">{voiceSample ? "1" : "0"}</div>
-                  <div className="text-[10px] text-white/30">Voice Sample</div>
-                </div>
-                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5">
-                  <div className="text-lg font-bold gradient-text">
-                    <Check className="w-5 h-5 mx-auto" />
-                  </div>
-                  <div className="text-[10px] text-white/30">Brand Profile</div>
-                </div>
-              </div>
-
-              <button
-                onClick={completeOnboarding}
-                disabled={completing}
-                className="btn-primary gap-2 text-lg disabled:opacity-50"
-              >
-                {completing ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" /> Setting up...
-                  </>
-                ) : (
-                  <>
-                    Go to Dashboard <ArrowRight className="w-5 h-5" />
-                  </>
+              <div className="flex items-center gap-3">
+                {photos.length < 3 && (
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="flex items-center gap-2 px-5 py-3 rounded-xl border border-white/[0.06] text-[14px] text-white/50 hover:text-white/70 hover:border-white/10 hover:bg-white/[0.02] transition-all"
+                  >
+                    {uploading ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</>
+                    ) : (
+                      <>{photos.length > 0 ? <Plus className="w-4 h-4" /> : <Upload className="w-4 h-4" />} {photos.length > 0 ? "Add more" : "Choose photos"}</>
+                    )}
+                  </button>
                 )}
-              </button>
+                <div className="flex-1" />
+                <button
+                  onClick={enterCharacterStep}
+                  disabled={photos.length < 1}
+                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-medium hover:bg-white/90 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                >
+                  Continue <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           )}
+
+          {/* ════ STEP 3: CHARACTER SHEET ════ */}
+          {step === "character" && (
+            <div>
+              {generating ? (
+                <div className="text-center py-16">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/[0.04] mb-6">
+                    <Loader2 className="w-5 h-5 text-white/40 animate-spin" />
+                  </div>
+                  <h1 className="text-[22px] font-semibold text-white/90 mb-2">Building your avatar</h1>
+                  <p className="text-[14px] text-white/30 max-w-xs mx-auto">
+                    Analyzing your photos and generating a character model. About 20 seconds.
+                  </p>
+                </div>
+              ) : genError ? (
+                <div className="text-center py-16">
+                  <h1 className="text-[22px] font-semibold text-white/90 mb-2">Something went wrong</h1>
+                  <p className="text-[14px] text-white/30 mb-8">{genError}</p>
+                  <button
+                    onClick={() => { setGenError(null); generateCharacterSheet(); }}
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-medium hover:bg-white/90 transition-all"
+                  >
+                    <RefreshCw className="w-4 h-4" /> Try again
+                  </button>
+                </div>
+              ) : characterSheetUrl ? (
+                <div>
+                  <p className="text-sm text-white/30 mb-2">Step 3</p>
+                  <h1 className="text-[28px] font-semibold tracking-tight text-white leading-tight mb-1">
+                    Your AI avatar
+                  </h1>
+                  <p className="text-[15px] text-white/40 mb-8">
+                    Does this look like you?
+                  </p>
+
+                  <div className="rounded-2xl overflow-hidden ring-1 ring-white/[0.06] mb-8">
+                    <img src={characterSheetUrl} alt="Character Sheet" className="w-full" />
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setStep("photos")}
+                      className="flex items-center gap-2 px-4 py-3 rounded-xl border border-white/[0.06] text-[13px] text-white/40 hover:text-white/60 hover:border-white/10 transition-all"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> More photos
+                    </button>
+                    <button
+                      onClick={() => { setCharacterSheetUrl(null); generateCharacterSheet(); }}
+                      className="flex items-center gap-2 px-4 py-3 rounded-xl border border-white/[0.06] text-[13px] text-white/40 hover:text-white/60 hover:border-white/10 transition-all"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" /> Retry
+                    </button>
+                    <div className="flex-1" />
+                    <button
+                      onClick={enterVideoStep}
+                      className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-medium hover:bg-white/90 transition-all"
+                    >
+                      Looks like me <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Demo mode */
+                <div className="text-center py-16">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/[0.04] mb-6">
+                    <Check className="w-5 h-5 text-white/30" />
+                  </div>
+                  <h1 className="text-[22px] font-semibold text-white/90 mb-2">Avatar created</h1>
+                  <p className="text-[14px] text-white/30 mb-8">Your character model is ready.</p>
+                  <button
+                    onClick={enterVideoStep}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-medium hover:bg-white/90 transition-all"
+                  >
+                    Generate my video <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ════ STEP 4: VIDEO ════ */}
+          {step === "video" && (
+            <div>
+              {videoGenerating ? (
+                <div className="text-center py-16">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/[0.04] mb-6">
+                    <Loader2 className="w-5 h-5 text-white/40 animate-spin" />
+                  </div>
+                  <h1 className="text-[22px] font-semibold text-white/90 mb-2">Generating your video</h1>
+                  <p className="text-[14px] text-white/30 max-w-xs mx-auto">
+                    Creating a short clip featuring your AI avatar. This is the good part.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-sm text-white/30 mb-2">Step 4</p>
+                  <h1 className="text-[28px] font-semibold tracking-tight text-white leading-tight mb-1">
+                    {videoUrl ? "Here's your first video" : "You're ready"}
+                  </h1>
+                  <p className="text-[15px] text-white/40 mb-8">
+                    {videoUrl
+                      ? "This is what AI can do with your face. Imagine this, every week, on autopilot."
+                      : "Your AI marketing teammate is set up and ready to create."}
+                  </p>
+
+                  {videoUrl && (
+                    <div className="rounded-2xl overflow-hidden ring-1 ring-white/[0.06] bg-black aspect-video mb-8">
+                      <video src={videoUrl} controls autoPlay muted loop className="w-full h-full object-cover" />
+                    </div>
+                  )}
+
+                  <button
+                    onClick={completeOnboarding}
+                    disabled={completing}
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-medium hover:bg-white/90 disabled:opacity-40 transition-all"
+                  >
+                    {completing ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Setting up...</>
+                    ) : (
+                      <>Go to dashboard <ArrowRight className="w-4 h-4" /></>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
         </div>
       </div>
     </div>

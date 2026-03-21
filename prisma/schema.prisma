@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -33,6 +34,7 @@ model User {
   analytics               AnalyticsEvent[]
   passwordResetTokens     PasswordResetToken[]
   emailVerificationTokens EmailVerificationToken[]
+  characterSheets         CharacterSheet[]
 }
 
 model PasswordResetToken {
@@ -159,4 +161,39 @@ model AnalyticsEvent {
   platform  String?
   count     Int      @default(1)
   date      DateTime @default(now())
+}
+
+// ─── Character Sheets ───────────────────────────────────────────
+
+model CharacterSheet {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  type         String   // "poses" | "3d_360"
+  compositeUrl String?
+  status       String   @default("generating") // generating | complete | failed
+  createdAt    DateTime @default(now())
+
+  images CharacterSheetImage[]
+}
+
+model CharacterSheetImage {
+  id               String         @id @default(uuid())
+  characterSheetId String
+  characterSheet   CharacterSheet @relation(fields: [characterSheetId], references: [id], onDelete: Cascade)
+  url              String
+  position         Int
+  angle            String?
+  createdAt        DateTime       @default(now())
+}
+
+// ─── System Configuration ───────────────────────────────────────
+
+model SystemConfig {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  label     String
+  category  String   // "models" | "prompts" | "onboarding"
+  updatedAt DateTime @updatedAt
 }

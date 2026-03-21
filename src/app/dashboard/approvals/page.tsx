@@ -1,189 +1,146 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Play,
+  ArrowLeft,
+  ArrowRight,
   Check,
   X,
-  RefreshCw,
-  Cpu,
-  Calendar,
   MessageSquare,
-  ChevronLeft,
-  ChevronRight,
-  AlertCircle,
+  Loader2,
+  Cpu,
 } from "lucide-react";
 
-const pendingVideos = [
-  {
-    id: "1",
-    title: "Weekly Market Update — Bellevue Area",
-    model: "Kling 2.6",
-    contentType: "Market Update",
-    script: "This week in Bellevue real estate, we're seeing a 12% increase in buyer activity compared to last month. The average days on market has dropped to just 18 days, signaling a strong seller's market...",
-    date: "Feb 25, 2026",
-    duration: "0:45",
-    color: "from-blue-500/20 to-cyan-500/20",
-  },
-  {
-    id: "2",
-    title: "Client Success Story — The Martinez Family",
-    model: "Seedance 2.0",
-    contentType: "Testimonial",
-    script: "When the Martinez family first reached out, they were feeling overwhelmed by the competitive market. Within three weeks, we found them their dream home, 15% under asking price...",
-    date: "Feb 24, 2026",
-    duration: "0:30",
-    color: "from-purple-500/20 to-pink-500/20",
-  },
-  {
-    id: "3",
-    title: "5 Tips for First-Time Homebuyers",
-    model: "Kling 2.6",
-    contentType: "Educational",
-    script: "If you're buying your first home, here are five things you absolutely need to know. Number one: get pre-approved before you start looking. Number two: don't skip the home inspection...",
-    date: "Feb 23, 2026",
-    duration: "1:15",
-    color: "from-green-500/20 to-emerald-500/20",
-  },
-];
+interface VideoItem {
+  id: string;
+  title: string;
+  model: string;
+  contentType: string;
+  script: string | null;
+  duration: number;
+  createdAt: string;
+}
+
+const modelLabels: Record<string, string> = {
+  "kling_2.6": "Kling 2.6",
+  "seedance_2.0": "Seedance 2.0",
+};
 
 export default function ApprovalsPage() {
+  const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [feedback, setFeedback] = useState("");
-  const current = pendingVideos[currentIndex];
+  const [acting, setActing] = useState(false);
+
+  useEffect(() => { fetchPending(); }, []);
+
+  async function fetchPending() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/videos?status=review");
+      if (res.ok) setVideos(await res.json());
+    } catch {} finally { setLoading(false); }
+  }
+
+  async function updateStatus(status: "approved" | "rejected" | "draft") {
+    const video = videos[currentIndex];
+    if (!video) return;
+    setActing(true);
+    try {
+      await fetch(`/api/videos/${video.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      const updated = videos.filter((_, i) => i !== currentIndex);
+      setVideos(updated);
+      setCurrentIndex(Math.min(currentIndex, Math.max(0, updated.length - 1)));
+      setFeedback("");
+    } catch {} finally { setActing(false); }
+  }
+
+  const video = videos[currentIndex];
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-32"><Loader2 className="w-5 h-5 text-white/20 animate-spin" /></div>;
+  }
+
+  if (videos.length === 0) {
+    return (
+      <div className="max-w-2xl mx-auto text-center py-24">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/[0.03] mb-5">
+          <Check className="w-6 h-6 text-white/15" />
+        </div>
+        <h1 className="text-[20px] font-semibold text-white/80 mb-1">All caught up</h1>
+        <p className="text-[14px] text-white/30">No videos pending review right now.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="max-w-3xl mx-auto">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Content Approvals</h1>
-          <p className="text-sm text-white/40 mt-1">
-            {pendingVideos.length} videos awaiting your review
-          </p>
+          <h1 className="text-2xl font-bold">Approvals</h1>
+          <p className="text-sm text-white/40 mt-1">{videos.length} pending</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-white/40">
-            {currentIndex + 1} of {pendingVideos.length}
-          </span>
-          <button
-            onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
-            disabled={currentIndex === 0}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-20 transition-all"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setCurrentIndex(Math.min(pendingVideos.length - 1, currentIndex + 1))}
-            disabled={currentIndex === pendingVideos.length - 1}
-            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-20 transition-all"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          <button onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))} disabled={currentIndex === 0} className="p-2 rounded-lg border border-white/[0.06] text-white/30 hover:text-white/60 disabled:opacity-20 transition-all"><ArrowLeft className="w-4 h-4" /></button>
+          <span className="text-sm text-white/30 px-2">{currentIndex + 1} / {videos.length}</span>
+          <button onClick={() => setCurrentIndex(Math.min(videos.length - 1, currentIndex + 1))} disabled={currentIndex >= videos.length - 1} className="p-2 rounded-lg border border-white/[0.06] text-white/30 hover:text-white/60 disabled:opacity-20 transition-all"><ArrowRight className="w-4 h-4" /></button>
         </div>
       </div>
 
-      {/* Info Banner */}
-      <div className="glass-card p-4 flex items-center gap-3 bg-blue-500/5 border-blue-500/10">
-        <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
-        <p className="text-sm text-white/60">
-          All content requires your explicit approval before publishing. Nothing goes live without your consent.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Video Preview - 3 cols */}
-        <div className="lg:col-span-3 space-y-4">
-          <div className="glass-card overflow-hidden">
-            <div className={`aspect-video bg-gradient-to-br ${current.color} relative flex items-center justify-center`}>
-              <div className="absolute inset-0 bg-[#0a0e17]/30" />
-              <button className="relative w-16 h-16 rounded-full bg-white/10 backdrop-blur flex items-center justify-center hover:scale-105 transition-transform">
-                <Play className="w-7 h-7 text-white ml-1" />
-              </button>
-              <div className="absolute bottom-3 left-3 flex items-center gap-2 px-3 py-1.5 bg-black/60 backdrop-blur rounded-full">
-                <Cpu className="w-3 h-3" />
-                <span className="text-xs font-medium">{current.model}</span>
+      {video && (
+        <div className="space-y-6">
+          <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-6">
+            <h2 className="text-[18px] font-semibold text-white/90 mb-4">{video.title}</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div>
+                <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1">Model</div>
+                <div className="flex items-center gap-1.5 text-sm text-white/70"><Cpu className="w-3.5 h-3.5 text-white/30" />{modelLabels[video.model] || video.model}</div>
               </div>
-              <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 backdrop-blur rounded text-xs">
-                {current.duration}
+              <div>
+                <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1">Type</div>
+                <div className="text-sm text-white/70 capitalize">{video.contentType.replace(/_/g, " ")}</div>
+              </div>
+              <div>
+                <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1">Duration</div>
+                <div className="text-sm text-white/70">{video.duration || 8}s</div>
+              </div>
+              <div>
+                <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1">Created</div>
+                <div className="text-sm text-white/70">{new Date(video.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</div>
               </div>
             </div>
           </div>
 
-          {/* Action buttons */}
-          <div className="flex gap-3">
-            <button className="btn-primary flex-1 gap-2">
-              <Check className="w-4 h-4" /> Approve
-            </button>
-            <button className="btn-secondary flex-1 gap-2">
-              <RefreshCw className="w-4 h-4" /> Request Changes
-            </button>
-            <button className="btn-secondary gap-2 text-red-400 border-red-500/10 hover:bg-red-500/5">
-              <X className="w-4 h-4" /> Reject
-            </button>
-          </div>
-        </div>
-
-        {/* Details - 2 cols */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="glass-card p-5 space-y-4">
-            <h2 className="font-semibold text-lg">{current.title}</h2>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-white/40">Content Type</span>
-                <span className="font-medium">{current.contentType}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-white/40">AI Model</span>
-                <span className="font-medium">{current.model}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-white/40">Duration</span>
-                <span className="font-medium">{current.duration}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-white/40">Created</span>
-                <span className="font-medium">{current.date}</span>
-              </div>
+          {video.script && (
+            <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-6">
+              <div className="text-[11px] text-white/25 uppercase tracking-wider mb-3">Script</div>
+              <p className="text-[14px] text-white/60 leading-relaxed whitespace-pre-wrap">{video.script}</p>
             </div>
+          )}
+
+          <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <MessageSquare className="w-3.5 h-3.5 text-white/25" />
+              <div className="text-[11px] text-white/25 uppercase tracking-wider">Feedback (optional)</div>
+            </div>
+            <textarea value={feedback} onChange={(e) => setFeedback(e.target.value)} placeholder="Add notes for revision..." className="w-full bg-transparent border-0 text-sm text-white/70 placeholder:text-white/15 resize-none focus:outline-none min-h-[60px]" />
           </div>
 
-          <div className="glass-card p-5">
-            <h3 className="text-sm font-semibold mb-3">Script</h3>
-            <p className="text-sm text-white/50 leading-relaxed">{current.script}</p>
-          </div>
-
-          <div className="glass-card p-5">
-            <h3 className="text-sm font-semibold mb-3">
-              <MessageSquare className="w-4 h-4 inline mr-1.5" />
-              Feedback (optional)
-            </h3>
-            <textarea
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Add notes or requested changes..."
-              className="input-field min-h-[80px] resize-none text-sm"
-            />
-          </div>
-
-          {/* Schedule after approval */}
-          <div className="glass-card p-5">
-            <h3 className="text-sm font-semibold mb-3">
-              <Calendar className="w-4 h-4 inline mr-1.5" />
-              Schedule After Approval
-            </h3>
-            <select className="input-field !py-2 text-sm mb-3">
-              <option value="">Select platform...</option>
-              <option value="instagram">Instagram</option>
-              <option value="linkedin">LinkedIn</option>
-              <option value="tiktok">TikTok</option>
-              <option value="facebook">Facebook</option>
-              <option value="youtube">YouTube</option>
-            </select>
-            <input type="datetime-local" className="input-field !py-2 text-sm" />
+          <div className="flex items-center gap-3">
+            <button onClick={() => updateStatus("rejected")} disabled={acting} className="flex items-center gap-2 px-5 py-3 rounded-xl border border-red-500/15 text-red-400/80 text-[14px] hover:bg-red-500/[0.06] disabled:opacity-40 transition-all"><X className="w-4 h-4" /> Reject</button>
+            <button onClick={() => updateStatus("draft")} disabled={acting} className="flex items-center gap-2 px-5 py-3 rounded-xl border border-white/[0.06] text-white/50 text-[14px] hover:bg-white/[0.03] disabled:opacity-40 transition-all">Request Changes</button>
+            <div className="flex-1" />
+            <button onClick={() => updateStatus("approved")} disabled={acting} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-medium hover:bg-white/90 disabled:opacity-40 transition-all">
+              {acting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Approve
+            </button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

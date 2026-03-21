@@ -148,16 +148,38 @@ export type BrandProfileInput = z.infer<typeof brandProfileSchema>;
 
 export const generateRequestSchema = z.object({
   videoId: z.string().uuid("Invalid video ID").optional(),
-  model: z.enum(["kling_2.6", "seedance_2.0"], {
-    message: "Model must be one of: kling_2.6, seedance_2.0",
-  }).optional(),
+  model: z.string().optional(),
   script: z
     .string()
     .min(1, "Script is required")
     .max(5000, "Script must be 5000 characters or less")
     .optional(),
+  format: z.enum([
+    "talking_head_15", "testimonial_15", "educational_30", "quick_tip_8",
+  ]).optional(),
   photoId: z.string().uuid("Invalid photo ID").optional(),
   voiceId: z.string().uuid("Invalid voice ID").optional(),
 });
 
 export type GenerateRequestInput = z.infer<typeof generateRequestSchema>;
+
+// ─── Publish Schemas ────────────────────────────────────────────
+
+export const publishSchema = z.object({
+  videoId: z.string().uuid("Invalid video ID"),
+  platforms: z
+    .array(
+      z.enum([
+        "youtube", "tiktok", "instagram", "linkedin",
+        "facebook", "twitter", "threads", "bluesky", "pinterest",
+      ])
+    )
+    .min(1, "At least one platform is required"),
+  scheduledAt: z
+    .string()
+    .datetime({ message: "scheduledAt must be a valid ISO 8601 datetime" })
+    .optional(),
+  caption: z.string().max(5000, "Caption must be 5000 characters or less").optional(),
+});
+
+export type PublishInput = z.infer<typeof publishSchema>;
