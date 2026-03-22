@@ -7,3 +7,7 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Force all middleware to run as Node.js functions, not Edge
+[functions]
+  node_bundler = "esbuild"
