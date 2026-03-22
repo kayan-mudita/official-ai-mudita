@@ -32,7 +32,7 @@ export const videoCreateSchema = z.object({
     .max(200, "Title must be 200 characters or less"),
   description: z.string().max(2000, "Description must be 2000 characters or less").optional(),
   script: z.string().max(5000, "Script must be 5000 characters or less").optional(),
-  model: z.enum(["kling_2.6", "seedance_2.0"]).optional().default("kling_2.6"),
+  model: z.string().max(50).optional().default("kling_2.6"),
   contentType: z.string().max(50).optional().default("general"),
   sourceReview: z.string().max(5000).optional(),
   photoId: z.string().uuid("Invalid photo ID").optional(),
@@ -45,7 +45,7 @@ export const videoUpdateSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   description: z.string().max(2000).optional(),
   script: z.string().max(5000).optional(),
-  model: z.enum(["kling_2.6", "seedance_2.0"]).optional(),
+  model: z.string().max(50).optional(),
   contentType: z.string().max(50).optional(),
   sourceReview: z.string().max(5000).optional(),
   status: z

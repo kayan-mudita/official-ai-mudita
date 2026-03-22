@@ -27,31 +27,26 @@ async function falMiniMaxTTS(text: string): Promise<TTSResult> {
   if (!apiKey) return { audioUrl: null, duration: 0, provider: "fal-minimax", error: "FAL_API_KEY not set" };
 
   try {
-    // FAL's MiniMax TTS endpoint (synchronous)
-    const response = await fetch("https://fal.run/fal-ai/minimax-tts", {
+    const response = await fetch("https://fal.run/fal-ai/minimax/speech-02-hd", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Key ${apiKey}`,
       },
-      body: JSON.stringify({
-        text,
-        voice_id: "Wise_Woman",
-        speed: 1.0,
-      }),
+      body: JSON.stringify({ text }),
     });
 
     if (!response.ok) {
       const err = await response.text();
-      return { audioUrl: null, duration: 0, provider: "fal-minimax", error: `FAL MiniMax TTS ${response.status}: ${err.substring(0, 200)}` };
+      return { audioUrl: null, duration: 0, provider: "fal-minimax", error: `FAL MiniMax Speech ${response.status}: ${err.substring(0, 200)}` };
     }
 
     const data = await response.json();
-    const audioUrl = data.audio?.url || data.audio_url || data.output?.url;
+    const audioUrl = data.audio?.url;
+    const durationMs = data.duration_ms || 0;
 
     if (audioUrl) {
-      const duration = Math.ceil(text.split(/\s+/).length / 2.5);
-      return { audioUrl, duration, provider: "fal-minimax" };
+      return { audioUrl, duration: Math.ceil(durationMs / 1000), provider: "fal-minimax" };
     }
 
     return { audioUrl: null, duration: 0, provider: "fal-minimax", error: "No audio URL in response" };
@@ -171,7 +166,7 @@ export async function cloneVoice(audioUrl: string, name: string): Promise<VoiceC
  * Priority: FAL MiniMax → standalone MiniMax → ElevenLabs → skip
  */
 export async function generateVoiceover(text: string, voiceId?: string): Promise<TTSResult> {
-  // Try FAL MiniMax first (uses same FAL key as video)
+  // Try FAL MiniMax first (uses same FAL key as video — best quality per course)
   if (process.env.FAL_API_KEY) {
     const result = await falMiniMaxTTS(text);
     if (result.audioUrl) return result;

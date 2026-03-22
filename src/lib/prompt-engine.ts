@@ -181,24 +181,34 @@ async function getCharacterContext(userId: string): Promise<string> {
 
 function getModelInstructions(model: string): string {
   switch (model) {
-    case "seedance_2.0":
-      return `TARGET MODEL: Seedance 2.0
-Seedance excels at: dynamic motion, creative effects, product interactions, UGC-style content.
-Write prompts with: detailed character actions, product callouts, iPhone UGC aesthetic, quick cuts described as continuous motion.
-Include @Image1 references for product images if relevant.`;
-
+    case "minimax_video":
+    case "minimax_hailuo":
     case "sora_2":
-      return `TARGET MODEL: Sora 2
-Sora excels at: natural motion, realistic talking heads, storyboard mode (5 scenes × 5 seconds).
-Write prompts with: scene-by-scene breakdown if >5 seconds, natural speech patterns, character consistency notes.
-For storyboard mode, break into exactly 5 scenes of 5 seconds each.`;
+      return `TARGET MODEL: Minimax Video (Hailuo)
+Minimax excels at: natural motion, great lip sync, talking head content, smooth camera work.
+Write prompts with: natural speech patterns, character consistency, conversational energy.
+Minimax handles up to 6 seconds per generation. Keep prompts focused on one action/beat per clip.`;
 
+    case "wan_2.1":
+      return `TARGET MODEL: Wan 2.1
+Wan excels at: strong character consistency, open-source flexibility, creative control.
+Write prompts with: detailed character descriptions, specific actions, environmental context.
+Wan works best at 480p resolution with clear, specific prompts.`;
+
+    case "ltx":
+    case "ltx_fast":
+      return `TARGET MODEL: LTX 2.3
+LTX excels at: fast generation, rapid iteration, good for testing prompt ideas quickly.
+Write prompts with: clear scene description, simple actions, good for b-roll and atmospheric shots.
+LTX is fastest — use for testing, then switch to Kling/Minimax for final output.`;
+
+    case "seedance_2.0":
     case "kling_2.6":
     default:
-      return `TARGET MODEL: Kling 2.6
+      return `TARGET MODEL: Kling 2.6 Pro
 Kling excels at: hyper-realistic output, professional talking heads, testimonials, lip sync.
 Write prompts with: professional lighting, clear facial expressions, steady camera, professional environments.
-Kling handles longer clips (up to 10 seconds) well.`;
+Kling handles longer clips (up to 10 seconds) well. Best quality model available.`;
   }
 }
 
