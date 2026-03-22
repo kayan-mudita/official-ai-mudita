@@ -7,6 +7,8 @@ import { validateBody } from "@/lib/validate";
 import { generateLimiter, RateLimitError } from "@/lib/rate-limit";
 import { planComposition, expandCutPrompts } from "@/lib/video-compositor";
 import { generateStartingFrame } from "@/lib/starting-frame";
+import { stitchCuts, isShotstackConfigured, StitchCut } from "@/lib/video-stitcher";
+import { downloadAndStore, videoKey } from "@/lib/storage";
 
 export async function POST(req: NextRequest) {
   try {
@@ -157,11 +159,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Background: generate remaining cuts (cuts 1..N)
-    // These will be stored as separate records and stitched later
+    // Background: generate remaining cuts (cuts 1..N) then stitch everything
     const remainingCuts = expandedPlan.format.cuts.slice(1);
     if (remainingCuts.length > 0) {
-      generateRemainingCuts(video.id, user.id, selectedModel, startingFrameUrl, voice?.url || "", remainingCuts, user.industry).catch((err) =>
+      generateRemainingCuts(
+        video.id, user.id, selectedModel, startingFrameUrl, voice?.url || "",
+        hookResult.videoUrl || null, hookCut.duration,
+        remainingCuts, user.industry
+      ).catch((err) =>
         console.error(`[generate] Remaining cuts failed for ${video!.id}:`, err)
       );
     }
@@ -184,7 +189,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// ─── Background Cut Generation ──────────────────────────────────
+// ─── Background Cut Generation + Stitching ──────────────────────
 
 async function generateRemainingCuts(
   parentVideoId: string,
@@ -192,9 +197,22 @@ async function generateRemainingCuts(
   model: string,
   photoUrl: string,
   voiceUrl: string,
+  hookVideoUrl: string | null,
+  hookDuration: number,
   cuts: any[],
   industry?: string
 ): Promise<void> {
+  // Collect all cut video URLs (hook is already done)
+  const completedCuts: StitchCut[] = [];
+
+  if (hookVideoUrl) {
+    completedCuts.push({
+      videoUrl: hookVideoUrl,
+      trimTo: hookDuration,
+    });
+  }
+
+  // Generate each remaining cut sequentially
   for (const cut of cuts) {
     try {
       const result = await generateVideo({
@@ -208,26 +226,83 @@ async function generateRemainingCuts(
         duration: cut.generateDuration,
       });
 
-      // If the model returns a completed video, poll if needed
-      if (result.status === "processing" && result.jobId) {
-        // Create a child video record for this cut
-        const cutVideo = await prisma.video.create({
-          data: {
-            userId,
-            title: `Cut ${cut.index + 1} — ${cut.type}`,
-            script: cut.prompt.substring(0, 200),
-            model,
-            contentType: `cut_${cut.type}`,
-            status: "generating",
-          },
-        });
+      let cutVideoUrl = result.videoUrl;
 
-        await pollJobUntilDone(cutVideo.id, result.jobId, model);
+      // If processing, poll until done then read URL from DB
+      if (result.status === "processing" && result.jobId) {
+        await pollJobUntilDone(parentVideoId, result.jobId, model);
+        const updated = await prisma.video.findUnique({ where: { id: parentVideoId } });
+        if (updated?.videoUrl) {
+          cutVideoUrl = updated.videoUrl;
+        }
       }
 
-      console.log(`[generate] Cut ${cut.index} (${cut.type}) completed for ${parentVideoId}`);
+      if (cutVideoUrl) {
+        completedCuts.push({
+          videoUrl: cutVideoUrl,
+          trimTo: cut.duration,
+        });
+      }
+
+      console.log(`[generate] Cut ${cut.index} (${cut.type}) done for ${parentVideoId}`);
     } catch (err) {
       console.error(`[generate] Cut ${cut.index} failed for ${parentVideoId}:`, err);
+    }
+  }
+
+  // ─── STITCH ALL CUTS ──────────────────────────────────────
+  if (completedCuts.length > 1 && isShotstackConfigured()) {
+    try {
+      console.log(`[generate] Stitching ${completedCuts.length} cuts for ${parentVideoId}...`);
+
+      const finalUrl = await stitchCuts({
+        cuts: completedCuts,
+        audioUrl: voiceUrl || undefined,
+        aspectRatio: "9:16",
+      });
+
+      // Download stitched video and store permanently in Supabase
+      const storedUrl = await downloadAndStore(
+        finalUrl,
+        videoKey(userId, parentVideoId, "mp4"),
+        "video/mp4"
+      );
+
+      // Update the parent video with the final stitched URL
+      await prisma.video.update({
+        where: { id: parentVideoId },
+        data: {
+          videoUrl: storedUrl,
+          status: "review",
+        },
+      });
+
+      console.log(`[generate] Final stitched video stored for ${parentVideoId}`);
+    } catch (err) {
+      console.error(`[generate] Stitching failed for ${parentVideoId}:`, err);
+      // Fall back to hook-only video
+      await prisma.video.update({
+        where: { id: parentVideoId },
+        data: { status: "review" },
+      });
+    }
+  } else if (completedCuts.length === 1) {
+    // Only hook generated — store it permanently
+    try {
+      const storedUrl = await downloadAndStore(
+        completedCuts[0].videoUrl,
+        videoKey(userId, parentVideoId, "mp4"),
+        "video/mp4"
+      );
+      await prisma.video.update({
+        where: { id: parentVideoId },
+        data: { videoUrl: storedUrl, status: "review" },
+      });
+    } catch {
+      await prisma.video.update({
+        where: { id: parentVideoId },
+        data: { status: "review" },
+      });
     }
   }
 }
