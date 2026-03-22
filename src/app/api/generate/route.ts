@@ -6,6 +6,7 @@ import { generateRequestSchema } from "@/lib/validations";
 import { validateBody } from "@/lib/validate";
 import { generateLimiter, RateLimitError } from "@/lib/rate-limit";
 import { planComposition, expandCutPrompts } from "@/lib/video-compositor";
+import { generateStartingFrame } from "@/lib/starting-frame";
 
 export async function POST(req: NextRequest) {
   try {
@@ -68,6 +69,28 @@ export async function POST(req: NextRequest) {
     // Step 2: Expand each cut's prompt with full production details
     const expandedPlan = await expandCutPrompts(plan, user.id, selectedModel, user.industry);
 
+    // Step 2.5: Generate or retrieve starting frame for character consistency
+    let startingFrameUrl = photo?.url || "";
+    if (photo?.url) {
+      try {
+        // Check for existing starting frame first
+        const existingSF = await prisma.photo.findFirst({
+          where: { userId: user.id, filename: { startsWith: "starting-frame-" } },
+          orderBy: { createdAt: "desc" },
+        });
+        if (existingSF?.url) {
+          startingFrameUrl = existingSF.url;
+        } else {
+          const sf = await generateStartingFrame(user.id, rawScript);
+          if (sf.status === "complete" && sf.imageUrl) {
+            startingFrameUrl = sf.imageUrl;
+          }
+        }
+      } catch (err) {
+        console.error("[generate] Starting frame failed, using raw photo:", err);
+      }
+    }
+
     // Create/update video record with the composition plan
     if (!video) {
       video = await prisma.video.create({
@@ -102,7 +125,7 @@ export async function POST(req: NextRequest) {
     const hookCut = expandedPlan.format.cuts[0];
     const hookResult = await generateVideo({
       model: selectedModel,
-      photoUrl: photo?.url || "",
+      photoUrl: startingFrameUrl,
       voiceUrl: voice?.url || "",
       script: hookCut.prompt,
       userId: user.id,
@@ -138,7 +161,7 @@ export async function POST(req: NextRequest) {
     // These will be stored as separate records and stitched later
     const remainingCuts = expandedPlan.format.cuts.slice(1);
     if (remainingCuts.length > 0) {
-      generateRemainingCuts(video.id, user.id, selectedModel, photo?.url || "", voice?.url || "", remainingCuts, user.industry).catch((err) =>
+      generateRemainingCuts(video.id, user.id, selectedModel, startingFrameUrl, voice?.url || "", remainingCuts, user.industry).catch((err) =>
         console.error(`[generate] Remaining cuts failed for ${video!.id}:`, err)
       );
     }

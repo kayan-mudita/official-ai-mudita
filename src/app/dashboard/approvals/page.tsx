@@ -17,6 +17,7 @@ interface VideoItem {
   model: string;
   contentType: string;
   script: string | null;
+  videoUrl: string | null;
   duration: number;
   createdAt: string;
 }
@@ -115,6 +116,20 @@ export default function ApprovalsPage() {
               </div>
             </div>
           </div>
+
+          {video.videoUrl && (
+            <div className="rounded-xl border border-white/[0.04] bg-black overflow-hidden">
+              <video
+                src={video.videoUrl}
+                controls
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
 
           {video.script && (
             <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-6">

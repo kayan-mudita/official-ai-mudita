@@ -122,8 +122,18 @@ This image will be used as the consistent anchor frame for all video generation.
   }
 
   try {
+    // Use the same model config as character-sheet.ts
+    const model = await getConfig("character_sheet_model", "nano_banana");
+    const MODEL_MAP: Record<string, string> = {
+      nano_banana: "nano-banana-pro-preview",
+      gemini_image: "gemini-2.5-flash-image",
+      gemini_3_image: "gemini-3-pro-image-preview",
+      gemini_3_1_image: "gemini-3.1-flash-image-preview",
+    };
+    const modelName = MODEL_MAP[model] || "nano-banana-pro-preview";
+
     const response = await fetch(
-      `${GOOGLE_AI_STUDIO_URL}/nano-banana-pro-preview:generateContent?key=${apiKey}`,
+      `${GOOGLE_AI_STUDIO_URL}/${modelName}:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -138,7 +148,7 @@ This image will be used as the consistent anchor frame for all video generation.
     );
 
     if (!response.ok) {
-      console.error("[starting-frame] Nano Banana error:", await response.text());
+      console.error(`[starting-frame] ${modelName} error:`, await response.text());
       return { imageUrl: null, photoId: null, status: "failed" };
     }
 

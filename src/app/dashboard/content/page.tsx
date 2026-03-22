@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   Play,
@@ -14,6 +14,7 @@ import {
   Loader2,
   Film,
 } from "lucide-react";
+import VideoModal from "@/components/VideoModal";
 
 interface VideoItem {
   id: string;
@@ -62,6 +63,7 @@ export default function ContentPage() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [search, setSearch] = useState("");
+  const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
 
   useEffect(() => {
     fetchVideos();
@@ -172,36 +174,11 @@ export default function ContentPage() {
       {!loading && filtered.length > 0 && viewMode === "grid" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filtered.map((video) => (
-            <div key={video.id} className="rounded-xl border border-white/[0.04] bg-white/[0.015] overflow-hidden group cursor-pointer hover:border-white/[0.08] transition-all">
-              <div className="aspect-video bg-white/[0.02] relative flex items-center justify-center">
-                {video.thumbnailUrl ? (
-                  <img src={video.thumbnailUrl} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <Film className="w-8 h-8 text-white/[0.06]" />
-                )}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Play className="w-5 h-5 text-white ml-0.5" />
-                  </div>
-                </div>
-                <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur rounded-full">
-                  <Cpu className="w-2.5 h-2.5 text-white/60" />
-                  <span className="text-[10px] font-medium text-white/70">{modelLabels[video.model] || video.model}</span>
-                </div>
-                <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/50 backdrop-blur rounded text-[10px] text-white/70">
-                  {formatDuration(video.duration)}
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="text-sm font-medium truncate text-white/90">{video.title}</h3>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-white/25">{formatDate(video.createdAt)}</span>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${statusStyles[video.status] || statusStyles.draft}`}>
-                    {video.status}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <VideoGridCard
+              key={video.id}
+              video={video}
+              onSelect={() => video.videoUrl && setSelectedVideo(video)}
+            />
           ))}
         </div>
       )}
@@ -210,7 +187,11 @@ export default function ContentPage() {
       {!loading && filtered.length > 0 && viewMode === "list" && (
         <div className="rounded-xl border border-white/[0.04] overflow-hidden divide-y divide-white/[0.03]">
           {filtered.map((video) => (
-            <div key={video.id} className="flex items-center gap-4 px-5 py-3 hover:bg-white/[0.015] transition-colors">
+            <div
+              key={video.id}
+              onClick={() => video.videoUrl && setSelectedVideo(video)}
+              className={`flex items-center gap-4 px-5 py-3 hover:bg-white/[0.015] transition-colors ${video.videoUrl ? "cursor-pointer" : ""}`}
+            >
               <div className="w-16 h-10 rounded-lg bg-white/[0.03] flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {video.thumbnailUrl ? (
                   <img src={video.thumbnailUrl} alt="" className="w-full h-full object-cover" />
@@ -233,6 +214,112 @@ export default function ContentPage() {
           ))}
         </div>
       )}
+
+      {/* Video Modal */}
+      {selectedVideo && selectedVideo.videoUrl && (
+        <VideoModal
+          src={selectedVideo.videoUrl}
+          title={selectedVideo.title}
+          onClose={() => setSelectedVideo(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+/** Grid card with inline hover video preview */
+function VideoGridCard({
+  video,
+  onSelect,
+}: {
+  video: VideoItem;
+  onSelect: () => void;
+}) {
+  const videoPreviewRef = useRef<HTMLVideoElement>(null);
+  const [hovering, setHovering] = useState(false);
+
+  function handleMouseEnter() {
+    setHovering(true);
+    if (video.videoUrl && videoPreviewRef.current) {
+      videoPreviewRef.current.play().catch(() => {});
+    }
+  }
+
+  function handleMouseLeave() {
+    setHovering(false);
+    if (videoPreviewRef.current) {
+      videoPreviewRef.current.pause();
+      videoPreviewRef.current.currentTime = 0;
+    }
+  }
+
+  return (
+    <div
+      onClick={onSelect}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={`rounded-xl border border-white/[0.04] bg-white/[0.015] overflow-hidden group hover:border-white/[0.08] transition-all ${video.videoUrl ? "cursor-pointer" : ""}`}
+    >
+      <div className="aspect-video bg-white/[0.02] relative flex items-center justify-center overflow-hidden">
+        {/* Hover video preview */}
+        {video.videoUrl && (
+          <video
+            ref={videoPreviewRef}
+            src={video.videoUrl}
+            muted
+            loop
+            playsInline
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+              hovering ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        )}
+
+        {/* Thumbnail / fallback */}
+        {video.thumbnailUrl ? (
+          <img
+            src={video.thumbnailUrl}
+            alt=""
+            className={`w-full h-full object-cover transition-opacity duration-300 ${
+              hovering && video.videoUrl ? "opacity-0" : "opacity-100"
+            }`}
+          />
+        ) : (
+          <Film className="w-8 h-8 text-white/[0.06]" />
+        )}
+
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <Play className="w-5 h-5 text-white ml-0.5" />
+          </div>
+        </div>
+        <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 bg-black/50 backdrop-blur rounded-full">
+          <Cpu className="w-2.5 h-2.5 text-white/60" />
+          <span className="text-[10px] font-medium text-white/70">
+            {modelLabels[video.model] || video.model}
+          </span>
+        </div>
+        <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/50 backdrop-blur rounded text-[10px] text-white/70">
+          {formatDuration(video.duration)}
+        </div>
+      </div>
+      <div className="p-4">
+        <h3 className="text-sm font-medium truncate text-white/90">
+          {video.title}
+        </h3>
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-xs text-white/25">
+            {formatDate(video.createdAt)}
+          </span>
+          <span
+            className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${
+              statusStyles[video.status] || statusStyles.draft
+            }`}
+          >
+            {video.status}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
