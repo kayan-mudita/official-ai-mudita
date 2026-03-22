@@ -17,6 +17,10 @@ export async function GET(req: NextRequest) {
     if (status) where.status = status;
     if (contentType) where.contentType = contentType;
 
+    // Never show individual cuts to the user — only parent videos.
+    // Cuts have contentType starting with "cut_" (e.g. "cut_hook", "cut_talking_head")
+    where.NOT = { contentType: { startsWith: "cut_" } };
+
     const videos = await prisma.video.findMany({
       where,
       include: { photo: true, voice: true, schedule: true },
