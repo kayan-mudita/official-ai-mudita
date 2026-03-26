@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { generateVideo } from "@/lib/generate";
 import { expandCutPrompts, planComposition } from "@/lib/video-compositor";
 import { getOrGenerateStartingFrame } from "@/lib/starting-frame";
-import { stitchCuts, isShotstackConfigured, StitchCut } from "@/lib/video-stitcher";
+import { submitStitch, getStitchStatus, isShotstackConfigured, StitchCut } from "@/lib/video-stitcher";
 import { downloadAndStore, videoKey, audioKey, thumbnailKey, isStorageConfigured } from "@/lib/storage";
 import { generateVoiceover } from "@/lib/voice-engine";
 
@@ -12,11 +12,12 @@ import { generateVoiceover } from "@/lib/voice-engine";
  * POST /api/generate/process — HEAVY LIFTING
  *
  * Takes a videoId and runs ONE step of the pipeline per call:
- *   step=expand  → Expand prompts via Gemini (~3-5s)
- *   step=tts     → Generate TTS audio (~5-10s)
- *   step=cut&i=0 → Generate video cut #i via FAL (submits async, ~1s)
- *   step=poll&i=0 → Poll FAL for cut #i completion (~1s per poll)
- *   step=stitch  → Stitch all cuts via Shotstack (~1s to submit)
+ *   step=expand       → Expand prompts via Gemini (~3-5s)
+ *   step=tts          → Generate TTS audio (~5-10s)
+ *   step=cut&i=0      → Generate video cut #i via FAL (submits async, ~1s)
+ *   step=poll&i=0     → Poll FAL for cut #i completion (~1s per poll)
+ *   step=stitch       → Submit stitch job to Shotstack (~1s to submit, returns immediately)
+ *   step=poll_stitch  → Poll Shotstack for stitch completion (~1s per poll)
  *
  * Frontend calls these sequentially, staying within the 26s timeout.
  *
@@ -425,7 +426,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // ─── STEP: STITCH ─────────────────────────────────────────
+    // ─── STEP: STITCH (submit async, return immediately) ──────
     if (step === "stitch") {
       const meta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
       const cutJobs = meta.cutJobs || {};
@@ -457,7 +458,7 @@ export async function POST(req: NextRequest) {
       const firstCutJob: any = Object.values(cutJobs).find((j: any) => j.videoUrl);
       const cutThumbnailUrl = firstCutJob?.thumbnailUrl || null;
 
-      // Single cut — use it directly as the final video
+      // Single cut — use it directly as the final video (no stitch needed)
       if (completedCuts.length === 1) {
         const finalUrl = await ensurePermanentUrl(
           completedCuts[0].videoUrl,
@@ -479,52 +480,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ status: "done", videoUrl: finalUrl });
       }
 
-      // Multiple cuts — stitch via Shotstack
-      if (isShotstackConfigured()) {
-        try {
-          const stitchedUrl = await stitchCuts({
-            cuts: completedCuts,
-            audioUrl: meta.ttsAudioUrl || undefined,
-            aspectRatio: "9:16",
-          });
-
-          const storedUrl = await ensurePermanentUrl(
-            stitchedUrl,
-            videoKey(user.id, videoId, "mp4"),
-            "video/mp4"
-          );
-
-          let finalThumb = cutThumbnailUrl;
-          if (finalThumb) {
-            finalThumb = await ensurePermanentUrl(
-              finalThumb,
-              thumbnailKey(user.id, videoId, "jpg"),
-              "image/jpeg"
-            );
-          }
-
-          await prisma.video.update({
-            where: { id: videoId },
-            data: { videoUrl: storedUrl, thumbnailUrl: finalThumb, status: "review" },
-          });
-
-          return NextResponse.json({ status: "done", videoUrl: storedUrl });
-        } catch (err: any) {
-          console.error("[process/stitch] Shotstack failed:", err);
-          // Fall back to first cut (already a permanent Supabase URL from poll step)
-          const fallback = await ensurePermanentUrl(
-            completedCuts[0].videoUrl,
-            videoKey(user.id, videoId, "mp4"),
-            "video/mp4"
-          );
-          await prisma.video.update({
-            where: { id: videoId },
-            data: { videoUrl: fallback, thumbnailUrl: cutThumbnailUrl, status: "review" },
-          });
-          return NextResponse.json({ status: "done", videoUrl: fallback, warning: "Stitch failed, using first cut" });
-        }
-      } else {
-        // No Shotstack — use first cut (already a permanent Supabase URL from poll step)
+      // Multiple cuts — if Shotstack is not configured, fall back to first cut
+      if (!isShotstackConfigured()) {
+        console.warn("[process/stitch] Shotstack not configured, using first cut as final video");
         const fallback = await ensurePermanentUrl(
           completedCuts[0].videoUrl,
           videoKey(user.id, videoId, "mp4"),
@@ -535,6 +493,156 @@ export async function POST(req: NextRequest) {
           data: { videoUrl: fallback, thumbnailUrl: cutThumbnailUrl, status: "review" },
         });
         return NextResponse.json({ status: "done", videoUrl: fallback, warning: "Shotstack not configured" });
+      }
+
+      // Submit stitch job to Shotstack (returns immediately with render ID)
+      await updatePipelineProgress("stitch");
+      try {
+        const job = await submitStitch({
+          cuts: completedCuts,
+          audioUrl: meta.ttsAudioUrl || undefined,
+          aspectRatio: "9:16",
+        });
+
+        // Save render ID in metadata for polling
+        meta.stitchJobId = job.id;
+        meta.stitchStatus = job.status;
+        meta.cutThumbnailUrl = cutThumbnailUrl;
+        await prisma.video.update({
+          where: { id: videoId },
+          data: { sourceReview: JSON.stringify(meta) },
+        });
+
+        return NextResponse.json({
+          status: "stitch_submitted",
+          jobId: job.id,
+          nextStep: "poll_stitch",
+          retryAfter: 5,
+        });
+      } catch (err: any) {
+        console.error("[process/stitch] Shotstack submit failed:", err);
+        // Fall back to first cut
+        const fallback = await ensurePermanentUrl(
+          completedCuts[0].videoUrl,
+          videoKey(user.id, videoId, "mp4"),
+          "video/mp4"
+        );
+        await prisma.video.update({
+          where: { id: videoId },
+          data: { videoUrl: fallback, thumbnailUrl: cutThumbnailUrl, status: "review" },
+        });
+        return NextResponse.json({ status: "done", videoUrl: fallback, warning: "Stitch submit failed, using first cut" });
+      }
+    }
+
+    // ─── STEP: POLL_STITCH (check Shotstack render status) ───
+    if (step === "poll_stitch") {
+      const meta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
+      const stitchJobId = meta.stitchJobId;
+
+      if (!stitchJobId) {
+        return NextResponse.json({ error: "No stitch job ID found" }, { status: 400 });
+      }
+
+      // Helper: persist a URL to Supabase Storage if it's still a temp URL
+      const ensurePermanentUrl = async (url: string, storageKeyPath: string, mime: string): Promise<string> => {
+        if (!isStorageConfigured()) return url;
+        const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+        if (supabaseHost && url.startsWith(supabaseHost)) return url;
+        try {
+          return await downloadAndStore(url, storageKeyPath, mime);
+        } catch (err) {
+          console.error(`[process/poll_stitch] Failed to persist ${storageKeyPath}:`, err);
+          return url;
+        }
+      };
+
+      try {
+        const job = await getStitchStatus(stitchJobId);
+        meta.stitchStatus = job.status;
+
+        if (job.status === "completed" && job.url) {
+          // Stitch is done — download video, store in Supabase, mark as "review"
+          const storedUrl = await ensurePermanentUrl(
+            job.url,
+            videoKey(user.id, videoId, "mp4"),
+            "video/mp4"
+          );
+
+          let finalThumb = meta.cutThumbnailUrl || null;
+          if (finalThumb) {
+            finalThumb = await ensurePermanentUrl(
+              finalThumb,
+              thumbnailKey(user.id, videoId, "jpg"),
+              "image/jpeg"
+            );
+          }
+
+          await prisma.video.update({
+            where: { id: videoId },
+            data: { videoUrl: storedUrl, thumbnailUrl: finalThumb, status: "review", sourceReview: JSON.stringify(meta) },
+          });
+
+          return NextResponse.json({ status: "done", videoUrl: storedUrl });
+        }
+
+        if (job.status === "failed") {
+          console.error(`[process/poll_stitch] Shotstack render failed: ${job.error}`);
+          // Fall back to first cut
+          const cutJobs = meta.cutJobs || {};
+          const firstCutJob: any = Object.values(cutJobs).find((j: any) => j.videoUrl);
+          if (firstCutJob?.videoUrl) {
+            const fallback = await ensurePermanentUrl(
+              firstCutJob.videoUrl,
+              videoKey(user.id, videoId, "mp4"),
+              "video/mp4"
+            );
+            await prisma.video.update({
+              where: { id: videoId },
+              data: { videoUrl: fallback, thumbnailUrl: meta.cutThumbnailUrl, status: "review", sourceReview: JSON.stringify(meta) },
+            });
+            return NextResponse.json({ status: "done", videoUrl: fallback, warning: "Stitch render failed, using first cut" });
+          }
+
+          const failMsg = `Stitch render failed: ${job.error || "unknown error"}`;
+          await markVideoFailed(videoId, failMsg, video.sourceReview);
+          return NextResponse.json({ status: "failed", error: failMsg });
+        }
+
+        // Still rendering — save updated status and tell frontend to keep polling
+        await prisma.video.update({
+          where: { id: videoId },
+          data: { sourceReview: JSON.stringify(meta) },
+        });
+
+        return NextResponse.json({
+          status: "polling",
+          stitchStatus: job.status,
+          nextStep: "poll_stitch",
+          retryAfter: 5,
+        });
+      } catch (err: any) {
+        console.error("[process/poll_stitch] Error checking stitch status:", err);
+        // If polling fails, fall back to first cut rather than blocking the pipeline
+        const cutJobs = meta.cutJobs || {};
+        const firstCutJob: any = Object.values(cutJobs).find((j: any) => j.videoUrl);
+        if (firstCutJob?.videoUrl) {
+          const fallback = await ensurePermanentUrl(
+            firstCutJob.videoUrl,
+            videoKey(user.id, videoId, "mp4"),
+            "video/mp4"
+          );
+          await prisma.video.update({
+            where: { id: videoId },
+            data: { videoUrl: fallback, thumbnailUrl: meta.cutThumbnailUrl, status: "review" },
+          });
+          return NextResponse.json({ status: "done", videoUrl: fallback, warning: "Stitch poll failed, using first cut" });
+        }
+
+        return NextResponse.json({
+          status: "failed",
+          error: err?.message || "Failed to check stitch status",
+        }, { status: 500 });
       }
     }
 

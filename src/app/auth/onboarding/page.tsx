@@ -495,7 +495,7 @@ function OnboardingFlow() {
       updatePipelineStep("render", "done");
       if (abortRef.current) return;
 
-      // ── Stitch ──
+      // ── Stitch (async submit + poll) ──
       updatePipelineStep("finalize", "active");
       setPipelineProgress({ step: "stitch", currentCut: 0, totalCuts, percent: 90 });
       const stitchRes = await fetch("/api/generate/process", {
@@ -506,10 +506,38 @@ function OnboardingFlow() {
       if (!stitchRes.ok) throw new Error("Final processing failed");
       const stitchData = await stitchRes.json();
 
-      updatePipelineStep("finalize", "done");
-      setPipelineProgress({ step: "done", currentCut: 0, totalCuts: 0, percent: 100 });
+      // If stitch was submitted async, poll for completion
+      if (stitchData.nextStep === "poll_stitch") {
+        let stitchPollAttempts = 0;
+        const maxStitchAttempts = 120; // 120 * 5s = 10 min max
 
-      if (stitchData.videoUrl) {
+        while (stitchPollAttempts < maxStitchAttempts && !abortRef.current) {
+          await sleep(5000);
+          stitchPollAttempts++;
+
+          const pollRes = await fetch("/api/generate/process", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ videoId, step: "poll_stitch" }),
+          });
+          if (!pollRes.ok) continue;
+          const pollData = await pollRes.json();
+
+          if (pollData.status === "done") {
+            if (pollData.videoUrl) setVideoUrl(pollData.videoUrl);
+            break;
+          }
+          if (pollData.status === "failed") {
+            throw new Error(pollData.error || "Stitch rendering failed");
+          }
+          // status === "polling" — continue loop
+        }
+
+        if (stitchPollAttempts >= maxStitchAttempts) {
+          throw new Error("Stitch is taking too long. Check your dashboard later.");
+        }
+      } else if (stitchData.videoUrl) {
+        // Stitch completed synchronously (single cut or Shotstack not configured)
         setVideoUrl(stitchData.videoUrl);
       }
 

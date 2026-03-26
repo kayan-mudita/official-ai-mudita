@@ -35,6 +35,7 @@ const STEP_LABELS: Record<string, string> = {
   anchor: "Creating anchor image...",
   cut: "Generating scene",
   stitch: "Stitching final video...",
+  poll_stitch: "Stitching final video...",
   store: "Almost done...",
   done: "Complete!",
   failed: "Generation failed",

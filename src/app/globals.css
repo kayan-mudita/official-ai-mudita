@@ -2,16 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..900&display=swap');
 
 @layer base {
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv01', 'cv02', 'cv03';
     background-color: #060911;
     color: #ffffff;
     -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.03em;
+    font-variation-settings: 'opsz' 32;
   }
   ::selection { background-color: rgba(92, 124, 250, 0.3); }
 }
@@ -87,6 +92,53 @@
     background: rgba(76, 110, 245, 0.15);
     border: 1px solid rgba(76, 110, 245, 0.2);
   }
+}
+
+/* ─── Background noise texture (subtle film grain) ───────── */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ─── Neon glow on primary CTA buttons ───────────────────── */
+.btn-cta-glow {
+  position: relative;
+  isolation: isolate;
+}
+.btn-cta-glow::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #4c6ef5 0%, #7c3aed 50%, #06b6d4 100%);
+  opacity: 0;
+  filter: blur(16px);
+  transition: opacity 0.4s cubic-bezier(0.25, 0.4, 0.25, 1);
+}
+.btn-cta-glow:hover::after {
+  opacity: 0.5;
+}
+
+/* ─── Hairline border card ───────────────────────────────── */
+.card-hairline {
+  background: rgba(255, 255, 255, 0.015);
+  backdrop-filter: blur(12px);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  transition: border-color 0.3s cubic-bezier(0.25, 0.4, 0.25, 1),
+              background 0.3s cubic-bezier(0.25, 0.4, 0.25, 1);
+}
+.card-hairline:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 ::-webkit-scrollbar { width: 6px; }
