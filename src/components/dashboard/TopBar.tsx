@@ -10,7 +10,7 @@ export default function TopBar() {
   return (
     <header className="h-14 sm:h-16 border-b border-white/5 bg-[#060911]/80 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6">
       {/* Mobile logo (visible only on mobile) */}
-      <Link href="/dashboard/overview" className="flex lg:hidden items-center gap-2 mr-3">
+      <Link href="/dashboard/generate" className="flex lg:hidden items-center gap-2 mr-3">
         <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
           <Sparkles className="w-3.5 h-3.5 text-white" />
         </div>

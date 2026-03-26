@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import {
   User,
@@ -34,6 +35,8 @@ const tabs = [
   { id: "social", label: "Connected Accounts", icon: Link2 },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "privacy", label: "Privacy & Data", icon: Shield },
+  { id: "vault", label: "Vault", icon: Shield, href: "/dashboard/vault" },
+  { id: "referrals", label: "Referrals", icon: Crown, href: "/dashboard/referral" },
 ];
 
 // Platform visual metadata: name, abbreviated icon text, gradient color
@@ -417,20 +420,35 @@ function SettingsContent() {
 
       {/* Tabs */}
       <div className="flex gap-1 overflow-x-auto pb-2">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-              activeTab === tab.id
-                ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                : "text-white/40 hover:text-white/60 border border-transparent"
-            }`}
-          >
-            <tab.icon className="w-4 h-4" />
-            {tab.label}
-          </button>
-        ))}
+        {tabs.map((tab) => {
+          const tabHref = (tab as { href?: string }).href;
+          if (tabHref) {
+            return (
+              <Link
+                key={tab.id}
+                href={tabHref}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all text-white/40 hover:text-white/60 border border-transparent hover:border-white/[0.06]"
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+              </Link>
+            );
+          }
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                activeTab === tab.id
+                  ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
+                  : "text-white/40 hover:text-white/60 border border-transparent"
+              }`}
+            >
+              <tab.icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Profile Tab */}

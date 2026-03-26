@@ -83,7 +83,7 @@ export function welcomeEmailHtml(firstName: string): string {
       <li>Set up your brand profile</li>
       <li>Create your first AI video</li>
     </ul>
-    ${button("Go to Dashboard", `${baseUrl}/dashboard/overview`)}
+    ${button("Go to Dashboard", `${baseUrl}/dashboard/generate`)}
     <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.3);line-height:1.6;">
       Need help getting started? Reply to this email and our team will be happy to assist.
     </p>
@@ -101,7 +101,7 @@ Here is what to do next:
 - Set up your brand profile
 - Create your first AI video
 
-Go to your dashboard: ${baseUrl}/dashboard/overview
+Go to your dashboard: ${baseUrl}/dashboard/generate
 
 Need help getting started? Reply to this email and our team will be happy to assist.
 

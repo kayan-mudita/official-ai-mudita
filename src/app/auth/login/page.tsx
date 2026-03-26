@@ -29,7 +29,7 @@ function LoginForm() {
       setError("Invalid email or password");
       setLoading(false);
     } else {
-      router.push("/dashboard/overview");
+      router.push("/dashboard/generate");
     }
   };
 

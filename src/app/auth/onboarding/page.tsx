@@ -795,7 +795,7 @@ function OnboardingFlow() {
   const completeOnboarding = async () => {
     setCompleting(true);
     try { await fetch("/api/onboarding/complete", { method: "POST" }); } catch {}
-    router.push("/dashboard/overview");
+    router.push("/dashboard/generate");
   };
 
   const retryVideo = () => {
@@ -978,7 +978,7 @@ function OnboardingFlow() {
               {/* Item 8: Skip for now link */}
               <div className="flex justify-end mt-6">
                 <button
-                  onClick={() => router.push("/dashboard/overview")}
+                  onClick={() => router.push("/dashboard/generate")}
                   className="text-[13px] text-white/20 hover:text-white/40 transition-colors"
                 >
                   Skip for now <span aria-hidden="true">&rarr;</span>
@@ -1014,7 +1014,7 @@ function OnboardingFlow() {
                   {/* Item 8: Skip for now */}
                   <div className="flex justify-center mt-8">
                     <button
-                      onClick={() => router.push("/dashboard/overview")}
+                      onClick={() => router.push("/dashboard/generate")}
                       className="text-[13px] text-white/20 hover:text-white/40 transition-colors"
                     >
                       Skip for now <span aria-hidden="true">&rarr;</span>
@@ -1086,7 +1086,7 @@ function OnboardingFlow() {
                   {/* Item 8: Skip for now */}
                   <div className="flex justify-end mt-6">
                     <button
-                      onClick={() => router.push("/dashboard/overview")}
+                      onClick={() => router.push("/dashboard/generate")}
                       className="text-[13px] text-white/20 hover:text-white/40 transition-colors"
                     >
                       Skip for now <span aria-hidden="true">&rarr;</span>
@@ -1156,7 +1156,7 @@ function OnboardingFlow() {
                   {/* Item 8: Skip for now */}
                   <div className="flex justify-end">
                     <button
-                      onClick={() => router.push("/dashboard/overview")}
+                      onClick={() => router.push("/dashboard/generate")}
                       className="text-[13px] text-white/20 hover:text-white/40 transition-colors"
                     >
                       Skip for now <span aria-hidden="true">&rarr;</span>

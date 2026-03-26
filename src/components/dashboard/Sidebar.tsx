@@ -4,50 +4,33 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
-  LayoutDashboard,
-  Wand2,
-  FolderOpen,
-  CheckCircle2,
+  Sparkles,
+  Film,
   CalendarDays,
   BarChart3,
-  Shield,
   Settings,
+  Shield,
   LogOut,
-  Sparkles,
   ChevronLeft,
   ChevronRight,
-  SlidersHorizontal,
-  Gift,
-  Brain,
-  Calculator,
-  Music,
-  FileText,
 } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
-  { href: "/dashboard/overview", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/generate", label: "Create Video", icon: Wand2 },
-  { href: "/dashboard/content", label: "Content Library", icon: FolderOpen },
-  { href: "/dashboard/approvals", label: "Approvals", icon: CheckCircle2 },
+  { href: "/dashboard/generate", label: "Create Video", icon: Sparkles },
+  { href: "/dashboard/content", label: "Content", icon: Film },
   { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/dashboard/intelligence", label: "Intelligence", icon: Brain },
-  { href: "/dashboard/trending", label: "Trending", icon: Music },
-  { href: "/dashboard/reports", label: "Reports", icon: FileText },
-  { href: "/dashboard/roi", label: "ROI", icon: Calculator },
-  { href: "/dashboard/vault", label: "Vault", icon: Shield },
-  { href: "/dashboard/referral", label: "Referrals", icon: Gift },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
-  { href: "/dashboard/admin", label: "Admin", icon: SlidersHorizontal },
+  { href: "/dashboard/admin", label: "Admin", icon: Shield },
 ];
 
 // Mobile bottom nav shows a subset of key items
 const mobileNavItems = [
-  { href: "/dashboard/overview", label: "Home", icon: LayoutDashboard },
-  { href: "/dashboard/generate", label: "Create", icon: Wand2 },
-  { href: "/dashboard/content", label: "Library", icon: FolderOpen },
+  { href: "/dashboard/generate", label: "Create", icon: Sparkles },
+  { href: "/dashboard/content", label: "Content", icon: Film },
   { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
+  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/dashboard/settings", label: "More", icon: Settings },
 ];
 
@@ -65,7 +48,7 @@ export default function Sidebar() {
       >
         {/* Logo */}
         <div className="flex items-center gap-2 px-5 h-16 border-b border-white/5">
-          <Link href="/dashboard/overview" className="flex items-center gap-2">
+          <Link href="/dashboard/generate" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
@@ -92,11 +75,6 @@ export default function Sidebar() {
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
                 {!collapsed && <span>{item.label}</span>}
-                {isActive && item.href === "/dashboard/approvals" && !collapsed && (
-                  <span className="ml-auto w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 text-xs flex items-center justify-center font-semibold">
-                    3
-                  </span>
-                )}
               </Link>
             );
           })}

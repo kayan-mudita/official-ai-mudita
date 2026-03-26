@@ -55,7 +55,7 @@ const modelLabels: Record<string, string> = {
   sora_2: "Sora 2",
 };
 
-const filters = ["All", "Published", "Review", "Scheduled", "Approved", "Draft", "Failed"];
+const filters = ["All", "Published", "Needs Approval", "Scheduled", "Approved", "Draft", "Failed"];
 
 /** Check if a video URL is a demo placeholder or otherwise non-playable */
 function isDemoOrInvalidUrl(url: string | null | undefined): boolean {
@@ -235,7 +235,10 @@ export default function ContentPage() {
   }
 
   const filtered = videos.filter((v) => {
-    if (activeFilter !== "All" && v.status !== activeFilter.toLowerCase()) return false;
+    if (activeFilter !== "All") {
+      const filterStatus = activeFilter === "Needs Approval" ? "review" : activeFilter.toLowerCase();
+      if (v.status !== filterStatus) return false;
+    }
     if (search && !v.title.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
@@ -267,19 +270,27 @@ export default function ContentPage() {
           />
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          {filters.map((f) => (
-            <button
-              key={f}
-              onClick={() => setActiveFilter(f)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                activeFilter === f
-                  ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                  : "text-white/40 hover:text-white/60 border border-transparent"
-              }`}
-            >
-              {f}
-            </button>
-          ))}
+          {filters.map((f) => {
+            const reviewCount = f === "Needs Approval" ? videos.filter((v) => v.status === "review").length : 0;
+            return (
+              <button
+                key={f}
+                onClick={() => setActiveFilter(f)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+                  activeFilter === f
+                    ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
+                    : "text-white/40 hover:text-white/60 border border-transparent"
+                }`}
+              >
+                {f}
+                {f === "Needs Approval" && reviewCount > 0 && (
+                  <span className="w-4.5 h-4.5 min-w-[18px] rounded-full bg-yellow-500/20 text-yellow-400 text-[10px] flex items-center justify-center font-semibold">
+                    {reviewCount}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
         <div className="flex items-center gap-1 ml-auto">
           <button
