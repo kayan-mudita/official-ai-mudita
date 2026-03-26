@@ -1,689 +1,80 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/api-helpers";
-import { generateVideo } from "@/lib/generate";
-import { expandCutPrompts, planComposition } from "@/lib/video-compositor";
-import { getOrGenerateStartingFrame } from "@/lib/starting-frame";
-import { submitStitch, getStitchStatus, isShotstackConfigured, StitchCut } from "@/lib/video-stitcher";
-import { downloadAndStore, videoKey, audioKey, thumbnailKey, isStorageConfigured } from "@/lib/storage";
-import { generateVoiceover } from "@/lib/voice-engine";
+import { runStep } from "@/lib/pipeline/orchestrator";
+import { parseMeta, stringifyMeta } from "@/lib/pipeline/types";
 
 /**
- * POST /api/generate/process — HEAVY LIFTING
+ * POST /api/generate/process
  *
- * Takes a videoId and runs ONE step of the pipeline per call:
- *   step=expand       → Expand prompts via Gemini (~3-5s)
- *   step=tts          → Generate TTS audio (~5-10s)
- *   step=cut&i=0      → Generate video cut #i via FAL (submits async, ~1s)
- *   step=poll&i=0     → Poll FAL for cut #i completion (~1s per poll)
- *   step=stitch       → Submit stitch job to Shotstack (~1s to submit, returns immediately)
- *   step=poll_stitch  → Poll Shotstack for stitch completion (~1s per poll)
+ * Thin HTTP layer for the video generation pipeline.
+ * Parses the request, delegates to the pipeline orchestrator,
+ * and translates the StepResult into an HTTP response.
  *
- * Frontend calls these sequentially, staying within the 26s timeout.
- *
- * Error handling: If any step throws, the video is marked as "failed" with the
- * error message stored in sourceReview metadata. This prevents videos from
- * getting stuck in "generating" forever.
+ * All heavy logic lives in src/lib/pipeline/*.
  */
-
-/**
- * Helper to mark a video as failed and store the error in sourceReview metadata.
- */
-async function markVideoFailed(videoId: string, errorMessage: string, existingMeta?: string | null): Promise<void> {
-  const meta = existingMeta ? safeParseJson(existingMeta) : {};
-  meta.error = errorMessage;
-  await prisma.video.update({
-    where: { id: videoId },
-    data: {
-      status: "failed",
-      sourceReview: JSON.stringify(meta),
-    },
-  });
-}
-
-function safeParseJson(str: string): Record<string, any> {
-  try {
-    return JSON.parse(str);
-  } catch {
-    return {};
-  }
-}
-
 export async function POST(req: NextRequest) {
   let videoId: string | undefined;
-  let videoSourceReview: string | null = null;
 
   try {
     const { error, user } = await requireAuth();
     if (error) return error;
 
     let body: unknown;
-    try { body = await req.json(); } catch {
+    try {
+      body = await req.json();
+    } catch {
       return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
-    const { videoId: vid, step, cutIndex } = body as { videoId: string; step: string; cutIndex?: number };
+    const { videoId: vid, step, cutIndex } = body as {
+      videoId: string;
+      step: string;
+      cutIndex?: number;
+    };
     videoId = vid;
 
     if (!videoId || !step) {
       return NextResponse.json({ error: "videoId and step are required" }, { status: 400 });
     }
 
+    // Verify ownership
     const video = await prisma.video.findFirst({ where: { id: videoId, userId: user.id } });
     if (!video) return NextResponse.json({ error: "Video not found" }, { status: 404 });
 
-    videoSourceReview = video.sourceReview;
-
-    const selectedModel = video.model || "kling_2.6";
-    const selectedFormat = video.contentType || "talking_head_15";
-    const rawScript = video.script || "";
-
-    // Helper: update pipeline progress in sourceReview metadata.
-    // Reads the latest metadata from DB to avoid overwriting concurrent updates.
-    const updatePipelineProgress = async (pipelineStep: string, pipelineCut?: number) => {
-      const fresh = await prisma.video.findUnique({
-        where: { id: videoId },
-        select: { sourceReview: true },
-      });
-      const existing = fresh?.sourceReview ? JSON.parse(fresh.sourceReview as string) : {};
-      existing.pipelineStep = pipelineStep;
-      if (pipelineCut !== undefined) existing.pipelineCut = pipelineCut;
-      await prisma.video.update({
-        where: { id: videoId },
-        data: { sourceReview: JSON.stringify(existing) },
-      });
-    };
-
-    // ─── STEP: EXPAND ─────────────────────────────────────────
-    if (step === "expand") {
-      await updatePipelineProgress("expand");
-      const plan = planComposition(selectedFormat, rawScript);
-      const expandedPlan = await expandCutPrompts(plan, user.id, selectedModel, user.industry);
-
-      // Store expanded prompts in the video's script field
-      const allPrompts = expandedPlan.format.cuts.map((c, i) =>
-        `═══ CUT ${i + 1}: ${c.type.toUpperCase()} (${c.duration}s) ═══\n${c.prompt}`
-      ).join("\n\n");
-
-      // Store cut data as JSON in description for later steps
-      const cutData = expandedPlan.format.cuts.map(c => ({
-        index: c.index,
-        type: c.type,
-        duration: c.duration,
-        generateDuration: c.generateDuration,
-        prompt: c.prompt,
-      }));
-
-      // Don't generate starting frame here — it takes 30s+ and will timeout.
-      // The cut step will use the user's uploaded photo as fallback.
-      // Starting frame can be pre-generated during onboarding instead.
-
-      await prisma.video.update({
-        where: { id: videoId },
-        data: {
-          script: allPrompts.substring(0, 5000),
-          sourceReview: JSON.stringify({
-            cuts: cutData,
-            format: selectedFormat,
-            originalScript: rawScript,
-            startingFrameUrl: null,
-            pipelineStep: "expand",
-            pipelineCut: 0,
-          }),
-        },
-      });
-
-      return NextResponse.json({
-        status: "expanded",
-        totalCuts: cutData.length,
-        nextStep: "tts",
-      });
-    }
-
-    // ─── STEP: TTS ────────────────────────────────────────────
-    if (step === "tts") {
-      await updatePipelineProgress("tts");
-      let ttsAudioUrl: string | null = null;
-
-      // After the expand step, video.script is overwritten with formatted cut
-      // prompts (not human speech). The original user script is preserved in
-      // sourceReview.originalScript — use that for TTS.
-      const existingMeta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
-      const ttsScript = existingMeta.originalScript || rawScript;
-
-      if (ttsScript && ttsScript.length > 10) {
-        try {
-          const ttsResult = await generateVoiceover(ttsScript);
-          if (ttsResult.audioUrl) {
-            if (isStorageConfigured() && !ttsResult.audioUrl.startsWith("data:")) {
-              try {
-                ttsAudioUrl = await downloadAndStore(
-                  ttsResult.audioUrl,
-                  audioKey(user.id, `tts-${Date.now()}`, "mp3"),
-                  "audio/mpeg"
-                );
-              } catch (err) {
-                console.error("[process/tts] Failed to persist TTS audio to storage, using temp URL:", err);
-                ttsAudioUrl = ttsResult.audioUrl;
-              }
-            } else {
-              ttsAudioUrl = ttsResult.audioUrl;
-            }
-          }
-        } catch (err) {
-          console.error("[process/tts] TTS failed:", err);
-          // TTS failure is non-fatal — continue without audio
-        }
-      }
-
-      // Store TTS URL in metadata (use fresh meta from DB, not stale video object)
-      existingMeta.ttsAudioUrl = ttsAudioUrl;
-      await prisma.video.update({
-        where: { id: videoId },
-        data: { sourceReview: JSON.stringify(existingMeta) },
-      });
-
-      return NextResponse.json({
-        status: "tts_done",
-        hasAudio: !!ttsAudioUrl,
-        nextStep: "cut",
-        nextCutIndex: 0,
-      });
-    }
-
-    // ─── STEP: CUT (generate one video cut) ───────────────────
-    if (step === "cut") {
-      const i = cutIndex ?? 0;
-      const meta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
-      const cuts = meta.cuts || [];
-      const cut = cuts[i];
-
-      if (!cut) {
-        return NextResponse.json({ error: `Cut ${i} not found` }, { status: 400 });
-      }
-
-      await updatePipelineProgress("cut", i);
-
-      // ── Resolve the image URL to pass to FAL as the reference frame ──
-      let photoUrl: string = "";
-
-      // Use starting frame from metadata (pre-generated during expand step).
-      // Only fall back to getOrGenerateStartingFrame() if expand didn't cache one.
-      if (meta.startingFrameUrl) {
-        photoUrl = meta.startingFrameUrl;
-      } else if (i === 0) {
-        // Fallback: try fast retrieval only (no generation — that would timeout)
-        const { getStartingFrameUrl } = await import("@/lib/starting-frame");
-        const sfUrl = await getStartingFrameUrl(user.id);
-        if (sfUrl) {
-          photoUrl = sfUrl;
-          meta.startingFrameUrl = sfUrl;
-          await prisma.video.update({
-            where: { id: videoId },
-            data: { sourceReview: JSON.stringify(meta) },
-          });
-        }
-      }
-
-      // Fallback: use the video's photoId or user's primary photo
-      if (!photoUrl) {
-        const photo = video.photoId
-          ? await prisma.photo.findFirst({ where: { id: video.photoId } })
-          : await prisma.photo.findFirst({ where: { userId: user.id, isPrimary: true } });
-        photoUrl = photo?.url || "";
-        if (photoUrl) {
-          console.warn(`[process/cut] No starting frame available for cut ${i}. Falling back to user photo.`);
-        } else {
-          console.error(`[process/cut] No photo URL available for cut ${i}. Video generation may produce inconsistent results.`);
-        }
-      }
-
-      // Submit to FAL (returns immediately with job ID)
-      const result = await generateVideo({
-        model: selectedModel,
-        photoUrl,
-        voiceUrl: "",
-        script: cut.prompt,
-        userId: user.id,
-        industry: user.industry,
-        usePromptEngine: false,
-        duration: cut.generateDuration,
-      });
-
-      // If FAL returned a failed status on submission, fail the video immediately
-      if (result.status === "failed") {
-        const failMsg = `Cut ${i} generation failed: ${result.error || "FAL submission rejected"}`;
-        await markVideoFailed(videoId, failMsg, video.sourceReview);
-        return NextResponse.json({
-          status: "failed",
-          error: failMsg,
-        });
-      }
-
-      // If FAL returned a sync result (immediate completion), persist to Supabase Storage
-      let persistedVideoUrl = result.videoUrl || null;
-      let persistedThumbnailUrl = result.thumbnailUrl || null;
-
-      if (result.status === "completed" && result.videoUrl && isStorageConfigured()) {
-        try {
-          persistedVideoUrl = await downloadAndStore(
-            result.videoUrl,
-            videoKey(user.id, `${videoId}-cut-${i}`, "mp4"),
-            "video/mp4"
-          );
-        } catch (err) {
-          console.error(`[process/cut] Failed to persist cut ${i} video to storage:`, err);
-        }
-        if (result.thumbnailUrl) {
-          try {
-            persistedThumbnailUrl = await downloadAndStore(
-              result.thumbnailUrl,
-              thumbnailKey(user.id, `${videoId}-cut-${i}`, "jpg"),
-              "image/jpeg"
-            );
-          } catch (err) {
-            console.error(`[process/cut] Failed to persist cut ${i} thumbnail to storage:`, err);
-          }
-        }
-      }
-
-      // Store job ID in metadata
-      if (!meta.cutJobs) meta.cutJobs = {};
-      meta.cutJobs[i] = {
-        jobId: result.jobId,
-        status: result.status,
-        videoUrl: persistedVideoUrl,
-        thumbnailUrl: persistedThumbnailUrl,
-        trimTo: cut.duration,
-      };
-      await prisma.video.update({
-        where: { id: videoId },
-        data: { sourceReview: JSON.stringify(meta) },
-      });
-
-      const isLastCut = i >= cuts.length - 1;
-
-      return NextResponse.json({
-        status: result.status === "completed" ? "cut_done" : "cut_submitted",
-        cutIndex: i,
-        jobId: result.jobId,
-        videoUrl: persistedVideoUrl,
-        nextStep: result.status === "completed"
-          ? (isLastCut ? "stitch" : "cut")
-          : "poll",
-        nextCutIndex: isLastCut ? undefined : i + 1,
-      });
-    }
-
-    // ─── STEP: POLL (check if a cut is done) ──────────────────
-    if (step === "poll") {
-      const i = cutIndex ?? 0;
-      const meta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
-      const cutJob = meta.cutJobs?.[i];
-
-      if (!cutJob?.jobId) {
-        return NextResponse.json({ error: `No job for cut ${i}` }, { status: 400 });
-      }
-
-      if (cutJob.status === "completed" && cutJob.videoUrl) {
-        const cuts = meta.cuts || [];
-        const isLastCut = i >= cuts.length - 1;
-        return NextResponse.json({
-          status: "cut_done",
-          cutIndex: i,
-          videoUrl: cutJob.videoUrl,
-          nextStep: isLastCut ? "stitch" : "cut",
-          nextCutIndex: isLastCut ? undefined : i + 1,
-        });
-      }
-
-      // Poll FAL
-      const { falPollOnce } = await import("@/lib/generate");
-      const pollResult = await falPollOnce(cutJob.jobId);
-
-      cutJob.status = pollResult.status;
-
-      // ─── Handle FAL job failure gracefully ──────────────────
-      if (pollResult.status === "failed") {
-        const failMsg = `Cut ${i} generation failed: ${pollResult.error || "FAL reported failure"}`;
-        console.error(`[process/poll] ${failMsg}`);
-
-        // Update cut job status in metadata and mark video as failed
-        meta.cutJobs[i] = cutJob;
-        meta.error = failMsg;
-        await prisma.video.update({
-          where: { id: videoId },
-          data: {
-            status: "failed",
-            sourceReview: JSON.stringify(meta),
-          },
-        });
-
-        return NextResponse.json({
-          status: "cut_failed",
-          cutIndex: i,
-          error: failMsg,
-        });
-      }
-
-      // When cut completes, persist video/thumbnail to Supabase Storage (permanent URL)
-      if (pollResult.status === "completed" && pollResult.videoUrl) {
-        let storedVideoUrl = pollResult.videoUrl;
-        let storedThumbnailUrl = pollResult.thumbnailUrl || null;
-
-        if (isStorageConfigured()) {
-          try {
-            storedVideoUrl = await downloadAndStore(
-              pollResult.videoUrl,
-              videoKey(user.id, `${videoId}-cut-${i}`, "mp4"),
-              "video/mp4"
-            );
-          } catch (err) {
-            console.error(`[process/poll] Failed to persist cut ${i} video to storage:`, err);
-          }
-          if (pollResult.thumbnailUrl) {
-            try {
-              storedThumbnailUrl = await downloadAndStore(
-                pollResult.thumbnailUrl,
-                thumbnailKey(user.id, `${videoId}-cut-${i}`, "jpg"),
-                "image/jpeg"
-              );
-            } catch (err) {
-              console.error(`[process/poll] Failed to persist cut ${i} thumbnail to storage:`, err);
-            }
-          }
-        }
-
-        cutJob.videoUrl = storedVideoUrl;
-        cutJob.thumbnailUrl = storedThumbnailUrl;
-      } else if (pollResult.videoUrl) {
-        cutJob.videoUrl = pollResult.videoUrl;
-      }
-
-      meta.cutJobs[i] = cutJob;
-      await prisma.video.update({
-        where: { id: videoId },
-        data: { sourceReview: JSON.stringify(meta) },
-      });
-
-      if (pollResult.status === "completed") {
-        // If FAL reports "completed" but there is no video URL, treat as failure
-        if (!cutJob.videoUrl) {
-          const failMsg = `Cut ${i} completed but no video URL was returned from FAL`;
-          console.error(`[process/poll] ${failMsg}`);
-          meta.cutJobs[i] = { ...cutJob, status: "failed" };
-          meta.error = failMsg;
-          await prisma.video.update({
-            where: { id: videoId },
-            data: {
-              status: "failed",
-              sourceReview: JSON.stringify(meta),
-            },
-          });
-          return NextResponse.json({
-            status: "cut_failed",
-            cutIndex: i,
-            error: failMsg,
-          });
-        }
-
-        const cuts = meta.cuts || [];
-        const isLastCut = i >= cuts.length - 1;
-        return NextResponse.json({
-          status: "cut_done",
-          cutIndex: i,
-          videoUrl: cutJob.videoUrl,
-          nextStep: isLastCut ? "stitch" : "cut",
-          nextCutIndex: isLastCut ? undefined : i + 1,
-        });
-      }
-
-      return NextResponse.json({
-        status: "polling",
-        cutIndex: i,
-        nextStep: "poll",
-        nextCutIndex: i,
-        retryAfter: 5,
-      });
-    }
-
-    // ─── STEP: STITCH (submit async, return immediately) ──────
-    if (step === "stitch") {
-      const meta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
-      const cutJobs = meta.cutJobs || {};
-
-      const completedCuts: StitchCut[] = Object.values(cutJobs)
-        .filter((j: any) => j.videoUrl)
-        .map((j: any) => ({ videoUrl: j.videoUrl, trimTo: j.trimTo }));
-
-      if (completedCuts.length === 0) {
-        const failMsg = "No completed cuts to stitch. All video cuts may have failed.";
-        await markVideoFailed(videoId, failMsg, video.sourceReview);
-        return NextResponse.json({ status: "failed", error: failMsg });
-      }
-
-      // Helper: persist a URL to Supabase Storage if it's still a temp URL
-      const ensurePermanentUrl = async (url: string, storageKeyPath: string, mime: string): Promise<string> => {
-        if (!isStorageConfigured()) return url;
-        const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-        if (supabaseHost && url.startsWith(supabaseHost)) return url;
-        try {
-          return await downloadAndStore(url, storageKeyPath, mime);
-        } catch (err) {
-          console.error(`[process/stitch] Failed to persist ${storageKeyPath}:`, err);
-          return url;
-        }
-      };
-
-      // Get first cut's thumbnail for the final video record
-      const firstCutJob: any = Object.values(cutJobs).find((j: any) => j.videoUrl);
-      const cutThumbnailUrl = firstCutJob?.thumbnailUrl || null;
-
-      // Single cut — use it directly as the final video (no stitch needed)
-      if (completedCuts.length === 1) {
-        const finalUrl = await ensurePermanentUrl(
-          completedCuts[0].videoUrl,
-          videoKey(user.id, videoId, "mp4"),
-          "video/mp4"
-        );
-        let finalThumb = cutThumbnailUrl;
-        if (finalThumb) {
-          finalThumb = await ensurePermanentUrl(
-            finalThumb,
-            thumbnailKey(user.id, videoId, "jpg"),
-            "image/jpeg"
-          );
-        }
-        await prisma.video.update({
-          where: { id: videoId },
-          data: { videoUrl: finalUrl, thumbnailUrl: finalThumb, status: "review" },
-        });
-        return NextResponse.json({ status: "done", videoUrl: finalUrl });
-      }
-
-      // Multiple cuts — if Shotstack is not configured, fall back to first cut
-      if (!isShotstackConfigured()) {
-        console.warn("[process/stitch] Shotstack not configured, using first cut as final video");
-        const fallback = await ensurePermanentUrl(
-          completedCuts[0].videoUrl,
-          videoKey(user.id, videoId, "mp4"),
-          "video/mp4"
-        );
-        await prisma.video.update({
-          where: { id: videoId },
-          data: { videoUrl: fallback, thumbnailUrl: cutThumbnailUrl, status: "review" },
-        });
-        return NextResponse.json({ status: "done", videoUrl: fallback, warning: "Shotstack not configured" });
-      }
-
-      // Submit stitch job to Shotstack (returns immediately with render ID)
-      await updatePipelineProgress("stitch");
-      try {
-        const job = await submitStitch({
-          cuts: completedCuts,
-          audioUrl: meta.ttsAudioUrl || undefined,
-          aspectRatio: "9:16",
-        });
-
-        // Save render ID in metadata for polling
-        meta.stitchJobId = job.id;
-        meta.stitchStatus = job.status;
-        meta.cutThumbnailUrl = cutThumbnailUrl;
-        await prisma.video.update({
-          where: { id: videoId },
-          data: { sourceReview: JSON.stringify(meta) },
-        });
-
-        return NextResponse.json({
-          status: "stitch_submitted",
-          jobId: job.id,
-          nextStep: "poll_stitch",
-          retryAfter: 5,
-        });
-      } catch (err: any) {
-        console.error("[process/stitch] Shotstack submit failed:", err);
-        // Fall back to first cut
-        const fallback = await ensurePermanentUrl(
-          completedCuts[0].videoUrl,
-          videoKey(user.id, videoId, "mp4"),
-          "video/mp4"
-        );
-        await prisma.video.update({
-          where: { id: videoId },
-          data: { videoUrl: fallback, thumbnailUrl: cutThumbnailUrl, status: "review" },
-        });
-        return NextResponse.json({ status: "done", videoUrl: fallback, warning: "Stitch submit failed, using first cut" });
-      }
-    }
-
-    // ─── STEP: POLL_STITCH (check Shotstack render status) ───
-    if (step === "poll_stitch") {
-      const meta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
-      const stitchJobId = meta.stitchJobId;
-
-      if (!stitchJobId) {
-        return NextResponse.json({ error: "No stitch job ID found" }, { status: 400 });
-      }
-
-      // Helper: persist a URL to Supabase Storage if it's still a temp URL
-      const ensurePermanentUrl = async (url: string, storageKeyPath: string, mime: string): Promise<string> => {
-        if (!isStorageConfigured()) return url;
-        const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-        if (supabaseHost && url.startsWith(supabaseHost)) return url;
-        try {
-          return await downloadAndStore(url, storageKeyPath, mime);
-        } catch (err) {
-          console.error(`[process/poll_stitch] Failed to persist ${storageKeyPath}:`, err);
-          return url;
-        }
-      };
-
-      try {
-        const job = await getStitchStatus(stitchJobId);
-        meta.stitchStatus = job.status;
-
-        if (job.status === "completed" && job.url) {
-          // Stitch is done — download video, store in Supabase, mark as "review"
-          const storedUrl = await ensurePermanentUrl(
-            job.url,
-            videoKey(user.id, videoId, "mp4"),
-            "video/mp4"
-          );
-
-          let finalThumb = meta.cutThumbnailUrl || null;
-          if (finalThumb) {
-            finalThumb = await ensurePermanentUrl(
-              finalThumb,
-              thumbnailKey(user.id, videoId, "jpg"),
-              "image/jpeg"
-            );
-          }
-
-          await prisma.video.update({
-            where: { id: videoId },
-            data: { videoUrl: storedUrl, thumbnailUrl: finalThumb, status: "review", sourceReview: JSON.stringify(meta) },
-          });
-
-          return NextResponse.json({ status: "done", videoUrl: storedUrl });
-        }
-
-        if (job.status === "failed") {
-          console.error(`[process/poll_stitch] Shotstack render failed: ${job.error}`);
-          // Fall back to first cut
-          const cutJobs = meta.cutJobs || {};
-          const firstCutJob: any = Object.values(cutJobs).find((j: any) => j.videoUrl);
-          if (firstCutJob?.videoUrl) {
-            const fallback = await ensurePermanentUrl(
-              firstCutJob.videoUrl,
-              videoKey(user.id, videoId, "mp4"),
-              "video/mp4"
-            );
-            await prisma.video.update({
-              where: { id: videoId },
-              data: { videoUrl: fallback, thumbnailUrl: meta.cutThumbnailUrl, status: "review", sourceReview: JSON.stringify(meta) },
-            });
-            return NextResponse.json({ status: "done", videoUrl: fallback, warning: "Stitch render failed, using first cut" });
-          }
-
-          const failMsg = `Stitch render failed: ${job.error || "unknown error"}`;
-          await markVideoFailed(videoId, failMsg, video.sourceReview);
-          return NextResponse.json({ status: "failed", error: failMsg });
-        }
-
-        // Still rendering — save updated status and tell frontend to keep polling
-        await prisma.video.update({
-          where: { id: videoId },
-          data: { sourceReview: JSON.stringify(meta) },
-        });
-
-        return NextResponse.json({
-          status: "polling",
-          stitchStatus: job.status,
-          nextStep: "poll_stitch",
-          retryAfter: 5,
-        });
-      } catch (err: any) {
-        console.error("[process/poll_stitch] Error checking stitch status:", err);
-        // If polling fails, fall back to first cut rather than blocking the pipeline
-        const cutJobs = meta.cutJobs || {};
-        const firstCutJob: any = Object.values(cutJobs).find((j: any) => j.videoUrl);
-        if (firstCutJob?.videoUrl) {
-          const fallback = await ensurePermanentUrl(
-            firstCutJob.videoUrl,
-            videoKey(user.id, videoId, "mp4"),
-            "video/mp4"
-          );
-          await prisma.video.update({
-            where: { id: videoId },
-            data: { videoUrl: fallback, thumbnailUrl: meta.cutThumbnailUrl, status: "review" },
-          });
-          return NextResponse.json({ status: "done", videoUrl: fallback, warning: "Stitch poll failed, using first cut" });
-        }
-
-        return NextResponse.json({
-          status: "failed",
-          error: err?.message || "Failed to check stitch status",
-        }, { status: 500 });
-      }
-    }
-
-    return NextResponse.json({ error: `Unknown step: ${step}` }, { status: 400 });
+    // Run the pipeline step
+    const result = await runStep(videoId, step, cutIndex, user.id);
+
+    // Map StepResult to HTTP response
+    const statusCode = result.status === "error" ? 400 : 200;
+    return NextResponse.json(
+      { status: result.status, nextStep: result.nextStep, nextCutIndex: result.nextCutIndex, error: result.error, ...result.data },
+      { status: statusCode }
+    );
   } catch (error: any) {
     console.error("[POST /api/generate/process] Unexpected error:", error);
 
     // Mark the video as failed so it doesn't stay stuck in "generating"
     if (videoId) {
       try {
-        const errMsg = error?.message || "An unexpected error occurred during video generation.";
-        await markVideoFailed(videoId, errMsg, videoSourceReview);
+        const video = await prisma.video.findUnique({
+          where: { id: videoId },
+          select: { sourceReview: true },
+        });
+        const meta = parseMeta(video?.sourceReview);
+        meta.error = error?.message || "An unexpected error occurred during video generation.";
+        await prisma.video.update({
+          where: { id: videoId },
+          data: { status: "failed", sourceReview: stringifyMeta(meta) },
+        });
       } catch (dbErr) {
         console.error("[POST /api/generate/process] Failed to mark video as failed:", dbErr);
       }
     }
 
-    return NextResponse.json({
-      status: "failed",
-      error: error?.message || "Internal server error",
-    }, { status: 500 });
+    return NextResponse.json(
+      { status: "failed", error: error?.message || "Internal server error" },
+      { status: 500 }
+    );
   }
 }

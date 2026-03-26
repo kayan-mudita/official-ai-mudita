@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
       const currentCut: number = meta.pipelineCut ?? 0;
 
       // Calculate percent based on pipeline stage
-      // Stages: expand(5%) -> tts(15%) -> anchor(20%) -> cuts(20-85%) -> stitch(90%) -> store(95%) -> done(100%)
+      // Stages: expand(5%) -> tts(15%) -> anchor(20%) -> submit_all_cuts(25%) -> poll_all_cuts(25-85%) -> stitch(90%) -> store(95%) -> done(100%)
       let percent = 0;
       switch (step) {
         case "queued":
@@ -112,11 +112,21 @@ export async function GET(req: NextRequest) {
         case "anchor":
           percent = 20;
           break;
-        case "cut": {
-          // Each cut gets an equal share of 20-85% range
-          const cutRange = 65; // 85 - 20
+        case "submit_all_cuts":
+          percent = 25;
+          break;
+        case "poll_all_cuts": {
+          // currentCut tracks completed count during parallel polling
+          const cutRange = 60; // 85 - 25
           const perCut = totalCuts > 0 ? cutRange / totalCuts : cutRange;
-          percent = 20 + Math.round(currentCut * perCut);
+          percent = 25 + Math.round(currentCut * perCut);
+          break;
+        }
+        case "cut": {
+          // Legacy sequential mode: each cut gets an equal share of 25-85% range
+          const cutRange = 60; // 85 - 25
+          const perCut = totalCuts > 0 ? cutRange / totalCuts : cutRange;
+          percent = 25 + Math.round(currentCut * perCut);
           break;
         }
         case "stitch":

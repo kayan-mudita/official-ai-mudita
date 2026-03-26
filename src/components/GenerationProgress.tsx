@@ -144,6 +144,11 @@ export function GenerationStepIndicator({ progress }: StepIndicatorProps) {
             Scene {progress.currentCut + 1} of {progress.totalCuts}
           </p>
         )}
+        {progress?.step === "poll_all_cuts" && progress.totalCuts > 0 && (
+          <p className="text-[11px] text-white/20 mt-1">
+            {progress.currentCut} of {progress.totalCuts} scenes complete
+          </p>
+        )}
       </div>
     </div>
   );

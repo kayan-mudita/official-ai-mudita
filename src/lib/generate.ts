@@ -23,6 +23,12 @@ import {
   videoKey,
   thumbnailKey,
 } from "@/lib/storage";
+import {
+  withFalRetry,
+  withStorageRetry,
+  getNextFallbackModel,
+  MODEL_FALLBACK_CHAIN,
+} from "@/lib/pipeline/retry";
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -38,6 +44,17 @@ export interface GenerateVideoParams {
   industry?: string;
   /** Item 41: Pass true for onboarding videos to personalize the script with the user's name */
   isOnboarding?: boolean;
+  /** Webhook URL for FAL to POST results to when the job completes (server-driven pipeline) */
+  webhookUrl?: string;
+  /** Video ID for tracking -- passed through to webhook for pipeline continuation */
+  videoId?: string;
+  /** Cut index for tracking -- passed through to webhook for pipeline continuation */
+  cutIndex?: number;
+  /** Audio context for the cut — describes what dialogue is being spoken.
+   *  When present, appended to the video generation prompt so the model
+   *  generates appropriate mouth movements instead of a blank stare.
+   *  DATA FLOW GAP #8 FIX */
+  audioContext?: string;
 }
 
 export interface GenerateResult {
@@ -218,30 +235,38 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
 
 async function falSubmit(
   modelId: string,
-  payload: Record<string, unknown>
+  payload: Record<string, unknown>,
+  webhookUrl?: string
 ): Promise<GenerateResult> {
   const apiKey = getFalKey();
   if (!apiKey) return simulateGeneration(modelId);
 
-  try {
-    const response = await fetch(`https://queue.fal.run/${modelId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Key ${apiKey}`,
-      },
-      body: JSON.stringify(payload),
-    });
+  // If a webhook URL is provided, include it in the payload so FAL
+  // POSTs the result directly to our server when the job completes.
+  // This enables server-driven pipeline progression.
+  const submitPayload = webhookUrl
+    ? { ...payload, webhook_url: webhookUrl }
+    : payload;
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error(`[FAL] Submit error (${response.status}):`, errText);
-      return {
-        jobId: `fal-err-${Date.now()}`,
-        status: "failed",
-        error: `FAL ${response.status}: ${errText.substring(0, 200)}`,
-      };
-    }
+  try {
+    // Wrap the FAL submission in retry logic (2 retries with exponential backoff)
+    const { result: response } = await withFalRetry(async () => {
+      const res = await fetch(`https://queue.fal.run/${modelId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Key ${apiKey}`,
+        },
+        body: JSON.stringify(submitPayload),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`FAL ${res.status}: ${errText.substring(0, 200)}`);
+      }
+
+      return res;
+    }, `submit-${modelId}`);
 
     const data = await response.json();
 
@@ -262,13 +287,16 @@ async function falSubmit(
       };
     }
 
-    // Store the FULL URLs that FAL gave us — don't reconstruct them
+    // Store the FULL URLs that FAL gave us -- don't reconstruct them
     const statusUrl = data.status_url;
     const responseUrl = data.response_url;
 
     console.log(`[FAL] Job submitted: ${data.request_id} (model: ${modelId})`);
     console.log(`[FAL] Status URL: ${statusUrl}`);
     console.log(`[FAL] Response URL: ${responseUrl}`);
+    if (webhookUrl) {
+      console.log(`[FAL] Webhook URL: ${webhookUrl}`);
+    }
 
     return {
       jobId: `FAL::${statusUrl}::${responseUrl}`,
@@ -276,7 +304,7 @@ async function falSubmit(
       estimatedTime: 120,
     };
   } catch (err: any) {
-    console.error("[FAL] Submit exception:", err);
+    console.error("[FAL] Submit exception (after retries):", err);
     return {
       jobId: `fal-err-${Date.now()}`,
       status: "failed",
@@ -381,13 +409,42 @@ export async function generateVideo(params: GenerateVideoParams): Promise<Genera
   // not per cut). The voiceUrl param already contains either the user's voice
   // sample or the TTS-generated audio URL from the route.
 
-  // Step 3: Route to the correct FAL model
+  // Step 2.5: DATA FLOW GAP #8 FIX — Inject audio context into the prompt.
+  // The Cut type has an `audio` field with dialogue descriptions like
+  // "Person says: [script segment]". This was previously decorative and never
+  // reached the video model. Now, when audioContext is provided, we append it
+  // to the prompt so the video model knows the person IS SPEAKING and generates
+  // appropriate mouth movements instead of a blank stare.
+  if (params.audioContext && params.audioContext.startsWith("Person says:")) {
+    const dialogue = params.audioContext.replace("Person says: ", "").substring(0, 50);
+    if (dialogue.trim()) {
+      finalScript += ` AUDIO CONTEXT: The person is speaking these words: '${dialogue}'. Their mouth movements should match natural speech.`;
+    }
+  }
+
+  // Step 3: Build webhook URL if we have the pieces for server-driven pipeline.
+  // The webhook URL includes videoId and cutIndex so the webhook handler
+  // knows which pipeline step to advance.
+  let webhookUrl: string | undefined = params.webhookUrl;
+  if (!webhookUrl && params.videoId !== undefined) {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL;
+    if (appUrl) {
+      const base = appUrl.startsWith("http") ? appUrl : `https://${appUrl}`;
+      const qs = new URLSearchParams({
+        videoId: params.videoId,
+        ...(params.cutIndex !== undefined ? { cutIndex: String(params.cutIndex) } : {}),
+      });
+      webhookUrl = `${base}/api/generate/webhook?${qs.toString()}`;
+    }
+  }
+
+  // Step 4: Route to the correct FAL model
   const modelConfig = FAL_MODELS[params.model];
   if (!modelConfig) {
-    // Unknown model — fall back to Kling 2.6
+    // Unknown model -- fall back to Kling 2.6
     const fallbackConfig = FAL_MODELS["kling_2.6"];
     const payload = fallbackConfig.buildPayload({ ...params, script: finalScript });
-    const result = await falSubmit(fallbackConfig.falId, payload);
+    const result = await falSubmit(fallbackConfig.falId, payload, webhookUrl);
     return { ...result, expandedPrompt };
   }
 
@@ -395,8 +452,54 @@ export async function generateVideo(params: GenerateVideoParams): Promise<Genera
   console.log(`[generate] Submitting to FAL model: ${modelConfig.falId}`);
   console.log(`[generate] Payload keys: ${Object.keys(payload).join(", ")}`);
 
-  const result = await falSubmit(modelConfig.falId, payload);
+  const result = await falSubmit(modelConfig.falId, payload, webhookUrl);
   return { ...result, expandedPrompt };
+}
+
+/**
+ * Attempt to generate a video cut with model fallback.
+ * If the primary model fails on submission, tries the next model in the chain.
+ *
+ * @returns The result plus the model that was actually used
+ */
+export async function generateVideoWithFallback(
+  params: GenerateVideoParams
+): Promise<GenerateResult & { actualModel: string }> {
+  let currentModel = params.model;
+
+  // Try the primary model first
+  const result = await generateVideo({ ...params, model: currentModel });
+  if (result.status !== "failed") {
+    return { ...result, actualModel: currentModel };
+  }
+
+  // Primary model failed -- try fallbacks
+  console.warn(`[generate] Primary model ${currentModel} failed: ${result.error}. Trying fallbacks...`);
+
+  let fallbackModel = getNextFallbackModel(currentModel);
+  while (fallbackModel) {
+    console.log(`[generate] Trying fallback model: ${fallbackModel}`);
+    const fallbackResult = await generateVideo({ ...params, model: fallbackModel });
+
+    if (fallbackResult.status !== "failed") {
+      console.log(`[generate] Fallback model ${fallbackModel} succeeded`);
+      return { ...fallbackResult, actualModel: fallbackModel };
+    }
+
+    console.warn(`[generate] Fallback model ${fallbackModel} also failed: ${fallbackResult.error}`);
+    fallbackModel = getNextFallbackModel(fallbackModel);
+  }
+
+  // All fallbacks exhausted
+  console.error(`[generate] All models in fallback chain failed for this cut`);
+  return { ...result, actualModel: currentModel };
+}
+
+/**
+ * Get the model fallback chain (exported for use in pipeline config/UI).
+ */
+export function getModelFallbackChain(): string[] {
+  return [...MODEL_FALLBACK_CHAIN];
 }
 
 /**
@@ -429,19 +532,27 @@ export async function pollJobUntilDone(
         let finalVideoUrl = result.videoUrl || null;
         let finalThumbnailUrl = result.thumbnailUrl || null;
 
-        // Upload to S3 if configured
+        // Upload to S3 if configured (with retry logic)
         if (isStorageConfigured()) {
           try {
             const video = await prisma.video.findUnique({ where: { id: videoId }, select: { userId: true } });
             const userId = video?.userId || "unknown";
             if (result.videoUrl) {
-              finalVideoUrl = await downloadAndStore(result.videoUrl, videoKey(userId, videoId, "mp4"), "video/mp4");
+              const { result: storedUrl } = await withStorageRetry(
+                () => downloadAndStore(result.videoUrl!, videoKey(userId, videoId, "mp4"), "video/mp4"),
+                `poll-video-${videoId}`
+              );
+              finalVideoUrl = storedUrl;
             }
             if (result.thumbnailUrl) {
-              finalThumbnailUrl = await downloadAndStore(result.thumbnailUrl, thumbnailKey(userId, videoId, "jpg"), "image/jpeg");
+              const { result: storedThumb } = await withStorageRetry(
+                () => downloadAndStore(result.thumbnailUrl!, thumbnailKey(userId, videoId, "jpg"), "image/jpeg"),
+                `poll-thumb-${videoId}`
+              );
+              finalThumbnailUrl = storedThumb;
             }
           } catch (s3Err) {
-            console.error(`[Poll] S3 upload failed for ${videoId}:`, s3Err);
+            console.error(`[Poll] S3 upload failed for ${videoId} (after retries):`, s3Err);
           }
         }
 

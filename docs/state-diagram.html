@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Official AI -- System State Diagram</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface-2: #1a1a26;
+    --border: #2a2a3a;
+    --border-hover: #3a3a50;
+    --text: #e0e0e8;
+    --text-muted: #8888a0;
+    --text-dim: #555570;
+
+    --blue: #4c6ef5;
+    --blue-bg: rgba(76, 110, 245, 0.08);
+    --blue-border: rgba(76, 110, 245, 0.25);
+
+    --green: #22c55e;
+    --green-bg: rgba(34, 197, 94, 0.08);
+    --green-border: rgba(34, 197, 94, 0.25);
+
+    --purple: #a855f7;
+    --purple-bg: rgba(168, 85, 247, 0.08);
+    --purple-border: rgba(168, 85, 247, 0.25);
+
+    --orange: #f59e0b;
+    --orange-bg: rgba(245, 158, 11, 0.08);
+    --orange-border: rgba(245, 158, 11, 0.25);
+
+    --red: #ef4444;
+    --red-bg: rgba(239, 68, 68, 0.08);
+    --red-border: rgba(239, 68, 68, 0.25);
+
+    --cyan: #06b6d4;
+    --cyan-bg: rgba(6, 182, 212, 0.08);
+    --cyan-border: rgba(6, 182, 212, 0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  /* ─── Header ─────────────────────────────────── */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 10, 15, 0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .header h1 span { color: var(--blue); }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* ─── Legend ──────────────────────────────────── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 12px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    border: 1.5px solid;
+  }
+  .legend-dot.api { background: var(--blue-bg); border-color: var(--blue); }
+  .legend-dot.store { background: var(--green-bg); border-color: var(--green); }
+  .legend-dot.ext { background: var(--purple-bg); border-color: var(--purple); }
+  .legend-dot.user { background: var(--orange-bg); border-color: var(--orange); }
+
+  /* ─── Layout ─────────────────────────────────── */
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+
+  /* ─── Swim lanes ─────────────────────────────── */
+  .swim-lane {
+    margin-bottom: 48px;
+  }
+  .swim-lane-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .swim-lane-label {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .swim-lane-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .swim-lane-badge.onboarding {
+    background: var(--orange-bg);
+    border: 1px solid var(--orange-border);
+    color: var(--orange);
+  }
+  .swim-lane-badge.pipeline {
+    background: var(--blue-bg);
+    border: 1px solid var(--blue-border);
+    color: var(--blue);
+  }
+
+  /* ─── Flow row ───────────────────────────────── */
+  .flow-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .flow-row::-webkit-scrollbar { height: 6px; }
+  .flow-row::-webkit-scrollbar-track { background: transparent; }
+  .flow-row::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ─── Arrow connector ────────────────────────── */
+  .arrow-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    padding-top: 40px;
+    flex-shrink: 0;
+  }
+  .arrow-svg {
+    width: 40px;
+    height: 20px;
+  }
+
+  /* ─── State box ──────────────────────────────── */
+  .state-box {
+    min-width: 220px;
+    max-width: 280px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  .state-box:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+  .state-box.expanded .state-detail { display: block; }
+  .state-box.expanded { max-width: 360px; }
+
+  .state-box.api { border-left: 3px solid var(--blue); }
+  .state-box.store { border-left: 3px solid var(--green); }
+  .state-box.ext { border-left: 3px solid var(--purple); }
+  .state-box.user { border-left: 3px solid var(--orange); }
+
+  .state-head {
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .state-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .state-icon.api { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+  .state-icon.store { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .state-icon.ext { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+  .state-icon.user { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-border); }
+
+  .state-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .state-method {
+    font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    color: var(--text-dim);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .state-method .method {
+    font-weight: 600;
+    font-size: 10px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    letter-spacing: 0.03em;
+  }
+  .method-post { background: rgba(76,110,245,0.15); color: var(--blue); }
+  .method-get { background: rgba(34,197,94,0.15); color: var(--green); }
+  .method-user { background: rgba(245,158,11,0.15); color: var(--orange); }
+
+  .state-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  .expand-hint {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 10px;
+    color: var(--text-dim);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .state-box:hover .expand-hint { opacity: 1; }
+  .state-box.expanded .expand-hint { opacity: 1; }
+
+  /* ─── Detail panel ───────────────────────────── */
+  .state-detail {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    background: var(--surface-2);
+  }
+  .detail-section {
+    margin-bottom: 10px;
+  }
+  .detail-section:last-child { margin-bottom: 0; }
+  .detail-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .detail-label.input { color: var(--cyan); }
+  .detail-label.output { color: var(--green); }
+  .detail-label.ext-call { color: var(--purple); }
+  .detail-label.db { color: var(--green); }
+
+  .detail-list {
+    list-style: none;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    line-height: 1.7;
+  }
+  .detail-list li::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .detail-list.input li::before { background: var(--cyan); }
+  .detail-list.output li::before { background: var(--green); }
+  .detail-list.ext-call li::before { background: var(--purple); }
+  .detail-list.db li::before { background: var(--green); }
+
+  .ext-badge {
+    display: inline-block;
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+    margin-right: 4px;
+    letter-spacing: 0.03em;
+  }
+  .ext-badge.gemini { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .ext-badge.fal { background: rgba(76,110,245,0.15); color: var(--blue); }
+  .ext-badge.supabase { background: rgba(34,197,94,0.15); color: var(--green); }
+  .ext-badge.shotstack { background: rgba(245,158,11,0.15); color: var(--orange); }
+  .ext-badge.minimax { background: rgba(6,182,212,0.15); color: var(--cyan); }
+  .ext-badge.prisma { background: rgba(100,100,140,0.15); color: #9999b0; }
+
+  /* ─── Sub-pipeline (vertical steps inside video generation) ── */
+  .sub-pipeline {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .sub-pipeline-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    letter-spacing: 0.04em;
+  }
+  .sub-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .sub-step {
+    display: flex;
+    gap: 14px;
+    position: relative;
+  }
+  .sub-step-line {
+    width: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .sub-step-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .sub-step-dot.api { border-color: var(--blue); background: var(--blue-bg); }
+  .sub-step-dot.ext { border-color: var(--purple); background: var(--purple-bg); }
+  .sub-step-dot.store { border-color: var(--green); background: var(--green-bg); }
+  .sub-step-connector {
+    width: 1px;
+    flex: 1;
+    background: var(--border);
+    min-height: 12px;
+  }
+  .sub-step-content {
+    padding-bottom: 20px;
+    flex: 1;
+    min-width: 0;
+  }
+  .sub-step:last-child .sub-step-content { padding-bottom: 0; }
+  .sub-step:last-child .sub-step-connector { display: none; }
+
+  .sub-step-card {
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .sub-step-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  .sub-step-card.expanded .sub-step-detail { display: block; }
+
+  .sub-step-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sub-step-title .step-num {
+    font-size: 10px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .sub-step-method {
+    font-size: 10px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    color: var(--text-dim);
+    margin-top: 3px;
+    margin-left: 26px;
+  }
+  .sub-step-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    margin-left: 26px;
+    line-height: 1.4;
+  }
+  .sub-step-detail {
+    display: none;
+    margin-top: 10px;
+    margin-left: 26px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ─── Notes section ──────────────────────────── */
+  .notes-section {
+    margin-top: 48px;
+    padding: 24px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .notes-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .note-card {
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .note-card-title {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .note-card-body {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Collapse all / expand all buttons */
+  .toggle-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .toggle-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+  }
+
+  /* ─── Loop indicator ─────────────────────────── */
+  .loop-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    margin-top: 3px;
+    margin-left: 26px;
+  }
+  .loop-badge {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(239,68,68,0.1);
+    color: var(--red);
+    font-weight: 600;
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Official <span>AI</span> &mdash; System State Diagram</h1>
+  <div class="header-right">
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot api"></div> API Route</div>
+      <div class="legend-item"><div class="legend-dot store"></div> Data Store</div>
+      <div class="legend-item"><div class="legend-dot ext"></div> External Service</div>
+      <div class="legend-item"><div class="legend-dot user"></div> User Action</div>
+    </div>
+    <button class="toggle-btn" onclick="toggleAll(true)">Expand All</button>
+    <button class="toggle-btn" onclick="toggleAll(false)">Collapse All</button>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════════════
+     SWIM LANE 1: ONBOARDING FLOW
+     ═══════════════════════════════════════════════════════════ -->
+<div class="swim-lane">
+  <div class="swim-lane-header">
+    <span class="swim-lane-label">Onboarding Flow</span>
+    <span class="swim-lane-badge onboarding">User-Facing</span>
+    <span style="font-size:11px;color:var(--text-dim);margin-left:8px;">
+      /auth/onboarding &mdash; 4 steps: Industry &rarr; Photos &rarr; Character Sheet &rarr; First Video
+    </span>
+  </div>
+
+  <div class="flow-row">
+
+    <!-- 1. SIGNUP -->
+    <div class="state-box api" onclick="toggle(this)">
+      <span class="expand-hint">click</span>
+      <div class="state-head">
+        <div class="state-icon api">S</div>
+        <div>
+          <div class="state-title">Signup</div>
+          <div class="state-method"><span class="method method-post">POST</span> /api/auth/signup</div>
+          <div class="state-desc">Create user account with email, password, name, industry, optional ref code</div>
+        </div>
+      </div>
+      <div class="state-detail">
+        <div class="detail-section">
+          <div class="detail-label input">Inputs</div>
+          <ul class="detail-list input">
+            <li>email: string</li>
+            <li>password: string</li>
+            <li>firstName: string</li>
+            <li>lastName: string</li>
+            <li>industry?: string</li>
+            <li>company?: string</li>
+            <li>ref?: string (cohort tracking)</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label output">Outputs</div>
+          <ul class="detail-list output">
+            <li>id: string (user ID)</li>
+            <li>email: string</li>
+            <li>firstName: string</li>
+            <li>lastName: string</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label db">Data Store</div>
+          <ul class="detail-list db">
+            <li><span class="ext-badge prisma">Prisma</span> User.create()</li>
+            <li>bcrypt hash (12 rounds)</li>
+            <li>Rate limit: 5 req/IP</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#4c6ef5" stroke-width="1.5" fill="none"/></svg></div>
+
+    <!-- 2. INDUSTRY SELECTION -->
+    <div class="state-box user" onclick="toggle(this)">
+      <span class="expand-hint">click</span>
+      <div class="state-head">
+        <div class="state-icon user">1</div>
+        <div>
+          <div class="state-title">Select Industry</div>
+          <div class="state-method"><span class="method method-user">UI</span> Step 1 of 4</div>
+          <div class="state-desc">User picks one of 7 industries. Determines background presets, prompt context, and character sheet generation.</div>
+        </div>
+      </div>
+      <div class="state-detail">
+        <div class="detail-section">
+          <div class="detail-label input">Available Industries</div>
+          <ul class="detail-list input">
+            <li>legal</li>
+            <li>medical</li>
+            <li>real_estate</li>
+            <li>finance</li>
+            <li>creator</li>
+            <li>business</li>
+            <li>other</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label output">Outputs</div>
+          <ul class="detail-list output">
+            <li>selectedIndustry: string</li>
+            <li>Auto-advances to Step 2 after 250ms</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#f59e0b" stroke-width="1.5" fill="none"/></svg></div>
+
+    <!-- 3. PHOTO UPLOAD -->
+    <div class="state-box api" onclick="toggle(this)">
+      <span class="expand-hint">click</span>
+      <div class="state-head">
+        <div class="state-icon api">2</div>
+        <div>
+          <div class="state-title">Upload Photos</div>
+          <div class="state-method"><span class="method method-post">POST</span> /api/upload</div>
+          <div class="state-desc">1-3 photos uploaded to Supabase Storage. Client-side quality scoring. DB record created per photo.</div>
+        </div>
+      </div>
+      <div class="state-detail">
+        <div class="detail-section">
+          <div class="detail-label input">Inputs</div>
+          <ul class="detail-list input">
+            <li>file: File (multipart/form-data)</li>
+            <li>type: "photo"</li>
+            <li>MIME: jpeg, png, webp, heic, heif</li>
+            <li>Max size: 10 MB</li>
+            <li>Client quality check: 300x300px min</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label output">Outputs</div>
+          <ul class="detail-list output">
+            <li>url: string (Supabase public URL)</li>
+            <li>key: string (S3 path)</li>
+            <li>filename: string</li>
+            <li>recordId: string (Photo.id)</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label ext-call">External Services</div>
+          <ul class="detail-list ext-call">
+            <li><span class="ext-badge supabase">Supabase</span> Storage.upload() to officialai-media bucket</li>
+            <li><span class="ext-badge prisma">Prisma</span> Photo.create() &mdash; first photo is isPrimary: true</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#4c6ef5" stroke-width="1.5" fill="none"/></svg></div>
+
+    <!-- 4. CHARACTER SHEET -->
+    <div class="state-box ext" onclick="toggle(this)">
+      <span class="expand-hint">click</span>
+      <div class="state-head">
+        <div class="state-icon ext">3</div>
+        <div>
+          <div class="state-title">Character Sheet Generation</div>
+          <div class="state-method"><span class="method method-post">POST</span> /api/character-sheet</div>
+          <div class="state-desc">Generates poses sheet (3x3 grid, user-facing) and 360-degree sheet (2x3 grid, backend-only) in parallel via Gemini.</div>
+        </div>
+      </div>
+      <div class="state-detail">
+        <div class="detail-section">
+          <div class="detail-label input">Inputs</div>
+          <ul class="detail-list input">
+            <li>photoUrls: string[] (from upload step)</li>
+            <li>industry: string (from step 1)</li>
+            <li>userId: from auth session</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label output">Outputs</div>
+          <ul class="detail-list output">
+            <li>poses.id: string (CharacterSheet ID)</li>
+            <li>poses.compositeUrl: string (3x3 grid image)</li>
+            <li>poses.status: "complete" | "failed"</li>
+            <li>threeD.id: string (backend-only sheet)</li>
+            <li>threeD.status: "complete" | "failed"</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label ext-call">External Services</div>
+          <ul class="detail-list ext-call">
+            <li><span class="ext-badge gemini">Gemini</span> Nano Banana Pro &mdash; generateContent with image modality</li>
+            <li>Parallel: generatePosesSheet() + generate3DSheet()</li>
+            <li>Poses: 9 poses with industry-specific backgrounds (6 presets per industry)</li>
+            <li>3D: 6 angles (front, 3/4 right, right profile, back, 3/4 left, left profile)</li>
+            <li><span class="ext-badge supabase">Supabase</span> Upload generated images to Storage</li>
+            <li><span class="ext-badge prisma">Prisma</span> CharacterSheet.create() + CharacterSheetImage.create()</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#a855f7" stroke-width="1.5" fill="none"/></svg></div>
+
+    <!-- 4b. STARTING FRAME (background) -->
+    <div class="state-box ext" onclick="toggle(this)">
+      <span class="expand-hint">click</span>
+      <div class="state-head">
+        <div class="state-icon ext">SF</div>
+        <div>
+          <div class="state-title">Starting Frame (Background)</div>
+          <div class="state-method"><span class="method method-post">POST</span> /api/starting-frame</div>
+          <div class="state-desc">Non-blocking. Anchor image for character consistency across all video cuts. Fired after character sheet completes.</div>
+        </div>
+      </div>
+      <div class="state-detail">
+        <div class="detail-section">
+          <div class="detail-label input">Inputs</div>
+          <ul class="detail-list input">
+            <li>userId: from auth session</li>
+            <li>sceneDescription?: string (optional)</li>
+            <li>industry: from user profile</li>
+            <li>Reference images: user photos + character sheet composite</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label output">Outputs</div>
+          <ul class="detail-list output">
+            <li>imageUrl: string (Supabase URL)</li>
+            <li>photoId: string (Photo record with "sf--" prefix)</li>
+            <li>status: "complete" | "failed" | "demo"</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label ext-call">External Services</div>
+          <ul class="detail-list ext-call">
+            <li><span class="ext-badge gemini">Gemini</span> Nano Banana Pro &mdash; single portrait generation</li>
+            <li>Downloads user photos + character sheet as base64 reference</li>
+            <li><span class="ext-badge supabase">Supabase</span> Upload to starting-frames/{userId}/</li>
+            <li><span class="ext-badge prisma">Prisma</span> Photo.create() with filename: "sf--{timestamp}.jpg"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#a855f7" stroke-width="1.5" fill="none"/></svg></div>
+
+    <!-- 5. FORMAT SELECTION -->
+    <div class="state-box user" onclick="toggle(this)">
+      <span class="expand-hint">click</span>
+      <div class="state-head">
+        <div class="state-icon user">4</div>
+        <div>
+          <div class="state-title">Select Video Format</div>
+          <div class="state-method"><span class="method method-user">UI</span> Step 4 of 4</div>
+          <div class="state-desc">User picks a format: Market Update, Quick Tip, Personal Intro, or Client Testimonial. Triggers first video generation.</div>
+        </div>
+      </div>
+      <div class="state-detail">
+        <div class="detail-section">
+          <div class="detail-label input">Available Formats</div>
+          <ul class="detail-list input">
+            <li>Market Update (contentType: "market_update")</li>
+            <li>Quick Tip (contentType: "quick_tip_8")</li>
+            <li>Personal Intro (contentType: "brand_intro")</li>
+            <li>Client Testimonial (contentType: "testimonial")</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label output">Triggers</div>
+          <ul class="detail-list output">
+            <li>2.5s flashback (character sheet recall)</li>
+            <li>Then: triggers full video generation pipeline</li>
+            <li>Passes: format.contentType, format.script, model: "kling_2.6"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#f59e0b" stroke-width="1.5" fill="none"/></svg></div>
+
+    <!-- 6. COMPLETE -->
+    <div class="state-box user" onclick="toggle(this)">
+      <span class="expand-hint">click</span>
+      <div class="state-head">
+        <div class="state-icon user">&#10003;</div>
+        <div>
+          <div class="state-title">Complete Onboarding</div>
+          <div class="state-method"><span class="method method-post">POST</span> /api/onboarding/complete</div>
+          <div class="state-desc">After video reveal + reaction phases. Marks onboarding done, redirects to /dashboard/generate.</div>
+        </div>
+      </div>
+      <div class="state-detail">
+        <div class="detail-section">
+          <div class="detail-label input">Phases Before Completion</div>
+          <ul class="detail-list input">
+            <li>flashback &rarr; generating &rarr; reveal &rarr; reaction</li>
+            <li>Video auto-plays in reveal phase</li>
+            <li>Post-watch "This is you" moment in reaction phase</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label output">Result</div>
+          <ul class="detail-list output">
+            <li>User redirected to /dashboard/generate</li>
+            <li>Onboarding flag set on user record</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SWIM LANE 2: VIDEO GENERATION PIPELINE
+     ═══════════════════════════════════════════════════════════ -->
+<div class="swim-lane">
+  <div class="swim-lane-header">
+    <span class="swim-lane-label">Video Generation Pipeline</span>
+    <span class="swim-lane-badge pipeline">Backend Pipeline</span>
+    <span style="font-size:11px;color:var(--text-dim);margin-left:8px;">
+      Multi-step: Create &rarr; Plan &rarr; Expand &rarr; TTS &rarr; Cut[0..N] &rarr; Stitch &rarr; Store
+    </span>
+  </div>
+
+  <!-- Top row: initial API calls -->
+  <div class="flow-row">
+
+    <!-- P1. Create video record -->
+    <div class="state-box api" onclick="toggle(this)">
+      <span class="expand-hint">click</span>
+      <div class="state-head">
+        <div class="state-icon api">P1</div>
+        <div>
+          <div class="state-title">Create Video Record</div>
+          <div class="state-method"><span class="method method-post">POST</span> /api/generate</div>
+          <div class="state-desc">FAST path. Creates DB record, plans cut composition (pure logic, no API calls). Returns immediately.</div>
+        </div>
+      </div>
+      <div class="state-detail">
+        <div class="detail-section">
+          <div class="detail-label input">Inputs</div>
+          <ul class="detail-list input">
+            <li>videoId?: string (optional, reuse existing)</li>
+            <li>model: string (default "kling_2.6")</li>
+            <li>script: string</li>
+            <li>format: string (e.g. "talking_head_15")</li>
+            <li>photoId?: string</li>
+            <li>voiceId?: string</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label output">Outputs</div>
+          <ul class="detail-list output">
+            <li>video: { id, status: "generating", ... }</li>
+            <li>composition: { format, totalCuts, totalDuration, status: "queued" }</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label db">Internal Logic</div>
+          <ul class="detail-list db">
+            <li>enforceUsageLimit() &mdash; plan-based video cap</li>
+            <li>generateLimiter.check(10, userId) &mdash; rate limit</li>
+            <li>planComposition(format, script) &mdash; pure logic</li>
+            <li><span class="ext-badge prisma">Prisma</span> Video.create() or Video.update()</li>
+            <li>Cut patterns defined in video-compositor.ts</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-connector"><svg class="arrow-svg" viewBox="0 0 40 20"><path d="M0 10 L30 10" stroke="#2a2a3a" stroke-width="1.5" fill="none"/><path d="M26 5 L34 10 L26 15" stroke="#4c6ef5" stroke-width="1.5" fill="none"/></svg></div>
+
+    <!-- P2. Status endpoint -->
+    <div class="state-box api" onclick="toggle(this)">
+      <span class="expand-hint">click</span>
+      <div class="state-head">
+        <div class="state-icon api">S</div>
+        <div>
+          <div class="state-title">Status Polling</div>
+          <div class="state-method"><span class="method method-get">GET</span> /api/generate/status?videoId=...</div>
+          <div class="state-desc">Returns pipeline progress (step, currentCut, percent). Auto-marks as failed after 10min timeout.</div>
+        </div>
+      </div>
+      <div class="state-detail">
+        <div class="detail-section">
+          <div class="detail-label input">Inputs</div>
+          <ul class="detail-list input">
+            <li>videoId: string (query param)</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label output">Outputs</div>
+          <ul class="detail-list output">
+            <li>video: { id, status, videoUrl, thumbnailUrl, model, title, duration }</li>
+            <li>progress: { step, currentCut, totalCuts, percent }</li>
+            <li>error?: string (when status = "failed")</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-label db">Progress Calculation</div>
+          <ul class="detail-list db">
+            <li>queued: 0% | expand: 5% | tts: 15% | anchor: 20%</li>
+            <li>cut: 20-85% (proportional to cut index)</li>
+            <li>stitch: 90% | store: 95% | done: 100%</li>
+            <li>Timeout: 10 min &rarr; auto-fail</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sub-pipeline: Process steps -->
+  <div class="sub-pipeline">
+    <div class="sub-pipeline-label">
+      Pipeline Steps &mdash; POST /api/generate/process &mdash; One step per call (avoids 26s Netlify timeout)
+    </div>
+
+    <div class="sub-flow">
+
+      <!-- STEP: EXPAND -->
+      <div class="sub-step">
+        <div class="sub-step-line">
+          <div class="sub-step-dot ext"></div>
+          <div class="sub-step-connector"></div>
+        </div>
+        <div class="sub-step-content">
+          <div class="sub-step-card" onclick="toggleSub(this)">
+            <div class="sub-step-title">
+              <span class="step-num">1</span>
+              step=expand &mdash; Prompt Expansion via Gemini
+            </div>
+            <div class="sub-step-method"><span class="method method-post">POST</span> /api/generate/process { videoId, step: "expand" }</div>
+            <div class="sub-step-desc">Expands every cut's template prompt into a production-grade video prompt using Gemini 2.5 Flash. Each cut gets character context, anti-glitch rules, and model-specific instructions.</div>
+            <div class="sub-step-detail">
+              <div class="detail-section">
+                <div class="detail-label input">Inputs</div>
+                <ul class="detail-list input">
+                  <li>videoId: reads script, model, contentType from DB</li>
+                  <li>planComposition(format, script) &rarr; cut templates</li>
+                  <li>Character context: sheets, brand profile, user name</li>
+                  <li>Model-specific instructions (Kling, MiniMax, Wan, LTX)</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label ext-call">External Services</div>
+                <ul class="detail-list ext-call">
+                  <li><span class="ext-badge gemini">Gemini</span> 2.5 Flash &mdash; expandPrompt() per cut (parallel)</li>
+                  <li>System prompt: 150-200 word production prompt with iPhone camera specs, lived-in environment, character description, anti-glitch rules</li>
+                  <li>Returns JSON: { expandedPrompt, script, title, estimatedDuration }</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label output">Outputs (stored in sourceReview JSON)</div>
+                <ul class="detail-list output">
+                  <li>cuts[]: { index, type, duration, generateDuration, prompt }</li>
+                  <li>format: string</li>
+                  <li>originalScript: string (preserved for TTS)</li>
+                  <li>nextStep: "tts"</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP: TTS -->
+      <div class="sub-step">
+        <div class="sub-step-line">
+          <div class="sub-step-dot ext"></div>
+          <div class="sub-step-connector"></div>
+        </div>
+        <div class="sub-step-content">
+          <div class="sub-step-card" onclick="toggleSub(this)">
+            <div class="sub-step-title">
+              <span class="step-num">2</span>
+              step=tts &mdash; Voice Generation (TTS)
+            </div>
+            <div class="sub-step-method"><span class="method method-post">POST</span> /api/generate/process { videoId, step: "tts" }</div>
+            <div class="sub-step-desc">Generates voiceover audio from originalScript. Uses the best available TTS provider. Non-fatal: pipeline continues without audio if all providers fail.</div>
+            <div class="sub-step-detail">
+              <div class="detail-section">
+                <div class="detail-label input">Inputs</div>
+                <ul class="detail-list input">
+                  <li>sourceReview.originalScript (not the expanded prompts)</li>
+                  <li>Minimum 10 characters to trigger TTS</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label ext-call">External Services (Priority Chain)</div>
+                <ul class="detail-list ext-call">
+                  <li><span class="ext-badge minimax">MiniMax</span> via FAL &mdash; fal-ai/minimax/speech-02-hd (best quality)</li>
+                  <li><span class="ext-badge minimax">MiniMax</span> Standalone API &mdash; api.minimax.chat/v1/t2a_v2 (fallback)</li>
+                  <li><span class="ext-badge gemini">ElevenLabs</span> API &mdash; eleven_multilingual_v2 (fallback)</li>
+                  <li><span class="ext-badge supabase">Supabase</span> downloadAndStore() for TTS audio persistence</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label output">Outputs</div>
+                <ul class="detail-list output">
+                  <li>sourceReview.ttsAudioUrl: string | null</li>
+                  <li>hasAudio: boolean</li>
+                  <li>nextStep: "cut", nextCutIndex: 0</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP: CUT -->
+      <div class="sub-step">
+        <div class="sub-step-line">
+          <div class="sub-step-dot api"></div>
+          <div class="sub-step-connector"></div>
+        </div>
+        <div class="sub-step-content">
+          <div class="sub-step-card" onclick="toggleSub(this)">
+            <div class="sub-step-title">
+              <span class="step-num">3</span>
+              step=cut&amp;cutIndex=i &mdash; Generate Video Cut via FAL
+            </div>
+            <div class="sub-step-method"><span class="method method-post">POST</span> /api/generate/process { videoId, step: "cut", cutIndex: i }</div>
+            <div class="loop-indicator"><span class="loop-badge">LOOP</span> Repeats for each cut (0..N-1). Typical: 3-4 cuts for 15s, 8 cuts for 30s.</div>
+            <div class="sub-step-desc">Submits one video generation job to FAL. Resolves anchor image (starting frame &rarr; user photo fallback). Returns immediately with job ID.</div>
+            <div class="sub-step-detail">
+              <div class="detail-section">
+                <div class="detail-label input">Inputs</div>
+                <ul class="detail-list input">
+                  <li>cut.prompt: expanded production prompt</li>
+                  <li>cut.generateDuration: seconds (always > final duration)</li>
+                  <li>photoUrl: starting frame || user's primary photo</li>
+                  <li>model: FAL model ID (e.g. "kling_2.6")</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label ext-call">External Services</div>
+                <ul class="detail-list ext-call">
+                  <li><span class="ext-badge fal">FAL</span> POST queue.fal.run/{model-id}</li>
+                  <li>Models: Kling 2.6 Pro, MiniMax Video 01, Hailuo 2.3 Fast, Wan 2.1, LTX 2.3</li>
+                  <li>Returns: request_id, status_url, response_url</li>
+                  <li>Job ID stored as "FAL::{status_url}::{response_url}"</li>
+                  <li><span class="ext-badge supabase">Supabase</span> downloadAndStore() if sync result</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label output">Outputs</div>
+                <ul class="detail-list output">
+                  <li>status: "cut_submitted" | "cut_done"</li>
+                  <li>jobId: string (FAL composite ID)</li>
+                  <li>cutJobs[i]: { jobId, status, videoUrl, thumbnailUrl, trimTo }</li>
+                  <li>nextStep: "poll" (if async) | "cut" (next cut) | "stitch"</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP: POLL -->
+      <div class="sub-step">
+        <div class="sub-step-line">
+          <div class="sub-step-dot api"></div>
+          <div class="sub-step-connector"></div>
+        </div>
+        <div class="sub-step-content">
+          <div class="sub-step-card" onclick="toggleSub(this)">
+            <div class="sub-step-title">
+              <span class="step-num">4</span>
+              step=poll&amp;cutIndex=i &mdash; Poll FAL Job Status
+            </div>
+            <div class="sub-step-method"><span class="method method-post">POST</span> /api/generate/process { videoId, step: "poll", cutIndex: i }</div>
+            <div class="loop-indicator"><span class="loop-badge">POLL</span> Called every 3s by frontend until cut completes. Max 120 attempts (6min per cut).</div>
+            <div class="sub-step-desc">Checks FAL job status. On completion: downloads video from FAL temp URL and persists to Supabase Storage for permanence.</div>
+            <div class="sub-step-detail">
+              <div class="detail-section">
+                <div class="detail-label input">Inputs</div>
+                <ul class="detail-list input">
+                  <li>cutJobs[i].jobId: "FAL::{status_url}::{response_url}"</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label ext-call">External Services</div>
+                <ul class="detail-list ext-call">
+                  <li><span class="ext-badge fal">FAL</span> GET {status_url} &mdash; check IN_QUEUE / IN_PROGRESS / COMPLETED / FAILED</li>
+                  <li><span class="ext-badge fal">FAL</span> GET {response_url} &mdash; fetch result on COMPLETED</li>
+                  <li><span class="ext-badge supabase">Supabase</span> downloadAndStore() video + thumbnail to permanent URLs</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label output">Outputs</div>
+                <ul class="detail-list output">
+                  <li>status: "polling" | "cut_done" | "cut_failed"</li>
+                  <li>videoUrl: Supabase permanent URL (on completion)</li>
+                  <li>nextStep: "poll" (retry) | "cut" (next cut) | "stitch"</li>
+                  <li>retryAfter: 5 (seconds)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP: STITCH -->
+      <div class="sub-step">
+        <div class="sub-step-line">
+          <div class="sub-step-dot ext"></div>
+          <div class="sub-step-connector"></div>
+        </div>
+        <div class="sub-step-content">
+          <div class="sub-step-card" onclick="toggleSub(this)">
+            <div class="sub-step-title">
+              <span class="step-num">5</span>
+              step=stitch &mdash; Submit Stitch to Shotstack
+            </div>
+            <div class="sub-step-method"><span class="method method-post">POST</span> /api/generate/process { videoId, step: "stitch" }</div>
+            <div class="sub-step-desc">Collects all completed cut URLs, builds a Shotstack timeline with trim points and audio overlay, submits render job. Single-cut videos skip Shotstack entirely.</div>
+            <div class="sub-step-detail">
+              <div class="detail-section">
+                <div class="detail-label input">Inputs</div>
+                <ul class="detail-list input">
+                  <li>cutJobs[*].videoUrl: Supabase URLs for all completed cuts</li>
+                  <li>cutJobs[*].trimTo: seconds to keep from each cut</li>
+                  <li>sourceReview.ttsAudioUrl: voiceover audio (optional)</li>
+                  <li>aspectRatio: "9:16" (vertical)</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label ext-call">External Services</div>
+                <ul class="detail-list ext-call">
+                  <li><span class="ext-badge shotstack">Shotstack</span> POST /edit/{env}/render</li>
+                  <li>Timeline: video clips on track 0, audio on track 1</li>
+                  <li>Cross-dissolve transitions between cuts</li>
+                  <li>Output: MP4, HD (720p), 30fps, high quality</li>
+                  <li>If single cut: uses cut directly as final video (no Shotstack)</li>
+                  <li>If Shotstack not configured: falls back to first cut</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label output">Outputs</div>
+                <ul class="detail-list output">
+                  <li>status: "stitch_submitted" | "done"</li>
+                  <li>jobId: Shotstack render ID</li>
+                  <li>nextStep: "poll_stitch" (if async)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP: POLL_STITCH -->
+      <div class="sub-step">
+        <div class="sub-step-line">
+          <div class="sub-step-dot ext"></div>
+          <div class="sub-step-connector"></div>
+        </div>
+        <div class="sub-step-content">
+          <div class="sub-step-card" onclick="toggleSub(this)">
+            <div class="sub-step-title">
+              <span class="step-num">6</span>
+              step=poll_stitch &mdash; Poll Shotstack Render
+            </div>
+            <div class="sub-step-method"><span class="method method-post">POST</span> /api/generate/process { videoId, step: "poll_stitch" }</div>
+            <div class="loop-indicator"><span class="loop-badge">POLL</span> Called every 5s by frontend. Max 120 attempts (10min).</div>
+            <div class="sub-step-desc">Checks Shotstack render status. On completion: downloads stitched video, persists to Supabase, marks video as "review" status.</div>
+            <div class="sub-step-detail">
+              <div class="detail-section">
+                <div class="detail-label input">Inputs</div>
+                <ul class="detail-list input">
+                  <li>sourceReview.stitchJobId: Shotstack render ID</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label ext-call">External Services</div>
+                <ul class="detail-list ext-call">
+                  <li><span class="ext-badge shotstack">Shotstack</span> GET /edit/{env}/render/{jobId}</li>
+                  <li>States: queued &rarr; processing &rarr; rendering &rarr; finalizing &rarr; completed | failed</li>
+                  <li><span class="ext-badge supabase">Supabase</span> downloadAndStore() final video + thumbnail</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label output">Outputs</div>
+                <ul class="detail-list output">
+                  <li>status: "polling" | "done" | "failed"</li>
+                  <li>videoUrl: Supabase permanent URL (on done)</li>
+                  <li><span class="ext-badge prisma">Prisma</span> Video.update({ status: "review", videoUrl, thumbnailUrl })</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP: FINAL -->
+      <div class="sub-step">
+        <div class="sub-step-line">
+          <div class="sub-step-dot store"></div>
+        </div>
+        <div class="sub-step-content">
+          <div class="sub-step-card" onclick="toggleSub(this)">
+            <div class="sub-step-title">
+              <span class="step-num">&#10003;</span>
+              Video Complete &mdash; Ready for Review
+            </div>
+            <div class="sub-step-desc">Video marked as "review" in DB. Supabase Storage holds permanent URLs for video and thumbnail. Frontend shows cinematic reveal.</div>
+            <div class="sub-step-detail">
+              <div class="detail-section">
+                <div class="detail-label output">Final State</div>
+                <ul class="detail-list output">
+                  <li>video.status: "review"</li>
+                  <li>video.videoUrl: Supabase public URL (.mp4)</li>
+                  <li>video.thumbnailUrl: Supabase public URL (.jpg)</li>
+                  <li>sourceReview: JSON metadata with all cut info</li>
+                </ul>
+              </div>
+              <div class="detail-section">
+                <div class="detail-label db">Status Lifecycle</div>
+                <ul class="detail-list db">
+                  <li>generating &rarr; review &rarr; approved &rarr; published</li>
+                  <li>generating &rarr; failed (on error or 10min timeout)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     REFERENCE: External Services & Data Stores
+     ═══════════════════════════════════════════════════════════ -->
+<div class="notes-section">
+  <div class="notes-title">External Services &amp; Data Stores</div>
+  <div class="notes-grid">
+
+    <div class="note-card">
+      <div class="note-card-title"><span class="ext-badge gemini">Gemini</span> Google AI Studio</div>
+      <div class="note-card-body">
+        <strong>Used in:</strong> Character sheet, Starting frame, Prompt expansion<br>
+        <strong>Models:</strong> Nano Banana Pro (image gen), Gemini 2.5 Flash (text/JSON)<br>
+        <strong>API:</strong> generativelanguage.googleapis.com/v1beta/models<br>
+        <strong>Auth:</strong> GOOGLE_AI_STUDIO_KEY<br>
+        <strong>Character sheets:</strong> Send user photos as base64 inline, return generated image as base64<br>
+        <strong>Prompt engine:</strong> Takes user request + character context, returns JSON with expandedPrompt, script, title
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title"><span class="ext-badge fal">FAL</span> fal.ai Video Generation</div>
+      <div class="note-card-body">
+        <strong>Used in:</strong> Video cut generation, TTS (MiniMax via FAL)<br>
+        <strong>Models:</strong> Kling 2.6 Pro, MiniMax Video 01, Hailuo 2.3, Wan 2.1, LTX 2.3<br>
+        <strong>API:</strong> queue.fal.run/{model-id} (submit), status_url (poll), response_url (result)<br>
+        <strong>Auth:</strong> FAL_API_KEY<br>
+        <strong>Pattern:</strong> Submit returns request_id + URLs. Poll status_url until COMPLETED. Fetch response_url for video.<br>
+        <strong>Job ID format:</strong> "FAL::{status_url}::{response_url}"
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title"><span class="ext-badge minimax">MiniMax</span> Speech TTS</div>
+      <div class="note-card-body">
+        <strong>Used in:</strong> TTS (step=tts in pipeline)<br>
+        <strong>Primary:</strong> FAL MiniMax &mdash; fal.run/fal-ai/minimax/speech-02-hd<br>
+        <strong>Fallback 1:</strong> Standalone MiniMax API &mdash; api.minimax.chat/v1/t2a_v2<br>
+        <strong>Fallback 2:</strong> ElevenLabs &mdash; eleven_multilingual_v2<br>
+        <strong>Auth:</strong> FAL_API_KEY, MINIMAX_API_KEY+MINIMAX_GROUP_ID, ELEVENLABS_API_KEY<br>
+        <strong>Note:</strong> TTS failure is non-fatal -- video continues without audio
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title"><span class="ext-badge shotstack">Shotstack</span> Cloud Video Editing</div>
+      <div class="note-card-body">
+        <strong>Used in:</strong> Video stitching (step=stitch, step=poll_stitch)<br>
+        <strong>API:</strong> api.shotstack.io/edit/{env}/render<br>
+        <strong>Auth:</strong> SHOTSTACK_API_KEY, SHOTSTACK_ENV (stage|v1)<br>
+        <strong>Features:</strong> Timeline-based editing, trim/concat cuts, audio overlay, cross-dissolve transitions<br>
+        <strong>Output:</strong> MP4, HD 720p, 9:16 vertical, 30fps<br>
+        <strong>Fallback:</strong> If not configured, uses first cut as final video
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title"><span class="ext-badge supabase">Supabase</span> Storage</div>
+      <div class="note-card-body">
+        <strong>Used in:</strong> Photo upload, character sheet storage, starting frame, video/audio/thumbnail persistence<br>
+        <strong>Bucket:</strong> officialai-media (public)<br>
+        <strong>Key patterns:</strong><br>
+        &nbsp;&nbsp;photos/{userId}/{fileId}.{ext}<br>
+        &nbsp;&nbsp;voices/{userId}/{fileId}.{ext}<br>
+        &nbsp;&nbsp;videos/{userId}/{fileId}.mp4<br>
+        &nbsp;&nbsp;audio/{userId}/{fileId}.mp3<br>
+        &nbsp;&nbsp;thumbnails/{userId}/{fileId}.jpg<br>
+        &nbsp;&nbsp;character-sheets/{userId}/{sheetId}-{type}.png<br>
+        &nbsp;&nbsp;starting-frames/{userId}/sf-{timestamp}.{ext}<br>
+        <strong>Auth:</strong> NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title"><span class="ext-badge prisma">Prisma</span> Database (PostgreSQL)</div>
+      <div class="note-card-body">
+        <strong>Tables involved:</strong><br>
+        &nbsp;&nbsp;<strong>User</strong> &mdash; email, passwordHash, firstName, lastName, industry, company, signupRef<br>
+        &nbsp;&nbsp;<strong>Photo</strong> &mdash; userId, filename, url, isPrimary (starting frames prefixed "sf--")<br>
+        &nbsp;&nbsp;<strong>VoiceSample</strong> &mdash; userId, filename, url, isDefault<br>
+        &nbsp;&nbsp;<strong>CharacterSheet</strong> &mdash; userId, type (poses|3d_360), status, compositeUrl<br>
+        &nbsp;&nbsp;<strong>CharacterSheetImage</strong> &mdash; characterSheetId, url, position, angle<br>
+        &nbsp;&nbsp;<strong>Video</strong> &mdash; userId, title, script, model, contentType, status, videoUrl, thumbnailUrl, sourceReview (JSON metadata), duration<br>
+        &nbsp;&nbsp;<strong>BrandProfile</strong> &mdash; userId, brandName, tagline, toneOfVoice, targetAudience
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     REFERENCE: Video Format Cut Patterns
+     ═══════════════════════════════════════════════════════════ -->
+<div class="notes-section" style="margin-top:24px;">
+  <div class="notes-title">Video Format Cut Patterns</div>
+  <div class="notes-grid">
+
+    <div class="note-card">
+      <div class="note-card-title">talking_head_15 &mdash; 15s, 4 cuts</div>
+      <div class="note-card-body">
+        <strong>1.</strong> Hook (3s, gen 8s) &mdash; Scroll-stopper, lean in<br>
+        <strong>2.</strong> Main Point (5s, gen 8s) &mdash; Key message, natural gestures<br>
+        <strong>3.</strong> Supporting Detail (4s, gen 8s) &mdash; Evidence/proof<br>
+        <strong>4.</strong> CTA (3s, gen 8s) &mdash; Call to action, natural ending
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title">testimonial_15 &mdash; 15s, 5 cuts</div>
+      <div class="note-card-body">
+        <strong>1.</strong> Hook (2s, gen 5s) &mdash; Product excitement<br>
+        <strong>2.</strong> Problem/Before (4s, gen 8s) &mdash; Relatable problem<br>
+        <strong>3.</strong> B-Roll (3s, gen 5s) &mdash; Product close-up<br>
+        <strong>4.</strong> Result (3s, gen 8s) &mdash; Transformation<br>
+        <strong>5.</strong> CTA (3s, gen 5s) &mdash; Recommendation
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title">educational_30 &mdash; 30s, 8 cuts</div>
+      <div class="note-card-body">
+        <strong>1.</strong> Hook (3s) <strong>2.</strong> Point 1 (5s) <strong>3.</strong> B-Roll (3s)<br>
+        <strong>4.</strong> Point 2 (5s) <strong>5.</strong> B-Roll (3s) <strong>6.</strong> Synthesis (5s)<br>
+        <strong>7.</strong> CTA (3s) <strong>8.</strong> End Card (3s)<br>
+        <em>Each cut generates 5-8s, trimmed to final duration.</em>
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title">quick_tip_8 &mdash; 8s, 3 cuts</div>
+      <div class="note-card-body">
+        <strong>1.</strong> Hook (2s, gen 5s) &mdash; "Stop scrolling" energy<br>
+        <strong>2.</strong> The Tip (4s, gen 8s) &mdash; One clear takeaway<br>
+        <strong>3.</strong> Close (2s, gen 5s) &mdash; Confident nod, stop recording
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     REFERENCE: FAL Model Registry
+     ═══════════════════════════════════════════════════════════ -->
+<div class="notes-section" style="margin-top:24px;">
+  <div class="notes-title">FAL Model Registry (generate.ts)</div>
+  <div class="notes-grid">
+
+    <div class="note-card">
+      <div class="note-card-title">kling_2.6 &mdash; Default</div>
+      <div class="note-card-body">
+        <strong>FAL ID:</strong> fal-ai/kling-video/v2.6/pro/image-to-video<br>
+        <strong>Max:</strong> 10s &mdash; <strong>Payload:</strong> prompt, image_url, duration ("5"|"10"), aspect_ratio "9:16"<br>
+        <strong>Best for:</strong> Hyper-realistic, talking heads, testimonials
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title">minimax_video</div>
+      <div class="note-card-body">
+        <strong>FAL ID:</strong> fal-ai/minimax/video-01/image-to-video<br>
+        <strong>Max:</strong> 6s &mdash; <strong>Payload:</strong> prompt, image_url, prompt_optimizer: true<br>
+        <strong>Best for:</strong> Natural motion, lip sync, talking heads
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title">minimax_hailuo</div>
+      <div class="note-card-body">
+        <strong>FAL ID:</strong> fal-ai/minimax/hailuo-2.3-fast/pro/image-to-video<br>
+        <strong>Max:</strong> 6s &mdash; <strong>Payload:</strong> prompt, image_url<br>
+        <strong>Best for:</strong> Fastest Hailuo, great for iteration
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title">wan_2.1 / ltx / ltx_fast</div>
+      <div class="note-card-body">
+        <strong>Wan 2.1:</strong> fal-ai/wan/v2.1/image-to-video (5s, 480p, 81 frames)<br>
+        <strong>LTX 2.3:</strong> fal-ai/ltx-2.3/image-to-video<br>
+        <strong>LTX Fast:</strong> fal-ai/ltx-2.3/image-to-video/fast<br>
+        <strong>Best for:</strong> Testing, rapid iteration, character consistency (Wan)
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     REFERENCE: Key Architecture Decisions
+     ═══════════════════════════════════════════════════════════ -->
+<div class="notes-section" style="margin-top:24px;">
+  <div class="notes-title">Key Architecture Decisions</div>
+  <div class="notes-grid">
+
+    <div class="note-card">
+      <div class="note-card-title" style="color:var(--blue);">Step-per-Call Pipeline</div>
+      <div class="note-card-body">
+        Each pipeline step is a separate HTTP call to /api/generate/process. This avoids Netlify's 26-second function timeout. The frontend drives the pipeline by calling steps sequentially and polling for async results.
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title" style="color:var(--purple);">Multi-Cut Composition</div>
+      <div class="note-card-body">
+        Every video is multiple AI generation calls stitched together. Each cut generates MORE than needed (e.g. 8s for a 3s cut) to pick the best segment. "If you splice it together, it'll actually look good."
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title" style="color:var(--green);">FAL-First Pipeline</div>
+      <div class="note-card-body">
+        All video generation routes through FAL. One API key, one billing, access to every model (Kling, MiniMax, Wan, LTX, Runway). Adding a new model = one line in FAL_MODELS registry.
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title" style="color:var(--orange);">Permanent URL Strategy</div>
+      <div class="note-card-body">
+        FAL returns temporary URLs that expire. Every completed asset (video cuts, thumbnails, TTS audio, stitched video) is immediately downloaded and re-uploaded to Supabase Storage for permanent public URLs.
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title" style="color:var(--cyan);">Starting Frame Consistency</div>
+      <div class="note-card-body">
+        A single anchor image (generated via Gemini) is used as the reference for every video cut. Ensures the same person appears consistently across all segments. Generated during onboarding, reused across all future videos.
+      </div>
+    </div>
+
+    <div class="note-card">
+      <div class="note-card-title" style="color:var(--red);">Graceful Degradation</div>
+      <div class="note-card-body">
+        TTS failure is non-fatal (video continues without audio). Shotstack failure falls back to first cut. Starting frame failure falls back to user photo. 10-minute timeout auto-marks stuck videos as failed.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<script>
+function toggle(el) {
+  el.classList.toggle('expanded');
+}
+
+function toggleSub(el) {
+  el.classList.toggle('expanded');
+}
+
+function toggleAll(expand) {
+  document.querySelectorAll('.state-box, .sub-step-card').forEach(el => {
+    if (expand) {
+      el.classList.add('expanded');
+    } else {
+      el.classList.remove('expanded');
+    }
+  });
+}
+</script>
+
+</body>
+</html>

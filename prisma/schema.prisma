@@ -76,13 +76,14 @@ model BrandProfile {
 }
 
 model Photo {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  filename  String
-  url       String
-  isPrimary Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  filename      String
+  url           String
+  isPrimary     Boolean  @default(false)
+  photoAnalysis String?  // JSON: PhotoAnalysis from photo-analyzer.ts
+  createdAt     DateTime @default(now())
 
   videos Video[]
 }

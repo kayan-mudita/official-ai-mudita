@@ -645,55 +645,67 @@ function OnboardingFlow() {
       updatePipelineStep("tts", "done");
       if (abortRef.current) return;
 
-      // ── Render cuts ──
-      updatePipelineStep("render", "active");
+      // ── Anchor (starting frame) ──
       const totalCuts = expandData.totalCuts || 1;
-      setPipelineProgress({ step: "anchor", currentCut: 0, totalCuts, percent: 20 });
+      setPipelineProgress({ step: "anchor", currentCut: 0, totalCuts, percent: 18 });
+      updatePipelineStep("render", "active");
+      updatePipelineSublabel("render", "Creating anchor image...");
+      const anchorRes = await fetch("/api/generate/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoId, step: "anchor" }),
+      });
+      if (!anchorRes.ok) throw new Error("Anchor image creation failed");
+      if (abortRef.current) return;
 
-      updatePipelineSublabel("render", `Creating anchor image...`);
+      // ── Submit ALL cuts in parallel ──
+      updatePipelineSublabel("render", `Submitting ${totalCuts} scenes...`);
+      setPipelineProgress({ step: "submit_all_cuts", currentCut: 0, totalCuts, percent: 25 });
 
-      for (let i = 0; i < totalCuts; i++) {
-        if (abortRef.current) return;
+      const submitAllRes = await fetch("/api/generate/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoId, step: "submit_all_cuts" }),
+      });
+      if (!submitAllRes.ok) throw new Error("Failed to submit scenes for generation");
+      const submitAllData = await submitAllRes.json();
+      if (abortRef.current) return;
 
-        updatePipelineSublabel("render", i === 0 ? `Creating anchor image...` : `Generating scene ${i + 1} of ${totalCuts}...`);
-        const cutPercent = 20 + Math.round((i / totalCuts) * 65);
-        setPipelineProgress({ step: "cut", currentCut: i, totalCuts, percent: cutPercent });
+      // ── Poll ALL cuts until done ──
+      if (submitAllData.nextStep === "poll_all_cuts") {
+        let pollAttempts = 0;
+        const maxAttempts = 120; // 120 * 5s = 10 min max for all cuts
 
-        // Submit cut
-        const cutRes = await fetch("/api/generate/process", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ videoId, step: "cut", cutIndex: i }),
-        });
-        if (!cutRes.ok) throw new Error(`Failed to render cut ${i + 1}`);
-        const cutData = await cutRes.json();
+        while (pollAttempts < maxAttempts && !abortRef.current) {
+          await sleep(5000);
+          pollAttempts++;
 
-        // If cut needs polling (async FAL job)
-        if (cutData.nextStep === "poll") {
-          let pollAttempts = 0;
-          const maxAttempts = 120; // 120 * 3s = 6 min max per cut
+          const pollRes = await fetch("/api/generate/process", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ videoId, step: "poll_all_cuts" }),
+          });
+          if (!pollRes.ok) continue;
+          const pollData = await pollRes.json();
 
-          while (pollAttempts < maxAttempts && !abortRef.current) {
-            await sleep(3000);
-            pollAttempts++;
+          // Update progress with completed count
+          const completed = pollData.completedCuts || 0;
+          const cutPercent = 25 + Math.round((completed / totalCuts) * 60);
+          setPipelineProgress({ step: "poll_all_cuts", currentCut: completed, totalCuts, percent: cutPercent });
+          updatePipelineSublabel("render", `${completed} of ${totalCuts} scenes complete...`);
 
-            const pollRes = await fetch("/api/generate/process", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ videoId, step: "poll", cutIndex: i }),
-            });
-            if (!pollRes.ok) continue;
-            const pollData = await pollRes.json();
-
-            if (pollData.status === "cut_done") break;
-            if (pollData.status === "polling") continue;
+          if (pollData.status === "all_cuts_done") break;
+          if (pollData.status === "failed") {
+            throw new Error(pollData.error || "Scene generation failed");
           }
+          // status === "polling" — continue loop
+        }
 
-          if (pollAttempts >= maxAttempts) {
-            throw new Error("Video rendering is taking too long. Check your dashboard later.");
-          }
+        if (pollAttempts >= maxAttempts) {
+          throw new Error("Video rendering is taking too long. Check your dashboard later.");
         }
       }
+      // If nextStep is already "stitch", all cuts completed synchronously
 
       updatePipelineStep("render", "done");
       if (abortRef.current) return;

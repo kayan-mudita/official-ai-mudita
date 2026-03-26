@@ -1,16 +1,22 @@
 /**
- * Video Stitcher — Shotstack Cloud Video Editing API
+ * Video Stitcher -- Shotstack Cloud Video Editing API
  *
  * Takes an array of generated video cut URLs, trims each to its
  * target duration, stitches them into one final video, and optionally
  * adds an audio track (voiceover/music).
  *
- * Replaces FFmpeg — runs in the cloud, works on serverless.
+ * Replaces FFmpeg -- runs in the cloud, works on serverless.
+ *
+ * Retry policy: Shotstack API calls get 2 retries with 2s exponential backoff.
+ * If the stitch submission fails after retries, callers should fall back to
+ * using the first cut as the final video.
  *
  * API Reference: https://shotstack.io/docs/api/
  * Base URL: https://api.shotstack.io/edit/{env}/render
  * Auth: x-api-key header
  */
+
+import { withShotstackRetry } from "@/lib/pipeline/retry";
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -20,12 +26,21 @@ export interface StitchCut {
   startFrom?: number;   // seconds to skip from the beginning (default: 0)
 }
 
+/** Per-cut audio entry for aligned audio tracks */
+export interface PerCutAudioEntry {
+  /** Audio URL for this cut's voiceover segment */
+  url: string;
+  /** Duration of the audio in milliseconds */
+  durationMs: number;
+}
+
 export interface StitchOptions {
   cuts: StitchCut[];
-  audioUrl?: string;      // optional voiceover/music URL
-  audioVolume?: number;   // 0-1 (default: 1)
+  audioUrl?: string;              // optional single voiceover/music URL (legacy)
+  perCutAudio?: PerCutAudioEntry[];  // per-cut audio tracks (preferred over audioUrl)
+  audioVolume?: number;           // 0-1 (default: 1)
   resolution?: "sd" | "hd" | "1080";  // default: hd (720p)
-  aspectRatio?: string;   // default: "9:16" (vertical)
+  aspectRatio?: string;           // default: "9:16" (vertical)
   outputFormat?: "mp4" | "webm";  // default: mp4
 }
 
@@ -103,23 +118,32 @@ async function shotstackFetch(path: string, options: RequestInit = {}) {
 function buildTimeline(options: StitchOptions) {
   const { cuts, audioUrl, audioVolume = 1, aspectRatio = "9:16" } = options;
 
-  // Calculate start times for each clip on the timeline
+  // Calculate start times for each clip on the timeline.
+  // Each clip uses Shotstack's `length` to control how many seconds of the
+  // source video actually appear in the final timeline, and `trim` (a
+  // clip-level property, NOT asset-level) to set the starting offset within
+  // the source.  This is how a 5-second Kling generation gets trimmed down
+  // to its target 2 seconds.
   let currentTime = 0;
   const clips = cuts.map((cut, index) => {
-    // Build video asset — only include trim if we need to skip ahead
+    // Build video asset -- src only (trim lives on the clip, not the asset)
     const asset: Record<string, unknown> = {
       type: "video",
       src: cut.videoUrl,
     };
-    if (cut.startFrom && cut.startFrom > 0) {
-      asset.trim = cut.startFrom;
-    }
 
-    // Build the clip object
+    // Shotstack clip-level `trim`: seconds to skip from the start of the
+    // source video.  E.g. trim=0 means "start from the very beginning."
+    const trimOffset = cut.startFrom && cut.startFrom > 0 ? cut.startFrom : 0;
+
+    // Build the clip object with explicit trim + length for proper cutting.
+    // `length` = how many seconds this clip plays in the final video
+    // `trim`   = where in the source video to begin playback (seconds)
     const clip: Record<string, unknown> = {
       asset,
       start: currentTime,
-      length: cut.trimTo,
+      length: cut.trimTo,   // target duration (e.g. 2s for a hook)
+      trim: trimOffset,      // source offset (usually 0 = start from beginning)
       fit: "cover",
     };
 
@@ -131,17 +155,60 @@ function buildTimeline(options: StitchOptions) {
     }
 
     currentTime += cut.trimTo;
-    log(`Cut ${index}: start=${clip.start}s, length=${cut.trimTo}s, trim=${cut.startFrom || 0}s, src=${cut.videoUrl.substring(0, 80)}...`);
+    log(`Cut ${index}: start=${clip.start}s, length=${cut.trimTo}s, trim=${trimOffset}s, src=${cut.videoUrl.substring(0, 80)}...`);
     return clip;
   });
 
   const totalDuration = currentTime;
 
-  // Build tracks — video clips on track 0
+  // Build tracks -- video clips on track 0
   const tracks: Record<string, unknown>[] = [{ clips }];
 
-  // Audio as a separate track for voiceover/music overlay
-  if (audioUrl) {
+  // Per-cut audio tracks: each cut gets its OWN audio clip aligned to its
+  // timeline position. This replaces the old single-blob overlay and produces
+  // much tighter audio-video sync because each segment starts exactly when
+  // its corresponding video cut starts.
+  const hasPerCutAudio = options.perCutAudio && options.perCutAudio.some((a) => a.url);
+
+  if (hasPerCutAudio && options.perCutAudio) {
+    const audioClips: Record<string, unknown>[] = [];
+    let audioStart = 0;
+
+    for (let i = 0; i < cuts.length; i++) {
+      const audioEntry = options.perCutAudio[i];
+      const cut = cuts[i];
+
+      if (audioEntry && audioEntry.url) {
+        // Audio length = the lesser of audio duration and the cut's visual duration.
+        // This prevents audio bleeding into the next cut.
+        const audioDurationSec = audioEntry.durationMs / 1000;
+        const clipLength = Math.min(audioDurationSec, cut.trimTo);
+
+        audioClips.push({
+          asset: {
+            type: "audio",
+            src: audioEntry.url,
+            volume: audioVolume,
+          },
+          start: audioStart,
+          length: clipLength,
+        });
+
+        log(
+          `Per-cut audio ${i}: start=${audioStart}s, length=${clipLength.toFixed(1)}s, ` +
+          `audioMs=${audioEntry.durationMs}, src=${audioEntry.url.substring(0, 60)}...`
+        );
+      }
+
+      audioStart += cut.trimTo;
+    }
+
+    if (audioClips.length > 0) {
+      tracks.push({ clips: audioClips });
+      log(`Per-cut audio track: ${audioClips.length} clips across ${totalDuration}s timeline`);
+    }
+  } else if (audioUrl) {
+    // Legacy fallback: single audio blob overlaid on the full timeline
     tracks.push({
       clips: [{
         asset: {
@@ -153,7 +220,7 @@ function buildTimeline(options: StitchOptions) {
         length: totalDuration,
       }],
     });
-    log(`Audio track: ${audioUrl.substring(0, 80)}..., volume=${audioVolume}, duration=${totalDuration}s`);
+    log(`Audio track (single): ${audioUrl.substring(0, 80)}..., volume=${audioVolume}, duration=${totalDuration}s`);
   }
 
   // Resolution mapping — Shotstack expects named resolutions, not pixel counts
@@ -181,7 +248,8 @@ function buildTimeline(options: StitchOptions) {
   log("Built timeline:", JSON.stringify({
     cutCount: cuts.length,
     totalDuration,
-    hasAudio: !!audioUrl,
+    hasPerCutAudio: !!hasPerCutAudio,
+    hasLegacyAudio: !hasPerCutAudio && !!audioUrl,
     resolution: body.output.resolution,
     aspectRatio: body.output.aspectRatio,
     format: body.output.format,
@@ -229,18 +297,25 @@ export async function submitStitch(options: StitchOptions): Promise<StitchJob> {
 
   const body = buildTimeline(options);
 
-  log("Submitting render job...");
-  const result = await shotstackFetch("/render", {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
+  log("Submitting render job (with retry)...");
+
+  // Wrap in retry: 2 retries with 2s exponential backoff
+  const { result } = await withShotstackRetry(async () => {
+    const res = await shotstackFetch("/render", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+
+    const jobId = res.response?.id;
+    if (!jobId) {
+      logError("Unexpected response -- no job ID:", res);
+      throw new Error("Shotstack returned no job ID in response");
+    }
+
+    return res;
+  }, "submit-render");
 
   const jobId = result.response?.id;
-  if (!jobId) {
-    logError("Unexpected response — no job ID:", result);
-    throw new Error("Shotstack returned no job ID in response");
-  }
-
   log(`Render job submitted: ${jobId}`);
 
   return {
@@ -257,19 +332,24 @@ export async function getStitchStatus(jobId: string): Promise<StitchJob> {
     throw new Error("jobId is required");
   }
 
-  const result = await shotstackFetch(`/render/${jobId}`);
-  const render = result.response;
+  // Wrap in retry: 2 retries with 2s exponential backoff
+  const { result } = await withShotstackRetry(async () => {
+    const res = await shotstackFetch(`/render/${jobId}`);
+    const render = res.response;
 
-  if (!render) {
-    logError("Unexpected response — no render data:", result);
-    throw new Error("Shotstack returned no render data");
-  }
+    if (!render) {
+      logError("Unexpected response -- no render data:", res);
+      throw new Error("Shotstack returned no render data");
+    }
+
+    return render;
+  }, `status-${jobId}`);
 
   const job: StitchJob = {
-    id: render.id,
-    status: render.status,
-    url: render.url || undefined,
-    error: render.error || undefined,
+    id: result.id,
+    status: result.status,
+    url: result.url || undefined,
+    error: result.error || undefined,
   };
 
   log(`Job ${jobId}: status=${job.status}${job.url ? `, url=${job.url.substring(0, 80)}` : ""}`);

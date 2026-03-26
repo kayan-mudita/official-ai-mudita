@@ -9,6 +9,7 @@ import {
   videoKey,
 } from "@/lib/storage";
 import { v4 as uuidv4 } from "uuid";
+import { analyzePhoto } from "@/lib/pipeline/photo-analyzer";
 
 // ---------------------------------------------------------------------------
 // File type / size validation
@@ -184,6 +185,21 @@ export async function POST(req: NextRequest) {
           isPrimary: existingPhotos === 0, // first photo is primary
         },
       });
+
+      // Issue #12: Analyze photo metadata in the background (non-blocking)
+      // We don't await this — the upload response returns immediately and
+      // analysis results are saved to the record when ready.
+      analyzePhoto(url)
+        .then(async (analysis) => {
+          await prisma.photo.update({
+            where: { id: record!.id },
+            data: { photoAnalysis: JSON.stringify(analysis) },
+          });
+          console.log(`[upload] Photo analysis saved for photo ${record!.id}`);
+        })
+        .catch((err) => {
+          console.error(`[upload] Photo analysis failed for photo ${record!.id}:`, err);
+        });
     } else if (fileCategory === "voice") {
       const existingVoices = await prisma.voiceSample.count({ where: { userId: user.id } });
       record = await prisma.voiceSample.create({

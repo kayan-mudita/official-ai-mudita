@@ -1,7 +1,12 @@
 // Supabase Storage layer
 // Uses the officialai-media bucket for all file storage
+//
+// Retry policy: All uploads get 3 retries with 1s exponential backoff.
+// Downloads (downloadAndStore) also retry since they involve both a
+// fetch from the source URL and an upload to Supabase.
 
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { withStorageRetry } from "@/lib/pipeline/retry";
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -30,28 +35,33 @@ export function isStorageConfigured(): boolean {
 
 /**
  * Upload a file buffer to Supabase Storage and return its public URL.
+ * Includes retry logic: 3 retries with 1s exponential backoff.
  */
 export async function uploadFile(
   buffer: Buffer,
   key: string,
   contentType: string
 ): Promise<string> {
-  const client = getClient();
+  const { result: publicUrl } = await withStorageRetry(async () => {
+    const client = getClient();
 
-  const { error } = await client.storage
-    .from(BUCKET)
-    .upload(key, buffer, {
-      contentType,
-      upsert: true,
-    });
+    const { error } = await client.storage
+      .from(BUCKET)
+      .upload(key, buffer, {
+        contentType,
+        upsert: true,
+      });
 
-  if (error) {
-    throw new Error(`Supabase upload failed: ${error.message}`);
-  }
+    if (error) {
+      throw new Error(`Supabase upload failed: ${error.message}`);
+    }
 
-  // Return the public URL (bucket is public)
-  const { data } = client.storage.from(BUCKET).getPublicUrl(key);
-  return data.publicUrl;
+    // Return the public URL (bucket is public)
+    const { data } = client.storage.from(BUCKET).getPublicUrl(key);
+    return data.publicUrl;
+  }, `upload-${key.substring(0, 50)}`);
+
+  return publicUrl;
 }
 
 /**

@@ -1,6 +1,9 @@
 import { getConfig } from "./system-config";
 import prisma from "./prisma";
 import { getCharacterDescription } from "./character-profile";
+import { getBackgroundsForIndustry } from "./character-sheet";
+import { getSocialContext } from "./pipeline/social-context";
+import { getVoiceContext } from "./pipeline/voice-context";
 
 const GOOGLE_AI_STUDIO_URL = "https://generativelanguage.googleapis.com/v1beta/models";
 
@@ -25,6 +28,10 @@ export interface PromptEngineInput {
   format?: "9:16" | "16:9" | "1:1";
   /** Item 41: If true, injects the user's first name into the prompt for personalized onboarding */
   isOnboarding?: boolean;
+  /** Scene bible context — shared across all cuts for visual continuity.
+   *  When present, injected as a hard constraint so the video model keeps
+   *  environment, wardrobe, lighting, and mood consistent across cuts. */
+  sceneContext?: string;
 }
 
 export interface PromptEngineOutput {
@@ -32,6 +39,7 @@ export interface PromptEngineOutput {
   script: string;              // extracted dialogue/script portion
   title: string;               // generated video title
   estimatedDuration: number;   // seconds
+  wordCount: number;           // word count of expandedPrompt (track prompt length vs. video quality)
 }
 
 // ─── System Prompt ──────────────────────────────────────────────
@@ -114,10 +122,21 @@ async function getCharacterContext(userId: string): Promise<string> {
   }
 
   if (brand) {
-    if (brand.brandName) context += `\nBRAND: ${brand.brandName}`;
-    if (brand.tagline) context += `\nTAGLINE: ${brand.tagline}`;
-    if (brand.toneOfVoice) context += `\nTONE: ${brand.toneOfVoice}`;
-    if (brand.targetAudience) context += `\nTARGET AUDIENCE: ${brand.targetAudience}`;
+    // Build a comprehensive brand context block so the video model aligns
+    // messaging, tone, and target audience with the user's brand profile.
+    const brandParts: string[] = [];
+    if (brand.brandName) brandParts.push(`Brand: ${brand.brandName}`);
+    if (brand.tagline) brandParts.push(`Tagline: ${brand.tagline}`);
+    if (brand.toneOfVoice) brandParts.push(`Tone of voice: ${brand.toneOfVoice}`);
+    if (brand.targetAudience) brandParts.push(`Target audience: ${brand.targetAudience}`);
+    if (brand.competitors) brandParts.push(`Competitors: ${brand.competitors}`);
+    if (brand.guidelines) brandParts.push(`Brand guidelines: ${brand.guidelines}`);
+
+    if (brandParts.length > 0) {
+      const brandProfileText = brandParts.join(". ");
+      context += `\n\nBRAND CONTEXT: ${brandProfileText}`;
+      context += `\nThe video's messaging, tone, and target audience MUST align with this brand profile.`;
+    }
   }
 
   if (sheets.length > 0) {
@@ -161,6 +180,34 @@ Keep prompts under 200 words — Kling degrades with longer prompts.`;
   }
 }
 
+// ─── Prompt Length Enforcement ───────────────────────────────────
+
+/**
+ * Truncate a prompt to approximately `maxWords` words, cutting at the
+ * nearest sentence boundary so the result doesn't end mid-thought.
+ */
+function truncateToSentenceBoundary(text: string, maxWords: number): string {
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length <= maxWords) return text;
+
+  // Take maxWords words, then find the last sentence-ending punctuation
+  const truncated = words.slice(0, maxWords).join(" ");
+  const lastSentenceEnd = Math.max(
+    truncated.lastIndexOf("."),
+    truncated.lastIndexOf("!"),
+    truncated.lastIndexOf("?"),
+    truncated.lastIndexOf('"')
+  );
+
+  if (lastSentenceEnd > truncated.length * 0.5) {
+    // Cut at sentence boundary if it's past the halfway point
+    return truncated.substring(0, lastSentenceEnd + 1);
+  }
+
+  // Otherwise just cut at the word boundary
+  return truncated;
+}
+
 // ─── Main Engine ────────────────────────────────────────────────
 
 export async function expandPrompt(input: PromptEngineInput): Promise<PromptEngineOutput> {
@@ -172,6 +219,7 @@ export async function expandPrompt(input: PromptEngineInput): Promise<PromptEngi
       script: input.userRequest,
       title: input.userRequest.length > 80 ? input.userRequest.substring(0, 77) + "..." : input.userRequest,
       estimatedDuration: input.duration || 8,
+      wordCount: input.userRequest.split(/\s+/).filter(Boolean).length,
     };
   }
 
@@ -179,6 +227,12 @@ export async function expandPrompt(input: PromptEngineInput): Promise<PromptEngi
   const modelInstructions = getModelInstructions(input.model);
   const format = input.format || "9:16";
   const duration = input.duration || 8;
+
+  // Issue #13: Fetch social/audience context for prompt enrichment
+  const socialContext = await getSocialContext(input.userId);
+
+  // Issue #14: Fetch voice/speaking style context for prompt enrichment
+  const voiceContext = await getVoiceContext(input.userId);
 
   // Get custom system prompt from admin config (if edited)
   const customSystemAdditions = await getConfig("prompt_video_default", "");
@@ -194,10 +248,29 @@ export async function expandPrompt(input: PromptEngineInput): Promise<PromptEngi
     onboardingPersonalization = `\n\nONBOARDING PERSONALIZATION: This is the user's very first video. The script MUST address the user by name. Open with: "Hey ${firstName}, I'm your AI content partner..." Make the tone warm, excited, and personal. This video sells the subscription — make the user feel like the AI knows them.`;
   }
 
+  // Scene bible constraint: when provided, enforce visual continuity across all cuts
+  let sceneBibleConstraint = "";
+  if (input.sceneContext) {
+    sceneBibleConstraint = `\n\nMANDATORY SCENE CONTINUITY (same across ALL cuts — do NOT deviate from this):\n${input.sceneContext}\nYou MUST use the exact environment, wardrobe, lighting, and mood described above. Do NOT invent a different setting, outfit, or lighting setup. Your prompt must place the character in THIS scene.`;
+  }
+
+  // Item 11: Pick a random industry-specific background to ground the video
+  // in a realistic, industry-relevant environment. Only used when no scene
+  // bible is present (scene bible takes priority for visual continuity).
+  let environmentContext = "";
+  if (!input.sceneContext) {
+    const industry = input.industry || "other";
+    const backgrounds = getBackgroundsForIndustry(industry);
+    const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+    environmentContext = `\n\nENVIRONMENT: Set this video in: ${randomBackground}\nMake the background feel REAL and LIVED-IN — clutter, personal items, imperfect lighting.`;
+  }
+
   const userMessage = `${modelInstructions}
 
 CHARACTER CONTEXT:${characterContext || "\nNo character details available — create a realistic, relatable person with specific quirks and real clothing. NO generic descriptions."}
-
+${sceneBibleConstraint}${environmentContext}
+${socialContext ? `\nAUDIENCE CONTEXT: ${socialContext}` : ""}
+${voiceContext ? `\nSPEAKING STYLE: ${voiceContext}. The person's mouth movements and gestures should match this energy.` : ""}
 VIDEO REQUEST: "${input.userRequest}"
 FORMAT: ${format} vertical
 TARGET DURATION: ${duration} seconds
@@ -234,6 +307,7 @@ Generate the full production prompt now. Return valid JSON only.`;
         script: input.userRequest,
         title: input.userRequest.substring(0, 80),
         estimatedDuration: duration,
+        wordCount: input.userRequest.split(/\s+/).filter(Boolean).length,
       };
     }
 
@@ -246,16 +320,40 @@ Generate the full production prompt now. Return valid JSON only.`;
         script: input.userRequest,
         title: input.userRequest.substring(0, 80),
         estimatedDuration: duration,
+        wordCount: input.userRequest.split(/\s+/).filter(Boolean).length,
       };
     }
 
     // Parse the JSON response
     const parsed = JSON.parse(text);
+    let expandedPrompt: string = parsed.expandedPrompt || input.userRequest;
+
+    // ── Word count enforcement (#19) ──────────────────────────────
+    // Gemini often returns 300-500 words despite being told 150-200.
+    // Longer prompts = worse video quality on Kling and other models.
+    const MAX_WORDS = 220;  // 10% buffer above the 200-word target
+    const MIN_WORDS = 100;
+
+    let wordCount = expandedPrompt.split(/\s+/).filter(Boolean).length;
+
+    if (wordCount > MAX_WORDS) {
+      console.warn(
+        `[prompt-engine] Prompt exceeded 200 words (${wordCount}). Truncating.`
+      );
+      expandedPrompt = truncateToSentenceBoundary(expandedPrompt, 200);
+      wordCount = expandedPrompt.split(/\s+/).filter(Boolean).length;
+    } else if (wordCount < MIN_WORDS) {
+      console.warn(
+        `[prompt-engine] Prompt is only ${wordCount} words — may produce generic output.`
+      );
+    }
+
     return {
-      expandedPrompt: parsed.expandedPrompt || input.userRequest,
+      expandedPrompt,
       script: parsed.script || parsed.expandedPrompt || input.userRequest,
       title: parsed.title || input.userRequest.substring(0, 80),
       estimatedDuration: parsed.estimatedDuration || duration,
+      wordCount,
     };
   } catch (err) {
     console.error("[prompt-engine] Error:", err);
@@ -264,6 +362,7 @@ Generate the full production prompt now. Return valid JSON only.`;
       script: input.userRequest,
       title: input.userRequest.substring(0, 80),
       estimatedDuration: duration,
+      wordCount: input.userRequest.split(/\s+/).filter(Boolean).length,
     };
   }
 }

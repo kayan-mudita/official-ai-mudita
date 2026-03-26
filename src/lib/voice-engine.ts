@@ -3,7 +3,13 @@
  *
  * Priority: FAL MiniMax → standalone MiniMax → ElevenLabs → skip
  * From the course: "MiniMax has the most realistic voices out of any tool right now."
+ *
+ * Retry policy: Each provider gets 2 retries with exponential backoff before
+ * falling through to the next provider. TTS failure is always non-fatal --
+ * the pipeline continues without audio rather than failing the entire video.
  */
+
+import { withRetry } from "@/lib/pipeline/retry";
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -27,21 +33,25 @@ async function falMiniMaxTTS(text: string): Promise<TTSResult> {
   if (!apiKey) return { audioUrl: null, duration: 0, provider: "fal-minimax", error: "FAL_API_KEY not set" };
 
   try {
-    const response = await fetch("https://fal.run/fal-ai/minimax/speech-02-hd", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Key ${apiKey}`,
-      },
-      body: JSON.stringify({ text }),
-    });
+    // Wrap in retry: 2 retries with 1s exponential backoff
+    const { result: data } = await withRetry(async () => {
+      const response = await fetch("https://fal.run/fal-ai/minimax/speech-02-hd", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Key ${apiKey}`,
+        },
+        body: JSON.stringify({ text }),
+      });
 
-    if (!response.ok) {
-      const err = await response.text();
-      return { audioUrl: null, duration: 0, provider: "fal-minimax", error: `FAL MiniMax Speech ${response.status}: ${err.substring(0, 200)}` };
-    }
+      if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`FAL MiniMax Speech ${response.status}: ${err.substring(0, 200)}`);
+      }
 
-    const data = await response.json();
+      return response.json();
+    }, { maxRetries: 2, baseDelay: 1000, name: "tts:fal-minimax" });
+
     const audioUrl = data.audio?.url;
     const durationMs = data.duration_ms || 0;
 
@@ -63,25 +73,30 @@ async function miniMaxTTS(text: string, voiceId?: string): Promise<TTSResult> {
   if (!apiKey || !groupId) return { audioUrl: null, duration: 0, provider: "minimax", error: "Not configured" };
 
   try {
-    const response = await fetch(`https://api.minimax.chat/v1/t2a_v2?GroupId=${groupId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        model: "speech-02-hd",
-        text,
-        voice_setting: { voice_id: voiceId || "male-qn-qingse", speed: 1.0, vol: 1.0, pitch: 0 },
-        audio_setting: { sample_rate: 32000, bitrate: 128000, format: "mp3" },
-      }),
-    });
+    // Wrap in retry: 2 retries with 1s exponential backoff
+    const { result: data } = await withRetry(async () => {
+      const response = await fetch(`https://api.minimax.chat/v1/t2a_v2?GroupId=${groupId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: "speech-02-hd",
+          text,
+          voice_setting: { voice_id: voiceId || "male-qn-qingse", speed: 1.0, vol: 1.0, pitch: 0 },
+          audio_setting: { sample_rate: 32000, bitrate: 128000, format: "mp3" },
+        }),
+      });
 
-    if (!response.ok) {
-      return { audioUrl: null, duration: 0, provider: "minimax", error: `MiniMax ${response.status}` };
-    }
+      if (!response.ok) {
+        throw new Error(`MiniMax ${response.status}`);
+      }
 
-    const data = await response.json();
-    if (data.base_resp?.status_code !== 0) {
-      return { audioUrl: null, duration: 0, provider: "minimax", error: data.base_resp?.status_msg || "Error" };
-    }
+      const json = await response.json();
+      if (json.base_resp?.status_code !== 0) {
+        throw new Error(json.base_resp?.status_msg || "MiniMax API error");
+      }
+
+      return json;
+    }, { maxRetries: 2, baseDelay: 1000, name: "tts:minimax-standalone" });
 
     const audioData = data.data?.audio;
     if (audioData) {
@@ -105,21 +120,25 @@ async function elevenLabsTTS(text: string, voiceId?: string): Promise<TTSResult>
   const vid = voiceId || "21m00Tcm4TlvDq8ikWAM";
 
   try {
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vid}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "xi-api-key": apiKey },
-      body: JSON.stringify({
-        text,
-        model_id: "eleven_multilingual_v2",
-        voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.3, use_speaker_boost: true },
-      }),
-    });
+    // Wrap in retry: 2 retries with 1s exponential backoff
+    const { result: buffer } = await withRetry(async () => {
+      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vid}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "xi-api-key": apiKey },
+        body: JSON.stringify({
+          text,
+          model_id: "eleven_multilingual_v2",
+          voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.3, use_speaker_boost: true },
+        }),
+      });
 
-    if (!response.ok) {
-      return { audioUrl: null, duration: 0, provider: "elevenlabs", error: `ElevenLabs ${response.status}` };
-    }
+      if (!response.ok) {
+        throw new Error(`ElevenLabs ${response.status}`);
+      }
 
-    const buffer = await response.arrayBuffer();
+      return response.arrayBuffer();
+    }, { maxRetries: 2, baseDelay: 1000, name: "tts:elevenlabs" });
+
     const audioUrl = `data:audio/mpeg;base64,${Buffer.from(buffer).toString("base64")}`;
     return { audioUrl, duration: Math.ceil(text.split(/\s+/).length / 2.5), provider: "elevenlabs" };
   } catch (err: any) {

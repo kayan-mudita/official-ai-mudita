@@ -62,9 +62,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: validation.error, fieldErrors: validation.fieldErrors }, { status: 400 });
     }
 
-    const { videoId, model, script, format, photoId, voiceId } = validation.data;
+    const { videoId, model, script, format, photoId, voiceId, workflow, workflowData } = validation.data;
     const selectedModel = model || "kling_2.6";
-    const selectedFormat = format || "talking_head_15";
+
+    // Resolve format from workflow if not explicitly provided
+    let selectedFormat: string = format || "talking_head_15";
+    if (!format && workflow) {
+      const workflowFormatMap: Record<string, string> = {
+        lip_sync: "talking_head_15",
+        testimonial: "testimonial_20",
+        document: "educational_30",
+        manual: "talking_head_15",
+        property_tour: "property_tour_30",
+        listing_update: "quick_tip_8",
+        trend_video: "behind_scenes_20",
+      };
+      selectedFormat = workflowFormatMap[workflow] || "talking_head_15";
+    }
 
     // Get or validate existing video
     let video;

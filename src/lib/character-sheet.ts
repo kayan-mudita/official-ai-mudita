@@ -1,6 +1,12 @@
 import prisma from "./prisma";
 import { getConfig } from "./system-config";
 import { uploadFile, isStorageConfigured } from "./storage";
+import {
+  buildPosesGridMetadata,
+  buildThreeSixtyGridMetadata,
+  POSES_GRID,
+  THREE_SIXTY_GRID,
+} from "./pipeline/character-assets";
 
 const GOOGLE_AI_STUDIO_URL = "https://generativelanguage.googleapis.com/v1beta/models";
 
@@ -304,20 +310,46 @@ No warped hands, no extra fingers, no morphing between cells.`;
       data: { compositeUrl: imageUrl, status: "complete" },
     });
 
-    // Save individual image reference (the composite for now)
+    // Save composite image reference with grid position metadata.
+    // Each position in the 3x3 grid corresponds to a specific pose
+    // that maps to video cut types (see pipeline/character-assets.ts).
+    const gridMetadata = buildPosesGridMetadata();
     await prisma.characterSheetImage.create({
       data: {
         characterSheetId: sheet.id,
         url: imageUrl,
         position: 0,
-        angle: "composite",
+        angle: JSON.stringify({
+          type: "composite_poses",
+          gridLayout: "3x3",
+          positions: gridMetadata,
+        }),
       },
     });
+
+    // Also store individual position records so future cropping
+    // can reference them directly.
+    for (const pose of POSES_GRID) {
+      await prisma.characterSheetImage.create({
+        data: {
+          characterSheetId: sheet.id,
+          url: imageUrl, // same composite URL for now -- future: cropped individual images
+          position: pose.row * 3 + pose.col, // linear index into the 3x3 grid
+          angle: JSON.stringify({
+            row: pose.row,
+            col: pose.col,
+            label: pose.label,
+            suitableFor: pose.suitableFor,
+            isCropped: false, // flag for future: true when individual image is stored
+          }),
+        },
+      });
+    }
 
     return {
       characterSheetId: sheet.id,
       compositeUrl: imageUrl,
-      images: [{ url: imageUrl, position: 0, angle: "composite" }],
+      images: [{ url: imageUrl, position: 0, angle: "composite_poses" }],
       status: "complete",
     };
   } catch (err: any) {
@@ -395,15 +427,40 @@ No morphing between angles, no extra fingers, no face warping. Each view must cl
       data: { compositeUrl: imageUrl, status: "complete" },
     });
 
-    // Store with angle metadata for reference
+    // Store composite with 360 grid metadata.
+    // Each position in the 2x3 grid corresponds to a specific viewing angle
+    // (see pipeline/character-assets.ts).
+    const gridMetadata360 = buildThreeSixtyGridMetadata();
     await prisma.characterSheetImage.create({
       data: {
         characterSheetId: sheet.id,
         url: imageUrl,
         position: 0,
-        angle: "composite_360",
+        angle: JSON.stringify({
+          type: "composite_360",
+          gridLayout: "2x3",
+          positions: gridMetadata360,
+        }),
       },
     });
+
+    // Store individual angle position records for future cropping.
+    for (const angle of THREE_SIXTY_GRID) {
+      await prisma.characterSheetImage.create({
+        data: {
+          characterSheetId: sheet.id,
+          url: imageUrl, // same composite URL for now
+          position: angle.row * 3 + angle.col, // linear index into the 2x3 grid
+          angle: JSON.stringify({
+            row: angle.row,
+            col: angle.col,
+            label: angle.label,
+            suitableFor: angle.suitableFor,
+            isCropped: false,
+          }),
+        },
+      });
+    }
 
     return {
       characterSheetId: sheet.id,

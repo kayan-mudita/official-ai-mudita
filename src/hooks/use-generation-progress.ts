@@ -34,6 +34,8 @@ const STEP_LABELS: Record<string, string> = {
   tts: "Generating voiceover...",
   anchor: "Creating anchor image...",
   cut: "Generating scene",
+  submit_all_cuts: "Submitting all scenes...",
+  poll_all_cuts: "Generating scenes...",
   stitch: "Stitching final video...",
   poll_stitch: "Stitching final video...",
   store: "Almost done...",
@@ -48,6 +50,14 @@ export function getStepLabel(progress: GenerationProgress | null): string {
 
   if (step === "cut" && totalCuts > 0) {
     return `Generating scene ${currentCut + 1} of ${totalCuts}...`;
+  }
+
+  if (step === "poll_all_cuts" && totalCuts > 0) {
+    return `Generating scenes... ${currentCut} of ${totalCuts} complete`;
+  }
+
+  if (step === "submit_all_cuts" && totalCuts > 0) {
+    return `Submitting ${totalCuts} scenes...`;
   }
 
   return STEP_LABELS[step] || "Processing...";
@@ -68,10 +78,15 @@ export type PipelineStepKey = (typeof PIPELINE_STEPS)[number]["key"];
 /**
  * Returns the index of the current step in the PIPELINE_STEPS array.
  * Returns -1 for queued/unknown, and PIPELINE_STEPS.length for done.
+ * Maps parallel cut steps (submit_all_cuts, poll_all_cuts) to the "cut" visual step.
  */
 export function getStepIndex(step: string): number {
   if (step === "done") return PIPELINE_STEPS.length;
   if (step === "failed") return -1;
+  // Map parallel cut steps to the same visual position as "cut"
+  if (step === "submit_all_cuts" || step === "poll_all_cuts") {
+    return PIPELINE_STEPS.findIndex((s) => s.key === "cut");
+  }
   return PIPELINE_STEPS.findIndex((s) => s.key === step);
 }
 

@@ -155,10 +155,16 @@ export const generateRequestSchema = z.object({
     .max(5000, "Script must be 5000 characters or less")
     .optional(),
   format: z.enum([
-    "talking_head_15", "testimonial_15", "educational_30", "quick_tip_8",
+    "talking_head_15", "testimonial_15", "testimonial_20", "educational_30",
+    "quick_tip_8", "property_tour_30", "behind_scenes_20",
   ]).optional(),
   photoId: z.string().uuid("Invalid photo ID").optional(),
   voiceId: z.string().uuid("Invalid voice ID").optional(),
+  workflow: z.enum([
+    "lip_sync", "testimonial", "document", "manual",
+    "property_tour", "listing_update", "trend_video",
+  ]).optional(),
+  workflowData: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type GenerateRequestInput = z.infer<typeof generateRequestSchema>;
