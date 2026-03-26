@@ -113,6 +113,16 @@ export async function POST(req: NextRequest) {
         prompt: c.prompt,
       }));
 
+      // Pre-generate starting frame during expand step so the cut step
+      // doesn't block on Gemini image generation (which can take 30s+
+      // and would timeout on Netlify's 26s limit).
+      let startingFrameUrl: string | null = null;
+      try {
+        startingFrameUrl = await getOrGenerateStartingFrame(user.id);
+      } catch (err) {
+        console.warn("[process/expand] Starting frame pre-generation failed (non-fatal):", err);
+      }
+
       await prisma.video.update({
         where: { id: videoId },
         data: {
@@ -120,6 +130,8 @@ export async function POST(req: NextRequest) {
           sourceReview: JSON.stringify({
             cuts: cutData,
             format: selectedFormat,
+            originalScript: rawScript,
+            startingFrameUrl,
             pipelineStep: "expand",
             pipelineCut: 0,
           }),
@@ -138,9 +150,15 @@ export async function POST(req: NextRequest) {
       await updatePipelineProgress("tts");
       let ttsAudioUrl: string | null = null;
 
-      if (rawScript && rawScript.length > 10) {
+      // After the expand step, video.script is overwritten with formatted cut
+      // prompts (not human speech). The original user script is preserved in
+      // sourceReview.originalScript — use that for TTS.
+      const existingMeta = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
+      const ttsScript = existingMeta.originalScript || rawScript;
+
+      if (ttsScript && ttsScript.length > 10) {
         try {
-          const ttsResult = await generateVoiceover(rawScript);
+          const ttsResult = await generateVoiceover(ttsScript);
           if (ttsResult.audioUrl) {
             if (isStorageConfigured() && !ttsResult.audioUrl.startsWith("data:")) {
               try {
@@ -163,12 +181,11 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Store TTS URL in metadata
-      const existing = video.sourceReview ? JSON.parse(video.sourceReview as string) : {};
-      existing.ttsAudioUrl = ttsAudioUrl;
+      // Store TTS URL in metadata (use fresh meta from DB, not stale video object)
+      existingMeta.ttsAudioUrl = ttsAudioUrl;
       await prisma.video.update({
         where: { id: videoId },
-        data: { sourceReview: JSON.stringify(existing) },
+        data: { sourceReview: JSON.stringify(existingMeta) },
       });
 
       return NextResponse.json({
@@ -195,9 +212,14 @@ export async function POST(req: NextRequest) {
       // ── Resolve the image URL to pass to FAL as the reference frame ──
       let photoUrl: string = "";
 
-      // Try starting frame first (cached or generate on first cut)
-      if (i === 0) {
-        const sfUrl = await getOrGenerateStartingFrame(user.id);
+      // Use starting frame from metadata (pre-generated during expand step).
+      // Only fall back to getOrGenerateStartingFrame() if expand didn't cache one.
+      if (meta.startingFrameUrl) {
+        photoUrl = meta.startingFrameUrl;
+      } else if (i === 0) {
+        // Fallback: try fast retrieval only (no generation — that would timeout)
+        const { getStartingFrameUrl } = await import("@/lib/starting-frame");
+        const sfUrl = await getStartingFrameUrl(user.id);
         if (sfUrl) {
           photoUrl = sfUrl;
           meta.startingFrameUrl = sfUrl;
@@ -206,8 +228,6 @@ export async function POST(req: NextRequest) {
             data: { sourceReview: JSON.stringify(meta) },
           });
         }
-      } else if (meta.startingFrameUrl) {
-        photoUrl = meta.startingFrameUrl;
       }
 
       // Fallback: use the video's photoId or user's primary photo

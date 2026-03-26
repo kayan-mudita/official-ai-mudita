@@ -663,9 +663,17 @@ function OnboardingFlow() {
               <h1 className="text-[28px] font-semibold tracking-tight text-white leading-tight mb-1">
                 Upload your photos
               </h1>
-              <p className="text-[15px] text-white/40 mb-10">
+              <p className="text-[15px] text-white/40 mb-4">
                 1-3 clear photos. Selfies, headshots, or casual shots all work.
               </p>
+
+              <div className="mb-8 space-y-1.5">
+                <p className="text-[12px] text-white/30 font-medium mb-1">Tips for best results:</p>
+                <p className="text-[12px] text-white/25">&#10003; Face clearly visible, looking at camera</p>
+                <p className="text-[12px] text-white/25">&#10003; Good lighting, no heavy shadows</p>
+                <p className="text-[12px] text-white/25">&#10007; No sunglasses or hats</p>
+                <p className="text-[12px] text-white/25">&#10007; No group photos</p>
+              </div>
 
               {error && (
                 <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/[0.06] border border-red-500/10 text-[13px] text-red-400/80 mb-6">

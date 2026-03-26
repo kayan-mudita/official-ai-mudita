@@ -100,25 +100,25 @@ function SignupForm() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs text-white/40 mb-1.5">First Name</label>
-                  <input type="text" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} placeholder="John" className="input-field !py-2.5 text-sm" required />
+                  <input type="text" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} placeholder="First name" autoComplete="off" className="input-field !py-2.5 text-sm" required />
                 </div>
                 <div>
                   <label className="block text-xs text-white/40 mb-1.5">Last Name</label>
-                  <input type="text" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} placeholder="Doe" className="input-field !py-2.5 text-sm" required />
+                  <input type="text" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} placeholder="Last name" autoComplete="off" className="input-field !py-2.5 text-sm" required />
                 </div>
               </div>
               <div>
                 <label className="block text-xs text-white/40 mb-1.5">Email</label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                  <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@example.com" className="input-field pl-11 !py-2.5 text-sm" required />
+                  <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email address" autoComplete="off" className="input-field pl-11 !py-2.5 text-sm" required />
                 </div>
               </div>
               <div>
                 <label className="block text-xs text-white/40 mb-1.5">Password</label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                  <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Min 8 characters" className="input-field pl-11 !py-2.5 text-sm" required minLength={8} />
+                  <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Min 8 characters" autoComplete="new-password" className="input-field pl-11 !py-2.5 text-sm" required minLength={8} />
                 </div>
               </div>
               <div>
@@ -133,7 +133,7 @@ function SignupForm() {
               </div>
               <div>
                 <label className="block text-xs text-white/40 mb-1.5">Company (optional)</label>
-                <input type="text" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Your company name" className="input-field !py-2.5 text-sm" />
+                <input type="text" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Company name (optional)" autoComplete="off" className="input-field !py-2.5 text-sm" />
               </div>
 
               <button type="submit" disabled={loading} className="btn-primary w-full gap-2 !mt-6 min-h-[48px] disabled:opacity-50">
