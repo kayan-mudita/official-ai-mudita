@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getAllPillars, getPillarBySlug } from "@/data/topic-libraries";
 import PillarPageTemplate from "@/components/pillar/PillarPageTemplate";
+import { pillarContent } from "@/content";
 
 interface Props {
   params: { pillarSlug: string };
@@ -21,26 +23,12 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function PillarPage({ params }: Props) {
-  const pillar = getPillarBySlug(params.pillarSlug);
-  if (!pillar) notFound();
-
-  // Placeholder content — will be replaced with real long-form content per pillar
+function PlaceholderContent({ pillar }: { pillar: ReturnType<typeof getPillarBySlug> }) {
+  if (!pillar) return null;
   return (
-    <PillarPageTemplate
-      slug={params.pillarSlug}
-      toc={[
-        { id: "overview", label: "Overview" },
-        { id: "why-it-matters", label: "Why It Matters" },
-        { id: "how-it-works", label: "How It Works" },
-        { id: "best-practices", label: "Best Practices" },
-        { id: "getting-started", label: "Getting Started" },
-      ]}
-    >
+    <>
       <h2 id="overview">Overview</h2>
-      <p>
-        {pillar.description}
-      </p>
+      <p>{pillar.description}</p>
       <p>
         This guide covers everything you need to know about {pillar.title.toLowerCase()} — from
         foundational concepts to advanced strategies used by top-performing professionals.
@@ -74,6 +62,29 @@ export default function PillarPage({ params }: Props) {
         Start with 3-5 photos and a 30-second voice sample. From there, AI can generate your first
         video in under five minutes. The deep dives below cover each aspect in detail.
       </p>
+    </>
+  );
+}
+
+const defaultToc = [
+  { id: "overview", label: "Overview" },
+  { id: "why-it-matters", label: "Why It Matters" },
+  { id: "how-it-works", label: "How It Works" },
+  { id: "best-practices", label: "Best Practices" },
+  { id: "getting-started", label: "Getting Started" },
+];
+
+export default function PillarPage({ params }: Props) {
+  const pillar = getPillarBySlug(params.pillarSlug);
+  if (!pillar) notFound();
+
+  const content = pillarContent[params.pillarSlug];
+  const toc = content?.toc || defaultToc;
+  const ContentComponent = content?.Content;
+
+  return (
+    <PillarPageTemplate slug={params.pillarSlug} toc={toc}>
+      {ContentComponent ? <ContentComponent /> : <PlaceholderContent pillar={pillar} />}
     </PillarPageTemplate>
   );
 }
