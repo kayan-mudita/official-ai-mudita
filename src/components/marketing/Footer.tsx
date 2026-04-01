@@ -15,9 +15,14 @@ const footerLinks = {
     { label: "Financial Advisors", href: "/for/advisors" },
     { label: "All Use Cases", href: "/use-cases" },
   ],
+  Learn: [
+    { label: "Guides", href: "/learn" },
+    { label: "Blog", href: "/blog" },
+    { label: "Use Cases", href: "/use-cases" },
+    { label: "Compare", href: "/compare" },
+  ],
   Company: [
     { label: "About", href: "/about" },
-    { label: "Blog", href: "/blog" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
   ],
@@ -31,7 +36,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/[0.04]">
       <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-10">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="text-[15px] font-semibold tracking-tight">

@@ -15,6 +15,7 @@ import {
   BarChart3,
   FileText,
   ArrowRightLeft,
+  BookOpen,
 } from "lucide-react";
 
 const mainLinks = [
@@ -31,6 +32,7 @@ const industryLinks = [
 ];
 
 const learnLinks = [
+  { label: "Guides", href: "/learn", icon: BookOpen, desc: "In-depth AI video marketing guides" },
   { label: "Use Cases", href: "/use-cases", icon: Sparkles, desc: "How professionals use Official AI" },
   { label: "Compare", href: "/compare", icon: ArrowRightLeft, desc: "Official AI vs alternatives" },
   { label: "Blog", href: "/blog", icon: FileText, desc: "AI video & content strategy" },
