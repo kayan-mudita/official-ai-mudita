@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getAllPillars, getSubTopic } from "@/data/topic-libraries";
 import SubTopicPageTemplate from "@/components/pillar/SubTopicPageTemplate";
+import { subTopicContentRegistry } from "@/content";
 
 interface Props {
   params: { pillarSlug: string; subTopicSlug: string };
@@ -28,27 +30,18 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function SubTopicPage({ params }: Props) {
-  const result = getSubTopic(params.pillarSlug, params.subTopicSlug);
-  if (!result) notFound();
-
-  const { subTopic } = result;
-
-  // Placeholder content — will be replaced with real long-form content per subtopic
+function PlaceholderContent({ description }: { description: string }) {
   return (
-    <SubTopicPageTemplate
-      pillarSlug={params.pillarSlug}
-      subTopicSlug={params.subTopicSlug}
-    >
+    <>
       <h2>What You Need to Know</h2>
-      <p>{subTopic.description}</p>
+      <p>{description}</p>
 
       <h2>Why This Matters for Professionals</h2>
       <p>
-        Understanding {subTopic.title.toLowerCase()} is essential for any professional looking to
-        build a consistent, high-quality video presence. Whether you are an attorney sharing legal
-        tips, a doctor creating patient education content, or a real estate agent showcasing listings,
-        this topic directly impacts your content quality and audience engagement.
+        Understanding this topic is essential for any professional looking to build a consistent,
+        high-quality video presence. Whether you are an attorney sharing legal tips, a doctor creating
+        patient education content, or a real estate agent showcasing listings, this directly impacts
+        your content quality and audience engagement.
       </p>
 
       <h2>How to Get Started</h2>
@@ -65,6 +58,23 @@ export default function SubTopicPage({ params }: Props) {
         <li>Use AI to handle production so you can focus on strategy</li>
         <li>Measure what matters: leads and conversations, not just views</li>
       </ul>
+    </>
+  );
+}
+
+export default function SubTopicPage({ params }: Props) {
+  const result = getSubTopic(params.pillarSlug, params.subTopicSlug);
+  if (!result) notFound();
+
+  const pillarSubTopics = subTopicContentRegistry[params.pillarSlug];
+  const ContentComponent = pillarSubTopics?.[params.subTopicSlug];
+
+  return (
+    <SubTopicPageTemplate
+      pillarSlug={params.pillarSlug}
+      subTopicSlug={params.subTopicSlug}
+    >
+      {ContentComponent ? <ContentComponent /> : <PlaceholderContent description={result.subTopic.description} />}
     </SubTopicPageTemplate>
   );
 }
