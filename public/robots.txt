@@ -8,6 +8,12 @@ Disallow: /api/
 Disallow: /auth/onboarding
 Disallow: /auth/forgot-password
 Disallow: /auth/reset-password
+Disallow: /_next/
+Disallow: /v/
 
 # Sitemap
 Sitemap: https://officialai.com/sitemap.xml
+
+# LLMs
+LLMs-Txt: https://officialai.com/llms.txt
+LLMs-Full-Txt: https://officialai.com/llms-full.txt
