@@ -34,10 +34,10 @@ const productLinks = [
 ];
 
 const solutionLinks = [
-  { label: "Real Estate", href: "/for/realtors", icon: Home, desc: "Listing tours, market updates" },
-  { label: "Legal", href: "/for/attorneys", icon: Scale, desc: "Know-your-rights, case results" },
-  { label: "Medical", href: "/for/doctors", icon: HeartPulse, desc: "Health tips, patient education" },
-  { label: "Financial Advisors", href: "/for/advisors", icon: TrendingUp, desc: "Market commentary, tips" },
+  { label: "For Real Estate", href: "/for/realtors", icon: Home, desc: "Listing tours, market updates" },
+  { label: "For Legal", href: "/for/attorneys", icon: Scale, desc: "Know-your-rights, case results" },
+  { label: "For Medical", href: "/for/doctors", icon: HeartPulse, desc: "Health tips, patient education" },
+  { label: "For Financial Advisors", href: "/for/advisors", icon: TrendingUp, desc: "Market commentary, tips" },
 ];
 
 const resourceLearnLinks = [
