@@ -47,12 +47,12 @@ const resourceLearnLinks = [
 ];
 
 const topicGuideLinks = [
-  { label: "AI Video Creation", href: "/learn/ai-video-creation", icon: Video, color: "text-blue-400" },
-  { label: "Video Marketing", href: "/learn/video-marketing-professionals", icon: BarChart3, color: "text-violet-400" },
-  { label: "Social Media Video", href: "/learn/social-media-video-strategy", icon: Share2, color: "text-emerald-400" },
-  { label: "AI Video for Real Estate", href: "/learn/ai-video-real-estate", icon: Home, color: "text-amber-400" },
-  { label: "Professional Services", href: "/learn/ai-video-professional-services", icon: Briefcase, color: "text-cyan-400" },
-  { label: "AI Content at Scale", href: "/learn/ai-content-at-scale", icon: Layers, color: "text-rose-400" },
+  { label: "AI Video Creation", href: "/learn/ai-video-creation", icon: Video, hoverColor: "group-hover:text-blue-400/70" },
+  { label: "Video Marketing", href: "/learn/video-marketing-professionals", icon: BarChart3, hoverColor: "group-hover:text-violet-400/70" },
+  { label: "Social Media Video", href: "/learn/social-media-video-strategy", icon: Share2, hoverColor: "group-hover:text-emerald-400/70" },
+  { label: "AI Video for Real Estate", href: "/learn/ai-video-real-estate", icon: Home, hoverColor: "group-hover:text-amber-400/70" },
+  { label: "Professional Services", href: "/learn/ai-video-professional-services", icon: Briefcase, hoverColor: "group-hover:text-cyan-400/70" },
+  { label: "AI Content at Scale", href: "/learn/ai-content-at-scale", icon: Layers, hoverColor: "group-hover:text-rose-400/70" },
 ];
 
 export default function Navbar() {
@@ -254,7 +254,7 @@ export default function Navbar() {
                             href={link.href}
                             className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
                           >
-                            <link.icon className={`w-3.5 h-3.5 ${link.color} opacity-60 group-hover:opacity-100 transition-opacity`} />
+                            <link.icon className={`w-3.5 h-3.5 text-white/40 ${link.hoverColor} transition-colors`} />
                             <span className="text-[13px] text-white/50 group-hover:text-white/80 transition-colors">
                               {link.label}
                             </span>
@@ -451,7 +451,7 @@ export default function Navbar() {
                           : "text-white/40 active:text-white/70"
                       }`}
                     >
-                      <link.icon className={`w-4 h-4 flex-shrink-0 ${link.color} opacity-50`} />
+                      <link.icon className="w-4 h-4 flex-shrink-0 text-white/30" />
                       {link.label}
                     </Link>
                   ))}
