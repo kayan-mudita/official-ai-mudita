@@ -35,7 +35,24 @@ const pillarLabels: Record<string, string> = {
   "ai-content-at-scale": "AI Content at Scale",
 };
 
+const blogTitleMap: Record<string, string> = {
+  "multi-cut-method": "The Multi-Cut Method",
+  "ai-ugc-future": "AI-Generated UGC Is the Future",
+  "real-estate-agents-ai": "Real Estate Agents Using AI",
+  "five-content-formats": "5 Content Formats That Work",
+  "voice-cloning-guide": "How Voice Cloning Works",
+  "video-marketing-roi-guide": "Measure Video Marketing ROI",
+  "linkedin-video-tips": "LinkedIn Video Strategies",
+  "tiktok-professional-guide": "TikTok for Professionals",
+  "neighborhood-video-seo": "Neighborhood Spotlight Videos",
+  "lawyer-video-marketing": "Video Marketing for Lawyers",
+  "financial-advisor-video": "Video for Financial Advisors",
+  "batch-video-workflow": "Create 30 Videos in One Sitting",
+  "scaling-personal-brand-ai": "Scale Your Personal Brand With AI",
+};
+
 function formatBlogSlug(slug: string): string {
+  if (blogTitleMap[slug]) return blogTitleMap[slug];
   return slug
     .split("-")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
