@@ -1,130 +1,153 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-helpers";
 import prisma from "@/lib/prisma";
-import { planComposition } from "@/lib/video-compositor";
-import { runStep } from "@/lib/pipeline/orchestrator";
-import { generateVoiceover } from "@/lib/voice-engine";
+import { generateVideo } from "@/lib/generate";
 
-const PREVIEW_SCRIPT =
-  "Ready to take your business to the next level? With AI-powered content creation, you can engage your audience with professional videos, all customized to your brand. Let's get started.";
+const WELCOME_SCRIPT =
+  "Welcome to AI content — you can now take over the internet.";
 
+// Kling v3 Pro has a 2500 character prompt limit (~2050 chars below).
+const VIDEO_PROMPT =
+  "Generate a hyperrealistic UGC-style video that is completely indistinguishable " +
+  "from real smartphone footage shot in 2026. Zero AI aesthetic. Zero stylization. " +
+  "Raw, authentic human video. " +
+
+  // Character
+  "Reconstruct the subject's face with exact precision from the three provided " +
+  "references. Lock every feature: pore texture, asymmetry, skin unevenness, " +
+  "lip shape, hairline, jawline. No smoothing. No symmetry correction. Preserve " +
+  "all natural imperfections. Zero face/neck skin tone mismatch. " +
+
+  // Wardrobe & Setting
+  "Dark charcoal suit with natural fabric drape and slight sitting wrinkles. " +
+  "White dress shirt with a collar crease. Real working office background — " +
+  "laptop, coffee cup, papers. Large window to the left casting natural light. " +
+  "Overhead fluorescent-LED office panels visible. Shallow phone-camera depth " +
+  "of field, background 4-6 feet behind subject. " +
+
+  // Camera
+  "Simulate iPhone 16 Pro or Samsung S25 Ultra at eye level, propped or " +
+  "selfie-style. 26mm equivalent focal length. Slight barrel distortion at " +
+  "edges. Auto-exposure micro-fluctuation. Autofocus breathing in first " +
+  "0.5 seconds as face-tracking locks. Real compression artifacts in background " +
+  "gradients. Subtle chroma noise in shadows. 9:16 vertical. 1-2 degree " +
+  "frame tilt. 30fps. No film grain — phones suppress it. Luminance noise " +
+  "in shadows only. " +
+
+  // Lighting
+  "Mixed: cool overhead office LEDs + warm natural window light from left. " +
+  "Phone AWB creates a neutral-warm cast. Shadows present under chin and " +
+  "jawline — unfilled. Single catch light in each eye from window. " +
+  "No ring light. No softbox. Slightly unflattering — this is what makes it real. " +
+
+  // Performance
+  "Relaxed, confident. 0.2s natural breath beat before speaking. One blink " +
+  "before the line. Subtle head nod micro-movements during speech. Chest " +
+  "rise visible once. Tongue tip visible on dental consonants. Natural " +
+  "fly-away hairs at temples. Individual strand detail at hairline. " +
+
+  // Dialogue
+  `Subject says directly to camera: '${WELCOME_SCRIPT}'. ` +
+  "Conversational tone. Confident energy lift on 'take over the internet.' " +
+  "Sounds like a belief, not a script. Perfect lip sync. " +
+
+  // Avoid
+  "Avoid: smooth skin, perfect symmetry, glassy eyes, helmet hair, static hair " +
+  "during speech, white/uniform teeth, rendered-looking background, neck tone " +
+  "mismatch, frozen micro-expressions between words.";
+
+/**
+ * POST /api/onboarding/preview-video
+ *
+ * Single 5-second welcome video using Kling v3 with multi-image elements.
+ * Non-blocking — returns immediately with videoId. Frontend polls
+ * /api/onboarding/preview-video/status?videoId=xxx for completion.
+ */
 export async function POST(req: NextRequest) {
   const { error, user } = await requireAuth();
   if (error) return error;
 
   try {
-    const body = await req.json().catch(() => ({}));
-    const { characterSheetUrl, photoUrl } = body as {
-      characterSheetUrl?: string;
-      photoUrl?: string;
-    };
+    console.log("[welcome-video] Starting generation for user:", user.id);
 
-    // 1. Resolve user's primary photo
-    const photo = await prisma.photo.findFirst({
-      where: { userId: user.id, isPrimary: true },
-    });
+    // Gather all reference images: primary photo + both character sheets
+    const [primaryPhoto, posesSheet, threeSixtySheet] = await Promise.all([
+      prisma.photo.findFirst({
+        where: { userId: user.id, isPrimary: true },
+        select: { url: true },
+      }),
+      prisma.characterSheet.findFirst({
+        where: { userId: user.id, type: "poses", status: "complete" },
+        orderBy: { createdAt: "desc" },
+        select: { compositeUrl: true },
+      }),
+      prisma.characterSheet.findFirst({
+        where: { userId: user.id, type: "3d_360", status: "complete" },
+        orderBy: { createdAt: "desc" },
+        select: { compositeUrl: true },
+      }),
+    ]);
 
-    if (!photo && !photoUrl) {
-      return NextResponse.json({
-        success: true,
-        videoUrl: null,
-        message: "No photo available for preview video",
-      });
+    const startImageUrl = primaryPhoto?.url;
+    if (!startImageUrl) {
+      return NextResponse.json(
+        { error: "No primary photo available" },
+        { status: 400 }
+      );
     }
 
-    // 2. Resolve user's default voice (cloned or stock)
-    const voice = await prisma.voiceSample.findFirst({
-      where: { userId: user.id, isDefault: true },
+    // Collect character sheet URLs as additional references
+    const referenceImageUrls: string[] = [];
+    if (posesSheet?.compositeUrl) referenceImageUrls.push(posesSheet.compositeUrl);
+    if (threeSixtySheet?.compositeUrl) referenceImageUrls.push(threeSixtySheet.compositeUrl);
+
+    console.log(
+      `[welcome-video] Reference images: primary photo + ${referenceImageUrls.length} character sheet(s)`
+    );
+
+    // Submit single 5-second video to Kling v3 with elements
+    console.log("[welcome-video] Submitting to FAL (Kling v3)...");
+    const result = await generateVideo({
+      model: "kling_v3",
+      photoUrl: startImageUrl,
+      voiceUrl: "",
+      script: VIDEO_PROMPT,
+      userId: user.id,
+      duration: 5,
+      usePromptEngine: false,
+      referenceImageUrls,
     });
 
-    // 3. Plan a short talking_head format (single cut = fastest)
-    const plan = planComposition("quick_tip_8", PREVIEW_SCRIPT);
+    console.log("[welcome-video] FAL job submitted:", result.jobId, result.status);
 
-    // 4. Create a preview video record
+    // Create a video record to track this
     const video = await prisma.video.create({
       data: {
         userId: user.id,
-        title: "Onboarding Preview",
-        description: "Auto-generated preview for onboarding paywall",
-        script: PREVIEW_SCRIPT,
-        model: "kling_2.6",
-        contentType: "quick_tip_8",
-        photoId: photo?.id,
-        voiceId: voice?.id,
-        status: "generating",
-        duration: plan.format.totalDuration,
+        title: "Welcome Video",
+        description: "Your AI-generated welcome video",
+        script: WELCOME_SCRIPT,
+        model: "kling_v3",
+        contentType: "welcome",
+        status: result.status === "completed" ? "complete" : "generating",
+        duration: 5,
+        videoUrl: result.videoUrl || null,
+        thumbnailUrl: result.thumbnailUrl || null,
+        sourceReview: JSON.stringify({ falJobId: result.jobId }),
       },
     });
 
-    // 5. Run the pipeline: expand → tts → cut → poll → stitch
-    //    This is async and may take 60-90s. We run it sequentially
-    //    and return the final URL. The frontend shows a spinner.
-    try {
-      // Step 1: Expand script into production prompts
-      const expandResult = await runStep(video.id, "expand", undefined, user.id);
-      if (expandResult.status === "error") throw new Error(expandResult.error);
-
-      // Step 2: Generate TTS audio
-      const ttsResult = await runStep(video.id, "tts", undefined, user.id);
-
-      // Step 3: Generate the first video cut
-      const cutResult = await runStep(video.id, "cut", 0, user.id);
-      if (cutResult.status === "error") throw new Error(cutResult.error);
-
-      // Step 4: Poll until cut is ready
-      let pollResult = await runStep(video.id, "poll", 0, user.id);
-      let attempts = 0;
-      while (pollResult.nextStep === "poll" && attempts < 30) {
-        await new Promise((r) => setTimeout(r, 3000));
-        pollResult = await runStep(video.id, "poll", 0, user.id);
-        attempts++;
-      }
-
-      // Step 5: Stitch (even a single cut needs stitch for final mp4)
-      const stitchResult = await runStep(video.id, "stitch", undefined, user.id);
-      if (stitchResult.status === "error") throw new Error(stitchResult.error);
-
-      // Step 6: Poll stitch
-      let stitchPoll = await runStep(video.id, "poll_stitch", undefined, user.id);
-      let stitchAttempts = 0;
-      while (stitchPoll.nextStep === "poll_stitch" && stitchAttempts < 60) {
-        await new Promise((r) => setTimeout(r, 3000));
-        stitchPoll = await runStep(video.id, "poll_stitch", undefined, user.id);
-        stitchAttempts++;
-      }
-
-      // Fetch the completed video URL
-      const completed = await prisma.video.findUnique({
-        where: { id: video.id },
-        select: { videoUrl: true, status: true },
-      });
-
-      return NextResponse.json({
-        success: true,
-        videoId: video.id,
-        videoUrl: completed?.videoUrl || null,
-        message: completed?.videoUrl
-          ? "Preview video generated"
-          : "Video generation completed but no URL returned",
-      });
-    } catch (pipelineErr: any) {
-      console.error("[onboarding/preview-video] Pipeline error (non-fatal):", pipelineErr.message);
-      // Mark video as failed but don't fail the endpoint
-      await prisma.video.update({
-        where: { id: video.id },
-        data: { status: "failed" },
-      });
-      return NextResponse.json({
-        success: true,
-        videoId: video.id,
-        videoUrl: null,
-        message: "Preview video generation failed — paywall will show without video",
-      });
-    }
+    return NextResponse.json({
+      success: true,
+      videoId: video.id,
+      falJobId: result.jobId,
+      status: result.status,
+      videoUrl: result.videoUrl || null,
+    });
   } catch (err: any) {
-    console.error("Preview video generation failed:", err);
+    console.error("[welcome-video] Generation failed:", err);
     return NextResponse.json(
-      { error: "Failed to generate preview video" },
+      { error: "Failed to start welcome video generation" },
       { status: 500 }
     );
   }

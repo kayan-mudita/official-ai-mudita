@@ -135,6 +135,7 @@ function OnboardingFlow() {
   const [characterSheetUrl, setCharacterSheetUrl] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoGenerating, setVideoGenerating] = useState(false);
+  const [videoId, setVideoId] = useState<string | null>(null);
 
   // Track step transitions
   useEffect(() => {
@@ -179,25 +180,61 @@ function OnboardingFlow() {
     setStep("voice");
   }, []);
 
-  // Kick off preview video generation in the background
+  // Poll the status endpoint until video completes or fails
+  const pollVideoStatus = useCallback(async (vid: string) => {
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    for (let attempt = 0; attempt < 60; attempt++) {
+      await wait(5000);
+      try {
+        const res = await fetch(`/api/onboarding/preview-video/status?videoId=${vid}`);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data.status === "completed" && data.videoUrl) {
+          setVideoUrl(data.videoUrl);
+          setVideoGenerating(false);
+          return;
+        }
+        if (data.status === "failed") {
+          setVideoGenerating(false);
+          return;
+        }
+      } catch {
+        // Network error — keep trying
+      }
+    }
+    // Timed out
+    setVideoGenerating(false);
+  }, []);
+
+  // Kick off preview video generation in the background (non-blocking)
   const generatePreviewVideo = useCallback(async () => {
     setVideoGenerating(true);
     try {
       const res = await fetch("/api/onboarding/preview-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ characterSheetUrl, photoUrl }),
+        body: JSON.stringify({}),
       });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.videoUrl) setVideoUrl(data.videoUrl);
+      if (!res.ok) { setVideoGenerating(false); return; }
+      const data = await res.json();
+
+      // If FAL returned synchronously (unlikely but possible)
+      if (data.videoUrl) {
+        setVideoUrl(data.videoUrl);
+        setVideoGenerating(false);
+        return;
+      }
+
+      // Start polling for completion
+      if (data.videoId) {
+        setVideoId(data.videoId);
+        pollVideoStatus(data.videoId);
       }
     } catch {
       // Non-blocking — paywall still works without the video
-    } finally {
       setVideoGenerating(false);
     }
-  }, [characterSheetUrl, photoUrl]);
+  }, [pollVideoStatus]);
 
   const handleVoiceCapture = useCallback(async (audioBlob: Blob) => {
     setVoiceUploading(true);

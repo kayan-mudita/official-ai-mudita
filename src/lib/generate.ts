@@ -55,6 +55,8 @@ export interface GenerateVideoParams {
    *  generates appropriate mouth movements instead of a blank stare.
    *  DATA FLOW GAP #8 FIX */
   audioContext?: string;
+  /** Additional reference image URLs for multi-image models (e.g. Kling v3 elements) */
+  referenceImageUrls?: string[];
 }
 
 export interface GenerateResult {
@@ -123,6 +125,37 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
       duration: clampToKlingDuration(p.duration),
       aspect_ratio: "9:16",
     }),
+  },
+
+  "kling_v3": {
+    falId: "fal-ai/kling-video/v3/pro/image-to-video",
+    name: "Kling 3.0 Pro",
+    description: "Latest Kling — supports multi-image elements for character consistency",
+    maxDuration: 15,
+    supportsImage: true,
+    supportsAudio: false,
+    buildPayload: (p) => {
+      const duration = Math.max(3, Math.min(15, p.duration || 5));
+      const payload: Record<string, unknown> = {
+        prompt: p.script,
+        start_image_url: p.photoUrl,
+        duration: String(duration),
+        aspect_ratio: "9:16",
+        generate_audio: false,
+      };
+      if (p.referenceImageUrls && p.referenceImageUrls.length > 0) {
+        payload.elements = [
+          {
+            frontal_image_url: p.photoUrl,
+            reference_image_urls: p.referenceImageUrls,
+          },
+        ];
+        if (!p.script.includes("@Element1")) {
+          payload.prompt = `@Element1 ${p.script}`;
+        }
+      }
+      return payload;
+    },
   },
 
   "minimax_video": {
