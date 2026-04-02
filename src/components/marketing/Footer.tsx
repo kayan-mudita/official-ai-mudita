@@ -6,6 +6,7 @@ const footerLinks = {
     { label: "How it works", href: "/how-it-works" },
     { label: "Features", href: "/features" },
     { label: "Pricing", href: "/pricing" },
+    { label: "Demo", href: "/demo" },
     { label: "Compare", href: "/compare" },
   ],
   Solutions: [
@@ -15,9 +16,18 @@ const footerLinks = {
     { label: "Financial Advisors", href: "/for/advisors" },
     { label: "All Use Cases", href: "/use-cases" },
   ],
-  Learn: [
-    { label: "Guides", href: "/learn" },
+  Resources: [
     { label: "Blog", href: "/blog" },
+    { label: "Guides", href: "/learn" },
+    { label: "Use Cases", href: "/use-cases" },
+  ],
+  "Topic Guides": [
+    { label: "AI Video Creation", href: "/learn/ai-video-creation" },
+    { label: "Video Marketing", href: "/learn/video-marketing-professionals" },
+    { label: "Social Media Video", href: "/learn/social-media-video-strategy" },
+    { label: "AI Video for Real Estate", href: "/learn/ai-video-real-estate" },
+    { label: "Professional Services", href: "/learn/ai-video-professional-services" },
+    { label: "AI Content at Scale", href: "/learn/ai-content-at-scale" },
   ],
   Company: [
     { label: "About", href: "/about" },
@@ -68,9 +78,9 @@ export default function Footer() {
 
       {/* Footer columns */}
       <div className="max-w-6xl mx-auto px-6 pb-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-6">
           {/* Brand column */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             <Link href="/" className="text-[15px] font-semibold tracking-tight">
               Official <span className="text-blue-400">AI</span>
             </Link>

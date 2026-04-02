@@ -17,26 +17,42 @@ import {
   ArrowRightLeft,
   ArrowRight,
   Play,
+  Clapperboard,
+  Zap,
+  Video,
+  BarChart3,
+  Share2,
+  Briefcase,
+  Layers,
 } from "lucide-react";
 
-const mainLinks = [
-  { label: "How it works", href: "/how-it-works" },
-  { label: "Features", href: "/features" },
-  { label: "Pricing", href: "/pricing" },
+const productLinks = [
+  { label: "How it works", href: "/how-it-works", icon: Clapperboard, desc: "See the AI video pipeline" },
+  { label: "Features", href: "/features", icon: Zap, desc: "Everything Official AI does" },
+  { label: "Demo", href: "/demo", icon: Play, desc: "Try it free — no signup" },
+  { label: "Compare", href: "/compare", icon: ArrowRightLeft, desc: "Official AI vs alternatives" },
 ];
 
 const solutionLinks = [
-  { label: "For Real Estate", href: "/for/realtors", icon: Home, desc: "Listing tours, market updates" },
-  { label: "For Legal", href: "/for/attorneys", icon: Scale, desc: "Know-your-rights, case results" },
-  { label: "For Medical", href: "/for/doctors", icon: HeartPulse, desc: "Health tips, patient education" },
-  { label: "For Financial Advisors", href: "/for/advisors", icon: TrendingUp, desc: "Market commentary, tips" },
+  { label: "Real Estate", href: "/for/realtors", icon: Home, desc: "Listing tours, market updates" },
+  { label: "Legal", href: "/for/attorneys", icon: Scale, desc: "Know-your-rights, case results" },
+  { label: "Medical", href: "/for/doctors", icon: HeartPulse, desc: "Health tips, patient education" },
+  { label: "Financial Advisors", href: "/for/advisors", icon: TrendingUp, desc: "Market commentary, tips" },
 ];
 
-const learnLinks = [
-  { label: "Guides", href: "/learn", icon: BookOpen, desc: "In-depth AI video marketing guides" },
-  { label: "Use Cases", href: "/use-cases", icon: Sparkles, desc: "How professionals use Official AI" },
-  { label: "Compare", href: "/compare", icon: ArrowRightLeft, desc: "Official AI vs alternatives" },
+const resourceLearnLinks = [
   { label: "Blog", href: "/blog", icon: FileText, desc: "AI video & content strategy" },
+  { label: "Guides", href: "/learn", icon: BookOpen, desc: "In-depth marketing guides" },
+  { label: "Use Cases", href: "/use-cases", icon: Sparkles, desc: "How professionals use Official AI" },
+];
+
+const topicGuideLinks = [
+  { label: "AI Video Creation", href: "/learn/ai-video-creation", icon: Video, color: "text-blue-400" },
+  { label: "Video Marketing", href: "/learn/video-marketing-professionals", icon: BarChart3, color: "text-violet-400" },
+  { label: "Social Media Video", href: "/learn/social-media-video-strategy", icon: Share2, color: "text-emerald-400" },
+  { label: "AI Video for Real Estate", href: "/learn/ai-video-real-estate", icon: Home, color: "text-amber-400" },
+  { label: "Professional Services", href: "/learn/ai-video-professional-services", icon: Briefcase, color: "text-cyan-400" },
+  { label: "AI Content at Scale", href: "/learn/ai-content-at-scale", icon: Layers, color: "text-rose-400" },
 ];
 
 export default function Navbar() {
@@ -89,6 +105,25 @@ export default function Navbar() {
     setActiveDropdown(activeDropdown === name ? null : name);
   };
 
+  const DropdownLink = ({ link }: { link: { label: string; href: string; icon: React.ComponentType<{ className?: string }>; desc: string } }) => (
+    <Link
+      href={link.href}
+      className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors group"
+    >
+      <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:border-white/[0.1] transition-colors mt-0.5">
+        <link.icon className="w-4 h-4 text-white/40 group-hover:text-blue-400/70 transition-colors" />
+      </div>
+      <div>
+        <div className="text-[13px] font-medium text-white/70 group-hover:text-white/90 transition-colors">
+          {link.label}
+        </div>
+        <div className="text-[11px] text-white/25 mt-0.5">
+          {link.desc}
+        </div>
+      </div>
+    </Link>
+  );
+
   return (
     <>
       <nav
@@ -114,7 +149,33 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
-            {/* Solutions dropdown — leads the nav */}
+            {/* Products dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => toggleDropdown("products")}
+                className={`flex items-center gap-1 px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
+                  activeDropdown === "products" || pathname === "/how-it-works" || pathname === "/features" || pathname === "/demo" || pathname === "/compare"
+                    ? "text-white/70"
+                    : "text-white/40 hover:text-white/70"
+                }`}
+              >
+                Product
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform duration-200 ${
+                    activeDropdown === "products" ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {activeDropdown === "products" && (
+                <div className="absolute top-full left-0 mt-2 w-[280px] p-2 rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
+                  {productLinks.map((link) => (
+                    <DropdownLink key={link.href} link={link} />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Solutions dropdown */}
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("solutions")}
@@ -134,25 +195,8 @@ export default function Navbar() {
               {activeDropdown === "solutions" && (
                 <div className="absolute top-full left-0 mt-2 w-[280px] p-2 rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
                   {solutionLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors group"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:border-white/[0.1] transition-colors mt-0.5">
-                        <link.icon className="w-4 h-4 text-white/40 group-hover:text-blue-400/70 transition-colors" />
-                      </div>
-                      <div>
-                        <div className="text-[13px] font-medium text-white/70 group-hover:text-white/90 transition-colors">
-                          {link.label}
-                        </div>
-                        <div className="text-[11px] text-white/25 mt-0.5">
-                          {link.desc}
-                        </div>
-                      </div>
-                    </Link>
+                    <DropdownLink key={link.href} link={link} />
                   ))}
-                  {/* Dropdown CTA */}
                   <div className="mt-1 pt-2 border-t border-white/[0.06]">
                     <Link
                       href="/use-cases"
@@ -168,72 +212,87 @@ export default function Navbar() {
               )}
             </div>
 
-            {mainLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
-                  pathname === link.href
-                    ? "text-white/70"
-                    : "text-white/40 hover:text-white/70"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {/* Learn dropdown */}
+            {/* Resources mega-menu */}
             <div className="relative">
               <button
-                onClick={() => toggleDropdown("learn")}
+                onClick={() => toggleDropdown("resources")}
                 className={`flex items-center gap-1 px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
-                  activeDropdown === "learn" || pathname.startsWith("/learn") || pathname.startsWith("/blog")
+                  activeDropdown === "resources" || pathname.startsWith("/learn") || pathname.startsWith("/blog") || pathname === "/use-cases"
                     ? "text-white/70"
                     : "text-white/40 hover:text-white/70"
                 }`}
               >
-                Learn
+                Resources
                 <ChevronDown
                   className={`w-3 h-3 transition-transform duration-200 ${
-                    activeDropdown === "learn" ? "rotate-180" : ""
+                    activeDropdown === "resources" ? "rotate-180" : ""
                   }`}
                 />
               </button>
-              {activeDropdown === "learn" && (
-                <div className="absolute top-full right-0 mt-2 w-[280px] p-2 rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
-                  {learnLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors group"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:border-white/[0.1] transition-colors mt-0.5">
-                        <link.icon className="w-4 h-4 text-white/40 group-hover:text-blue-400/70 transition-colors" />
+              {activeDropdown === "resources" && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[580px] rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
+                  <div className="grid grid-cols-2 divide-x divide-white/[0.06]">
+                    {/* Left column: Learn */}
+                    <div className="p-4">
+                      <h3 className="text-[11px] font-medium text-white/25 uppercase tracking-wider px-3 mb-2">
+                        Learn
+                      </h3>
+                      {resourceLearnLinks.map((link) => (
+                        <DropdownLink key={link.href} link={link} />
+                      ))}
+                    </div>
+
+                    {/* Right column: Topic Guides */}
+                    <div className="p-4">
+                      <h3 className="text-[11px] font-medium text-white/25 uppercase tracking-wider px-3 mb-2">
+                        Topic Guides
+                      </h3>
+                      <div className="space-y-0.5">
+                        {topicGuideLinks.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
+                          >
+                            <link.icon className={`w-3.5 h-3.5 ${link.color} opacity-60 group-hover:opacity-100 transition-opacity`} />
+                            <span className="text-[13px] text-white/50 group-hover:text-white/80 transition-colors">
+                              {link.label}
+                            </span>
+                          </Link>
+                        ))}
                       </div>
-                      <div>
-                        <div className="text-[13px] font-medium text-white/70 group-hover:text-white/90 transition-colors">
-                          {link.label}
-                        </div>
-                        <div className="text-[11px] text-white/25 mt-0.5">
-                          {link.desc}
-                        </div>
+                      <div className="mt-2 pt-2 border-t border-white/[0.06]">
+                        <Link
+                          href="/learn"
+                          className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
+                        >
+                          <span className="text-[12px] text-white/30 group-hover:text-white/50 transition-colors">
+                            View all guides
+                          </span>
+                          <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
+                        </Link>
                       </div>
-                    </Link>
-                  ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
+
+            {/* Pricing — standalone */}
+            <Link
+              href="/pricing"
+              className={`px-4 py-2 text-[13px] transition-colors rounded-lg hover:bg-white/[0.03] ${
+                pathname === "/pricing"
+                  ? "text-white/70"
+                  : "text-white/40 hover:text-white/70"
+              }`}
+            >
+              Pricing
+            </Link>
           </div>
 
-          {/* Desktop CTA — dual path: demo (low friction) + signup */}
+          {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3 z-10">
-            <Link
-              href="/demo"
-              className="text-[13px] text-white/40 hover:text-white/70 transition-colors px-4 py-2 flex items-center gap-1.5"
-            >
-              <Play className="w-3 h-3" />
-              Demo
-            </Link>
             <Link
               href="/auth/login"
               className="text-[13px] text-white/40 hover:text-white/70 transition-colors px-3 py-2"
@@ -281,7 +340,40 @@ export default function Navbar() {
           }`}
         >
           <div className="max-w-sm mx-auto space-y-1">
-            {/* Solutions accordion — leads mobile nav */}
+            {/* Product accordion */}
+            <div>
+              <button
+                onClick={() => setMobileAccordion(mobileAccordion === "products" ? null : "products")}
+                className="w-full flex items-center justify-between text-[16px] py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
+              >
+                Product
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    mobileAccordion === "products" ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {mobileAccordion === "products" && (
+                <div className="pl-4 space-y-1 mt-1">
+                  {productLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`flex items-center gap-3 text-[15px] py-2.5 px-4 rounded-lg transition-colors ${
+                        pathname === link.href
+                          ? "text-white/90 bg-white/[0.04]"
+                          : "text-white/40 active:text-white/70"
+                      }`}
+                    >
+                      <link.icon className="w-4 h-4 text-white/30 flex-shrink-0" />
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Solutions accordion */}
             <div>
               <button
                 onClick={() => setMobileAccordion(mobileAccordion === "solutions" ? null : "solutions")}
@@ -314,37 +406,25 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Main links */}
-            {mainLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`block text-[16px] py-3 px-4 rounded-lg transition-colors ${
-                  pathname === link.href
-                    ? "text-white/90 bg-white/[0.04]"
-                    : "text-white/50 active:text-white/90 active:bg-white/[0.04]"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {/* Learn accordion */}
+            {/* Resources accordion */}
             <div>
               <button
-                onClick={() => setMobileAccordion(mobileAccordion === "learn" ? null : "learn")}
+                onClick={() => setMobileAccordion(mobileAccordion === "resources" ? null : "resources")}
                 className="w-full flex items-center justify-between text-[16px] py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
               >
-                Learn
+                Resources
                 <ChevronDown
                   className={`w-4 h-4 transition-transform duration-200 ${
-                    mobileAccordion === "learn" ? "rotate-180" : ""
+                    mobileAccordion === "resources" ? "rotate-180" : ""
                   }`}
                 />
               </button>
-              {mobileAccordion === "learn" && (
+              {mobileAccordion === "resources" && (
                 <div className="pl-4 space-y-1 mt-1">
-                  {learnLinks.map((link) => (
+                  <div className="px-4 py-2">
+                    <span className="text-[11px] font-medium text-white/25 uppercase tracking-wider">Learn</span>
+                  </div>
+                  {resourceLearnLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
@@ -358,11 +438,40 @@ export default function Navbar() {
                       {link.label}
                     </Link>
                   ))}
+                  <div className="px-4 py-2 mt-2">
+                    <span className="text-[11px] font-medium text-white/25 uppercase tracking-wider">Topic Guides</span>
+                  </div>
+                  {topicGuideLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`flex items-center gap-3 text-[15px] py-2.5 px-4 rounded-lg transition-colors ${
+                        pathname === link.href
+                          ? "text-white/90 bg-white/[0.04]"
+                          : "text-white/40 active:text-white/70"
+                      }`}
+                    >
+                      <link.icon className={`w-4 h-4 flex-shrink-0 ${link.color} opacity-50`} />
+                      {link.label}
+                    </Link>
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* About — standalone, not inside Learn */}
+            {/* Pricing — standalone */}
+            <Link
+              href="/pricing"
+              className={`block text-[16px] py-3 px-4 rounded-lg transition-colors ${
+                pathname === "/pricing"
+                  ? "text-white/90 bg-white/[0.04]"
+                  : "text-white/50 active:text-white/90 active:bg-white/[0.04]"
+              }`}
+            >
+              Pricing
+            </Link>
+
+            {/* About — standalone */}
             <Link
               href="/about"
               className={`block text-[16px] py-3 px-4 rounded-lg transition-colors ${
@@ -374,7 +483,7 @@ export default function Navbar() {
               About
             </Link>
 
-            {/* Divider + dual CTA: Demo (low friction) + Signup */}
+            {/* Divider + dual CTA */}
             <div className="pt-4 mt-4 border-t border-white/[0.06] space-y-2">
               <Link
                 href="/demo"
