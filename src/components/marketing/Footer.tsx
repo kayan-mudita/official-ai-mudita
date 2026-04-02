@@ -10,10 +10,10 @@ const footerLinks = {
     { label: "Compare", href: "/compare" },
   ],
   Solutions: [
-    { label: "Real Estate", href: "/for/realtors" },
-    { label: "Legal", href: "/for/attorneys" },
-    { label: "Medical", href: "/for/doctors" },
-    { label: "Financial Advisors", href: "/for/advisors" },
+    { label: "For Real Estate", href: "/for/realtors" },
+    { label: "For Legal", href: "/for/attorneys" },
+    { label: "For Medical", href: "/for/doctors" },
+    { label: "For Financial Advisors", href: "/for/advisors" },
     { label: "All Use Cases", href: "/use-cases" },
   ],
   Resources: [
