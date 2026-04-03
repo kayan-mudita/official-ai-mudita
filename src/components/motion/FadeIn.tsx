@@ -53,7 +53,8 @@ export default function FadeIn({
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, {
     once,
-    amount: threshold,
+    amount: "some",
+    margin: "200px 0px 0px 0px",
   });
 
   const initialTransform = getInitialTransform(direction, distance);
