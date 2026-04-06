@@ -240,6 +240,7 @@ model ResearchSession {
   competitorResult String?   // JSON: competitors, gaps, opportunities
   calendarStatus   String    @default("queued")
   calendarResult   String?   // JSON: 30-day calendar with topics, hooks, scripts
+  approvedDays     String?   // JSON: array of approved day indices e.g. [0,1,2,5,8]
   status           String    @default("processing") // processing | complete | failed
   createdAt        DateTime  @default(now())
   completedAt      DateTime?

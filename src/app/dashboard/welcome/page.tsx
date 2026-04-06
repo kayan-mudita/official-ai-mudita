@@ -494,30 +494,81 @@ function ResearchPhase({
 // ─── Phase 3: Calendar Reveal ─────────────────────────────────────
 
 function CalendarPhase({
-  calendar,
+  calendar: initialCalendar,
   business,
+  sessionId,
 }: {
   calendar: CalendarDay[];
   business: BusinessResult | null;
+  sessionId: string | null;
 }) {
   const router = useRouter();
+  const [calendar, setCalendar] = useState<CalendarDay[]>(initialCalendar);
   const [approvedDays, setApprovedDays] = useState<Set<number>>(() => new Set(calendar.map((_, i) => i)));
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<"calendar" | "list">("list");
   const [weekOffset, setWeekOffset] = useState(0);
   const [launching, setLaunching] = useState(false);
+  const [regeneratingDay, setRegeneratingDay] = useState<number | null>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Debounced save of approved days to API (saves 1s after last toggle)
+  const saveApprovals = useCallback((days: Set<number>) => {
+    if (!sessionId) return;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      fetch("/api/research/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, approvedDays: Array.from(days) }),
+      }).catch(() => {});
+    }, 1000);
+  }, [sessionId]);
 
   const toggleApprove = (index: number) => {
     setApprovedDays((prev) => {
       const next = new Set(prev);
       if (next.has(index)) next.delete(index);
       else next.add(index);
+      saveApprovals(next);
       return next;
     });
   };
 
-  const approveAll = () => setApprovedDays(new Set(calendar.map((_, i) => i)));
-  const rejectAll = () => setApprovedDays(new Set());
+  const approveAll = () => {
+    const all = new Set(calendar.map((_, i) => i));
+    setApprovedDays(all);
+    saveApprovals(all);
+  };
+
+  const rejectAll = () => {
+    const none = new Set<number>();
+    setApprovedDays(none);
+    saveApprovals(none);
+  };
+
+  const handleRegenerate = async (dayIndex: number) => {
+    if (!sessionId || regeneratingDay !== null) return;
+    setRegeneratingDay(dayIndex);
+    try {
+      const res = await fetch("/api/research/regenerate-day", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, dayIndex }),
+      });
+      if (!res.ok) throw new Error("Regeneration failed");
+      const { day } = await res.json();
+      setCalendar((prev) => {
+        const next = [...prev];
+        next[dayIndex] = day;
+        return next;
+      });
+    } catch (e) {
+      console.error("Failed to regenerate day:", e);
+    } finally {
+      setRegeneratingDay(null);
+    }
+  };
 
   const handleLaunch = async () => {
     setLaunching(true);
@@ -526,9 +577,22 @@ function CalendarPhase({
       approvedDays: approvedDays.size,
     });
 
+    // Save final approval state
+    if (sessionId) {
+      await fetch("/api/research/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, approvedDays: Array.from(approvedDays) }),
+      }).catch(() => {});
+    }
+
     // Mark onboarding complete
-    await fetch("/api/onboarding/complete", { method: "POST" }).catch(() => {});
-    router.push("/dashboard");
+    try {
+      await fetch("/api/onboarding/complete", { method: "POST" });
+      router.push("/dashboard");
+    } catch {
+      setLaunching(false);
+    }
   };
 
   // Group by week
@@ -762,9 +826,17 @@ function CalendarPhase({
                                 <Check className="w-3.5 h-3.5" />
                                 {isApproved ? "Approved" : "Approve"}
                               </button>
-                              <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/40 hover:bg-white/[0.06] transition-all">
-                                <RefreshCw className="w-3.5 h-3.5" />
-                                Regenerate
+                              <button
+                                onClick={() => handleRegenerate(globalIndex)}
+                                disabled={regeneratingDay !== null}
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/40 hover:bg-white/[0.06] disabled:opacity-30 transition-all"
+                              >
+                                {regeneratingDay === globalIndex ? (
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                  <RefreshCw className="w-3.5 h-3.5" />
+                                )}
+                                {regeneratingDay === globalIndex ? "Regenerating..." : "Regenerate"}
                               </button>
                             </div>
                           </div>
@@ -1033,6 +1105,7 @@ function WelcomeFlow() {
       <CalendarPhase
         calendar={research.calendar.result}
         business={research.business.result}
+        sessionId={sessionId}
       />
     );
   }

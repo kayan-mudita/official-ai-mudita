@@ -62,14 +62,41 @@ export interface CalendarDay {
   whyThisWorks: string;
 }
 
-// ─── Gemini Helper ────────────────────────────────────────────────
+// ─── Gemini Helpers ───────────────────────────────────────────────
 
-async function callGemini(systemPrompt: string, userPrompt: string): Promise<string> {
+interface GeminiOptions {
+  /** Enable Google Search grounding for real-time web research */
+  useSearchGrounding?: boolean;
+}
+
+async function callGemini(
+  systemPrompt: string,
+  userPrompt: string,
+  options: GeminiOptions = {}
+): Promise<string> {
   const apiKey = process.env.GOOGLE_AI_STUDIO_KEY;
   if (!apiKey) throw new Error("GOOGLE_AI_STUDIO_KEY not set");
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
+  // When search grounding is enabled, responseMimeType: "application/json"
+  // may conflict with grounding. We drop JSON mode and parse manually.
+  const useGrounding = options.useSearchGrounding === true;
+
+  const body: Record<string, unknown> = {
+    system_instruction: { parts: [{ text: systemPrompt }] },
+    contents: [{ parts: [{ text: userPrompt }] }],
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 4096,
+      ...(useGrounding ? {} : { responseMimeType: "application/json" }),
+    },
+  };
+
+  if (useGrounding) {
+    body.tools = [{ google_search: {} }];
+  }
 
   try {
     const res = await fetch(
@@ -78,15 +105,7 @@ async function callGemini(systemPrompt: string, userPrompt: string): Promise<str
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemPrompt }] },
-          contents: [{ parts: [{ text: userPrompt }] }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 4096,
-            responseMimeType: "application/json",
-          },
-        }),
+        body: JSON.stringify(body),
       }
     );
 
@@ -96,7 +115,13 @@ async function callGemini(systemPrompt: string, userPrompt: string): Promise<str
     }
 
     const data = await res.json();
-    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+    let raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+
+    // When grounding is used, response is plain text — extract JSON block
+    if (useGrounding && raw.includes("{")) {
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (jsonMatch) raw = jsonMatch[0];
+    }
 
     // Validate JSON is parseable before returning
     try {
@@ -140,7 +165,10 @@ Be specific and practical. If you don't have enough info, make educated inferenc
       ? `Research this business:\n- Company: ${input.companyName}\n- Industry: ${input.industry}\n- Website: ${input.websiteUrl}\n\nUse the website URL to infer services, positioning, audience, and tone.`
       : `Research this business:\n- Company: ${input.companyName}\n- Industry: ${input.industry}\n\nMake educated inferences about their services, audience, and positioning based on the company name and industry.`;
 
-    const raw = await callGemini(systemPrompt, userPrompt);
+    // Use search grounding for real web research when possible
+    const raw = await callGemini(systemPrompt, userPrompt, {
+      useSearchGrounding: true,
+    });
     const result: BusinessResult = JSON.parse(raw);
 
     await prisma.researchSession.update({
@@ -203,7 +231,9 @@ Include:
 - Seasonal angles for ${monthName} ${year}
 - Platform-specific format tips (Reels vs LinkedIn vs TikTok vs YouTube Shorts)`;
 
-    const raw = await callGemini(systemPrompt, userPrompt);
+    const raw = await callGemini(systemPrompt, userPrompt, {
+      useSearchGrounding: true,
+    });
     const result: TrendsResult = JSON.parse(raw);
 
     await prisma.researchSession.update({
@@ -262,7 +292,9 @@ Identify:
 - What content gaps exist that they're NOT covering
 - What opportunities exist to stand out through video content`;
 
-    const raw = await callGemini(systemPrompt, userPrompt);
+    const raw = await callGemini(systemPrompt, userPrompt, {
+      useSearchGrounding: true,
+    });
     const result: CompetitorResult = JSON.parse(raw);
 
     await prisma.researchSession.update({
