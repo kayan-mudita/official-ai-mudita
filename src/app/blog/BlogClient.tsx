@@ -11,7 +11,7 @@ const posts = [
     title: "The Multi-Cut Method: Why One-Shot AI Video Looks Like Garbage",
     excerpt:
       "Every AI video tool generates a single continuous shot from a prompt. That is why they all look fake. Here is how multi-cut composition changes everything.",
-    category: "Technology",
+    category: "AI Video",
     readTime: "6 min read",
     date: "March 18, 2026",
     featured: true,
@@ -21,7 +21,7 @@ const posts = [
     title: "Why AI-Generated UGC Is the Future of Professional Content",
     excerpt:
       "The content that performs best is not polished corporate video. It is raw, face-to-camera UGC. AI is about to make that accessible to every professional.",
-    category: "Industry",
+    category: "AI Video",
     readTime: "5 min read",
     date: "March 12, 2026",
     featured: false,
@@ -31,7 +31,7 @@ const posts = [
     title: "How Real Estate Agents Are Using AI to Post Daily Without Filming",
     excerpt:
       "The top-producing agents post content daily. Most agents post once a month. AI is closing that gap for agents who know their stuff but hate being on camera.",
-    category: "Use Cases",
+    category: "Industry Tips",
     readTime: "7 min read",
     date: "March 6, 2026",
     featured: false,
@@ -41,18 +41,108 @@ const posts = [
     title: "5 Content Formats That Work for Every Industry",
     excerpt:
       "Not all content formats work for all professionals. But these five formats consistently drive engagement regardless of industry, audience, or platform.",
-    category: "Strategy",
+    category: "Content Strategy",
     readTime: "4 min read",
     date: "February 28, 2026",
+    featured: false,
+  },
+  {
+    slug: "scaling-personal-brand-ai",
+    title: "How Solo Professionals Scale a Personal Brand With AI",
+    excerpt:
+      "Solo professionals cannot hire a content team. AI makes it possible to build a personal brand at scale without sacrificing quality or authenticity.",
+    category: "Content Strategy",
+    readTime: "6 min read",
+    date: "April 2, 2026",
+    featured: false,
+  },
+  {
+    slug: "tiktok-professional-guide",
+    title: "TikTok for Professionals: How to Build Authority Without Dancing",
+    excerpt:
+      "TikTok is not just for teenagers. Professionals are using it to build authority, attract clients, and grow their practice without compromising credibility.",
+    category: "Social Media",
+    readTime: "6 min read",
+    date: "April 1, 2026",
+    featured: false,
+  },
+  {
+    slug: "batch-video-workflow",
+    title: "How to Create 30 Videos in One Sitting",
+    excerpt:
+      "Batch video creation is how top creators maintain a daily posting schedule without burning out. Here is the exact workflow for producing 30 videos in a single session.",
+    category: "AI Video",
+    readTime: "5 min read",
+    date: "March 30, 2026",
+    featured: false,
+  },
+  {
+    slug: "linkedin-video-tips",
+    title: "7 LinkedIn Video Strategies That Actually Generate Leads",
+    excerpt:
+      "Most LinkedIn videos get views but zero leads. These seven strategies turn LinkedIn video content into a consistent source of inbound business.",
+    category: "Social Media",
+    readTime: "7 min read",
+    date: "March 28, 2026",
+    featured: false,
+  },
+  {
+    slug: "voice-cloning-guide",
+    title: "How Voice Cloning Works (And Why It Matters for Video)",
+    excerpt:
+      "Voice cloning lets AI video speak in your actual voice. Here is how the technology works, what it sounds like, and why it matters for professional content.",
+    category: "AI Video",
+    readTime: "6 min read",
+    date: "March 25, 2026",
+    featured: false,
+  },
+  {
+    slug: "lawyer-video-marketing",
+    title: "Video Marketing for Lawyers: A Compliance-Friendly Guide",
+    excerpt:
+      "Video marketing works for law firms, but bar rules add complexity. Here is how to create compelling legal content that stays within ethical guidelines.",
+    category: "Industry Tips",
+    readTime: "7 min read",
+    date: "March 22, 2026",
+    featured: false,
+  },
+  {
+    slug: "video-marketing-roi-guide",
+    title: "How to Measure Video Marketing ROI Without Expensive Tools",
+    excerpt:
+      "Most professionals know video works but cannot prove it. Here is a simple framework for measuring video marketing ROI with tools you already have.",
+    category: "Content Strategy",
+    readTime: "6 min read",
+    date: "March 20, 2026",
+    featured: false,
+  },
+  {
+    slug: "neighborhood-video-seo",
+    title: "How Neighborhood Spotlight Videos Win Listings Before the Pitch",
+    excerpt:
+      "Neighborhood spotlight videos position you as the local expert before a seller even calls. Here is how to create them with AI and win more listings.",
+    category: "Industry Tips",
+    readTime: "5 min read",
+    date: "March 15, 2026",
+    featured: false,
+  },
+  {
+    slug: "financial-advisor-video",
+    title: "How Financial Advisors Use Video to Build AUM",
+    excerpt:
+      "Financial advisors who use video consistently grow AUM faster. Here is how to create compliant, trust-building video content that attracts high-net-worth clients.",
+    category: "Industry Tips",
+    readTime: "6 min read",
+    date: "March 10, 2026",
     featured: false,
   },
 ];
 
 const categoryColors: Record<string, string> = {
-  Technology: "text-blue-400/70 bg-blue-500/10 border-blue-500/20",
-  Industry: "text-violet-400/70 bg-violet-500/10 border-violet-500/20",
-  "Use Cases": "text-emerald-400/70 bg-emerald-500/10 border-emerald-500/20",
-  Strategy: "text-amber-400/70 bg-amber-500/10 border-amber-500/20",
+  "AI Video": "text-blue-400/70 bg-blue-500/10 border-blue-500/20",
+  "Content Strategy": "text-violet-400/70 bg-violet-500/10 border-violet-500/20",
+  "Social Media": "text-emerald-400/70 bg-emerald-500/10 border-emerald-500/20",
+  "Industry Tips": "text-amber-400/70 bg-amber-500/10 border-amber-500/20",
 };
 
 export default function BlogClient() {
