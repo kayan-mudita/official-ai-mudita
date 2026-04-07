@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllPillars } from "@/data/topic-libraries";
+import { competitors } from "@/data/competitors";
 
 const siteUrl = "https://officialai.com";
 
@@ -50,7 +51,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Auth (public-facing)
     { url: `${siteUrl}/auth/login`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${siteUrl}/auth/signup`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+
+    // Free tools
+    { url: `${siteUrl}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
+    { url: `${siteUrl}/tools/speaking-time-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${siteUrl}/tools/video-roi-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${siteUrl}/tools/hook-generator`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
   ];
+
+  // Competitor comparison pages
+  for (const c of competitors) {
+    routes.push({
+      url: `${siteUrl}/compare/${c.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.85,
+    });
+  }
 
   // Pillar pages and subtopic pages
   const pillars = getAllPillars();

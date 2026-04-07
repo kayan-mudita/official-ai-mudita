@@ -15,7 +15,6 @@ import {
   Sparkles,
   BookOpen,
   FileText,
-  ArrowRightLeft,
   ArrowRight,
   Play,
   Clapperboard,
@@ -25,36 +24,193 @@ import {
   Share2,
   Briefcase,
   Layers,
+  Calculator,
+  Clock,
+  Wand2,
+  Users,
+  Quote,
+  GitCompareArrows,
 } from "lucide-react";
 
-const productLinks = [
-  { label: "How it works", href: "/how-it-works", icon: Clapperboard, desc: "See the AI video pipeline" },
-  { label: "Features", href: "/features", icon: Zap, desc: "Everything Official AI does" },
-  { label: "Demo", href: "/demo", icon: Play, desc: "Try it free — no signup" },
-  { label: "Compare", href: "/compare", icon: ArrowRightLeft, desc: "Official AI vs alternatives" },
+interface NavLink {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  desc?: string;
+  iconColor?: string;
+  iconBg?: string;
+  iconBorder?: string;
+}
+
+// ─── Product mega-menu ─────────────────────────────────────────────
+const productCoreLinks: NavLink[] = [
+  {
+    label: "How it works",
+    href: "/how-it-works",
+    icon: Clapperboard,
+    desc: "See the AI video pipeline end-to-end",
+    iconColor: "text-blue-400",
+    iconBg: "bg-blue-500/10",
+    iconBorder: "border-blue-500/20",
+  },
+  {
+    label: "Features",
+    href: "/features",
+    icon: Zap,
+    desc: "AI twin, scripts, captions, auto-post",
+    iconColor: "text-violet-400",
+    iconBg: "bg-violet-500/10",
+    iconBorder: "border-violet-500/20",
+  },
+  {
+    label: "Live Demo",
+    href: "/demo",
+    icon: Play,
+    desc: "Try it free — no signup",
+    iconColor: "text-emerald-400",
+    iconBg: "bg-emerald-500/10",
+    iconBorder: "border-emerald-500/20",
+  },
 ];
 
-const solutionLinks = [
+const productSolutionsLinks: NavLink[] = [
   { label: "For Real Estate", href: "/for/realtors", icon: Home, desc: "Listing tours, market updates" },
   { label: "For Legal", href: "/for/attorneys", icon: Scale, desc: "Know-your-rights, case results" },
   { label: "For Medical", href: "/for/doctors", icon: HeartPulse, desc: "Health tips, patient education" },
   { label: "For Financial Advisors", href: "/for/advisors", icon: TrendingUp, desc: "Market commentary, tips" },
 ];
 
-const resourceLearnLinks = [
-  { label: "Blog", href: "/blog", icon: FileText, desc: "AI video & content strategy" },
-  { label: "Guides", href: "/learn", icon: BookOpen, desc: "In-depth marketing guides" },
-  { label: "Use Cases", href: "/use-cases", icon: Sparkles, desc: "How professionals use Official AI" },
+// ─── Why Official AI mega-menu ─────────────────────────────────────
+const whyLinks: NavLink[] = [
+  {
+    label: "Customer Stories",
+    href: "/use-cases",
+    icon: Quote,
+    desc: "How professionals use Official AI",
+  },
+  {
+    label: "Save with Official AI",
+    href: "/tools/video-roi-calculator",
+    icon: Calculator,
+    desc: "Calculate your annual savings",
+  },
+  {
+    label: "Popular Use Cases",
+    href: "/use-cases",
+    icon: Users,
+    desc: "Most common workflows",
+  },
 ];
 
-const topicGuideLinks = [
-  { label: "AI Video Creation", href: "/learn/ai-video-creation", icon: Video, hoverColor: "group-hover:text-blue-400/70" },
-  { label: "Video Marketing", href: "/learn/video-marketing-professionals", icon: BarChart3, hoverColor: "group-hover:text-violet-400/70" },
-  { label: "Social Media Video", href: "/learn/social-media-video-strategy", icon: Share2, hoverColor: "group-hover:text-emerald-400/70" },
-  { label: "AI Video for Real Estate", href: "/learn/ai-video-real-estate", icon: Home, hoverColor: "group-hover:text-amber-400/70" },
-  { label: "Professional Services", href: "/learn/ai-video-professional-services", icon: Briefcase, hoverColor: "group-hover:text-cyan-400/70" },
-  { label: "AI Content at Scale", href: "/learn/ai-content-at-scale", icon: Layers, hoverColor: "group-hover:text-rose-400/70" },
+const compareLinks: NavLink[] = [
+  { label: "Official AI vs HeyGen", href: "/compare/vs-heygen", icon: GitCompareArrows },
+  { label: "Official AI vs Synthesia", href: "/compare/vs-synthesia", icon: GitCompareArrows },
+  { label: "Official AI vs Captions", href: "/compare/vs-captions", icon: GitCompareArrows },
+  { label: "Official AI vs Descript", href: "/compare/vs-descript", icon: GitCompareArrows },
+  { label: "Official AI vs Hour One", href: "/compare/vs-hourone", icon: GitCompareArrows },
+  { label: "Official AI vs D-ID", href: "/compare/vs-d-id", icon: GitCompareArrows },
 ];
+
+// ─── Resources mega-menu ───────────────────────────────────────────
+const freeToolLinks: NavLink[] = [
+  {
+    label: "Speaking Time Calculator",
+    href: "/tools/speaking-time-calculator",
+    icon: Clock,
+    desc: "Script length → exact runtime",
+    iconColor: "text-blue-400",
+    iconBg: "bg-blue-500/10",
+    iconBorder: "border-blue-500/20",
+  },
+  {
+    label: "Video ROI Calculator",
+    href: "/tools/video-roi-calculator",
+    icon: Calculator,
+    desc: "See what AI video saves you",
+    iconColor: "text-emerald-400",
+    iconBg: "bg-emerald-500/10",
+    iconBorder: "border-emerald-500/20",
+  },
+  {
+    label: "Hook Generator",
+    href: "/tools/hook-generator",
+    icon: Wand2,
+    desc: "100+ proven first-line hooks",
+    iconColor: "text-violet-400",
+    iconBg: "bg-violet-500/10",
+    iconBorder: "border-violet-500/20",
+  },
+];
+
+const learnLinks: NavLink[] = [
+  { label: "Blog", href: "/blog", icon: FileText },
+  { label: "Guides", href: "/learn", icon: BookOpen },
+  { label: "Use Cases", href: "/use-cases", icon: Sparkles },
+];
+
+const topicLinks: NavLink[] = [
+  { label: "AI Video Creation", href: "/learn/ai-video-creation", icon: Video },
+  { label: "Video Marketing", href: "/learn/video-marketing-professionals", icon: BarChart3 },
+  { label: "Social Media Video", href: "/learn/social-media-video-strategy", icon: Share2 },
+  { label: "Real Estate Video", href: "/learn/ai-video-real-estate", icon: Home },
+  { label: "Professional Services", href: "/learn/ai-video-professional-services", icon: Briefcase },
+  { label: "Content at Scale", href: "/learn/ai-content-at-scale", icon: Layers },
+];
+
+// ─── Helpers ───────────────────────────────────────────────────────
+function FeaturedItem({ link }: { link: NavLink }) {
+  const Icon = link.icon;
+  return (
+    <Link
+      href={link.href}
+      className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors group"
+    >
+      <div
+        className={`w-9 h-9 rounded-lg ${link.iconBg ?? "bg-white/[0.04]"} border ${
+          link.iconBorder ?? "border-white/[0.06]"
+        } flex items-center justify-center flex-shrink-0 mt-0.5`}
+      >
+        <Icon className={`w-4 h-4 ${link.iconColor ?? "text-white/50"}`} />
+      </div>
+      <div>
+        <div className="text-p2 font-semibold text-white/80 group-hover:text-white transition-colors">
+          {link.label}
+        </div>
+        {link.desc && (
+          <div className="text-p3 text-white/30 mt-0.5 leading-snug">{link.desc}</div>
+        )}
+      </div>
+    </Link>
+  );
+}
+
+function CompactItem({ link }: { link: NavLink }) {
+  const Icon = link.icon;
+  return (
+    <Link
+      href={link.href}
+      className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
+    >
+      <Icon className="w-3.5 h-3.5 text-white/30 group-hover:text-blue-400/70 transition-colors" />
+      <span className="text-p2 text-white/55 group-hover:text-white/90 transition-colors">
+        {link.label}
+      </span>
+    </Link>
+  );
+}
+
+function ColumnHeader({ children, badge }: { children: React.ReactNode; badge?: string }) {
+  return (
+    <div className="flex items-center gap-2 px-3 mb-2">
+      <h3 className="text-p3 font-medium text-white/25 uppercase tracking-wider">{children}</h3>
+      {badge && (
+        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 uppercase tracking-wider">
+          {badge}
+        </span>
+      )}
+    </div>
+  );
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -76,11 +232,7 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
@@ -106,24 +258,25 @@ export default function Navbar() {
     setActiveDropdown(activeDropdown === name ? null : name);
   };
 
-  const DropdownLink = ({ link }: { link: { label: string; href: string; icon: React.ComponentType<{ className?: string }>; desc: string } }) => (
-    <Link
-      href={link.href}
-      className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.04] transition-colors group"
-    >
-      <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:border-white/[0.1] transition-colors mt-0.5">
-        <link.icon className="w-4 h-4 text-white/40 group-hover:text-blue-400/70 transition-colors" />
-      </div>
-      <div>
-        <div className="text-p2 font-medium text-white/70 group-hover:text-white/90 transition-colors">
-          {link.label}
-        </div>
-        <div className="text-p3 text-white/25 mt-0.5">
-          {link.desc}
-        </div>
-      </div>
-    </Link>
-  );
+  const isProductActive =
+    pathname === "/how-it-works" ||
+    pathname === "/features" ||
+    pathname === "/demo" ||
+    pathname.startsWith("/for/");
+
+  const isWhyActive =
+    pathname === "/use-cases" ||
+    pathname === "/compare" ||
+    pathname.startsWith("/compare/") ||
+    pathname === "/tools/video-roi-calculator";
+
+  const isResourcesActive =
+    pathname === "/blog" ||
+    pathname.startsWith("/blog/") ||
+    pathname === "/learn" ||
+    pathname.startsWith("/learn/") ||
+    pathname === "/tools" ||
+    pathname.startsWith("/tools/");
 
   return (
     <>
@@ -135,7 +288,6 @@ export default function Navbar() {
             : "border-b border-transparent bg-transparent"
         }`}
       >
-        {/* Scroll progress bar */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-transparent">
           <div
             className="h-full bg-gradient-to-r from-blue-400 to-violet-400 transition-all duration-150 ease-out"
@@ -150,76 +302,113 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
-            {/* Products dropdown */}
+            {/* PRODUCT mega-menu */}
             <div className="relative">
               <button
-                onClick={() => toggleDropdown("products")}
+                onClick={() => toggleDropdown("product")}
                 className={`flex items-center gap-1 px-4 py-2 text-p2 transition-colors rounded-lg hover:bg-white/[0.03] ${
-                  activeDropdown === "products" || pathname === "/how-it-works" || pathname === "/features" || pathname === "/demo" || pathname === "/compare"
-                    ? "text-white/70"
+                  activeDropdown === "product" || isProductActive
+                    ? "text-white/80"
                     : "text-white/40 hover:text-white/70"
                 }`}
               >
                 Product
                 <ChevronDown
                   className={`w-3 h-3 transition-transform duration-200 ${
-                    activeDropdown === "products" ? "rotate-180" : ""
+                    activeDropdown === "product" ? "rotate-180" : ""
                   }`}
                 />
               </button>
-              {activeDropdown === "products" && (
-                <div className="absolute top-full left-0 mt-2 w-[280px] p-2 rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
-                  {productLinks.map((link) => (
-                    <DropdownLink key={link.href} link={link} />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Solutions dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => toggleDropdown("solutions")}
-                className={`flex items-center gap-1 px-4 py-2 text-p2 transition-colors rounded-lg hover:bg-white/[0.03] ${
-                  activeDropdown === "solutions" || pathname.startsWith("/for/")
-                    ? "text-white/70"
-                    : "text-white/40 hover:text-white/70"
-                }`}
-              >
-                Solutions
-                <ChevronDown
-                  className={`w-3 h-3 transition-transform duration-200 ${
-                    activeDropdown === "solutions" ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {activeDropdown === "solutions" && (
-                <div className="absolute top-full left-0 mt-2 w-[280px] p-2 rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
-                  {solutionLinks.map((link) => (
-                    <DropdownLink key={link.href} link={link} />
-                  ))}
-                  <div className="mt-1 pt-2 border-t border-white/[0.06]">
-                    <Link
-                      href="/use-cases"
-                      className="flex items-center justify-between p-3 rounded-lg hover:bg-white/[0.04] transition-colors group"
-                    >
-                      <span className="text-p3 text-white/30 group-hover:text-white/50 transition-colors">
-                        View all use cases
-                      </span>
-                      <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
-                    </Link>
+              {activeDropdown === "product" && (
+                <div className="absolute top-full left-0 mt-2 w-[640px] rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
+                  <div className="grid grid-cols-2 divide-x divide-white/[0.06]">
+                    <div className="p-4">
+                      <ColumnHeader>Core Product</ColumnHeader>
+                      {productCoreLinks.map((link) => (
+                        <FeaturedItem key={link.href} link={link} />
+                      ))}
+                    </div>
+                    <div className="p-4">
+                      <ColumnHeader>By Industry</ColumnHeader>
+                      <div className="space-y-0.5">
+                        {productSolutionsLinks.map((link) => (
+                          <CompactItem key={link.href} link={link} />
+                        ))}
+                      </div>
+                      <div className="mt-2 pt-2 border-t border-white/[0.06]">
+                        <Link
+                          href="/use-cases"
+                          className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
+                        >
+                          <span className="text-p3 text-white/30 group-hover:text-white/50 transition-colors">
+                            View all use cases
+                          </span>
+                          <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
+                        </Link>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Resources mega-menu */}
+            {/* WHY OFFICIAL AI mega-menu */}
+            <div className="relative">
+              <button
+                onClick={() => toggleDropdown("why")}
+                className={`flex items-center gap-1 px-4 py-2 text-p2 transition-colors rounded-lg hover:bg-white/[0.03] ${
+                  activeDropdown === "why" || isWhyActive
+                    ? "text-white/80"
+                    : "text-white/40 hover:text-white/70"
+                }`}
+              >
+                Why Official AI
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform duration-200 ${
+                    activeDropdown === "why" ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {activeDropdown === "why" && (
+                <div className="absolute top-full left-0 mt-2 w-[640px] rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
+                  <div className="grid grid-cols-2 divide-x divide-white/[0.06]">
+                    <div className="p-4">
+                      <ColumnHeader>Why Switch</ColumnHeader>
+                      {whyLinks.map((link) => (
+                        <FeaturedItem key={link.href + link.label} link={link} />
+                      ))}
+                    </div>
+                    <div className="p-4">
+                      <ColumnHeader>Compare Official AI</ColumnHeader>
+                      <div className="space-y-0.5">
+                        {compareLinks.map((link) => (
+                          <CompactItem key={link.href} link={link} />
+                        ))}
+                      </div>
+                      <div className="mt-2 pt-2 border-t border-white/[0.06]">
+                        <Link
+                          href="/compare"
+                          className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
+                        >
+                          <span className="text-p3 text-white/30 group-hover:text-white/50 transition-colors">
+                            All comparisons
+                          </span>
+                          <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* RESOURCES mega-menu */}
             <div className="relative">
               <button
                 onClick={() => toggleDropdown("resources")}
                 className={`flex items-center gap-1 px-4 py-2 text-p2 transition-colors rounded-lg hover:bg-white/[0.03] ${
-                  activeDropdown === "resources" || pathname.startsWith("/learn") || pathname.startsWith("/blog") || pathname === "/use-cases"
-                    ? "text-white/70"
+                  activeDropdown === "resources" || isResourcesActive
+                    ? "text-white/80"
                     : "text-white/40 hover:text-white/70"
                 }`}
               >
@@ -231,35 +420,43 @@ export default function Navbar() {
                 />
               </button>
               {activeDropdown === "resources" && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[580px] rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
-                  <div className="grid grid-cols-2 divide-x divide-white/[0.06]">
-                    {/* Left column: Learn */}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[820px] rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
+                  <div className="grid grid-cols-3 divide-x divide-white/[0.06]">
+                    {/* Featured: Free Tools */}
                     <div className="p-4">
-                      <h3 className="text-p3 font-medium text-white/25 uppercase tracking-wider px-3 mb-2">
-                        Learn
-                      </h3>
-                      {resourceLearnLinks.map((link) => (
-                        <DropdownLink key={link.href} link={link} />
+                      <ColumnHeader badge="Free">Tools</ColumnHeader>
+                      {freeToolLinks.map((link) => (
+                        <FeaturedItem key={link.href} link={link} />
                       ))}
+                      <div className="mt-1 pt-2 border-t border-white/[0.06]">
+                        <Link
+                          href="/tools"
+                          className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
+                        >
+                          <span className="text-p3 text-white/30 group-hover:text-white/50 transition-colors">
+                            All free tools
+                          </span>
+                          <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
+                        </Link>
+                      </div>
                     </div>
 
-                    {/* Right column: Topic Guides */}
+                    {/* Learn */}
                     <div className="p-4">
-                      <h3 className="text-p3 font-medium text-white/25 uppercase tracking-wider px-3 mb-2">
-                        Topic Guides
-                      </h3>
+                      <ColumnHeader>Learn</ColumnHeader>
                       <div className="space-y-0.5">
-                        {topicGuideLinks.map((link) => (
-                          <Link
-                            key={link.href}
-                            href={link.href}
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
-                          >
-                            <link.icon className={`w-3.5 h-3.5 text-white/40 ${link.hoverColor} transition-colors`} />
-                            <span className="text-p2 text-white/50 group-hover:text-white/80 transition-colors">
-                              {link.label}
-                            </span>
-                          </Link>
+                        {learnLinks.map((link) => (
+                          <CompactItem key={link.href} link={link} />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Topic Libraries */}
+                    <div className="p-4">
+                      <ColumnHeader>Topic Libraries</ColumnHeader>
+                      <div className="space-y-0.5">
+                        {topicLinks.map((link) => (
+                          <CompactItem key={link.href} link={link} />
                         ))}
                       </div>
                       <div className="mt-2 pt-2 border-t border-white/[0.06]">
@@ -268,7 +465,7 @@ export default function Navbar() {
                           className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
                         >
                           <span className="text-p3 text-white/30 group-hover:text-white/50 transition-colors">
-                            View all guides
+                            All guides
                           </span>
                           <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
                         </Link>
@@ -284,7 +481,7 @@ export default function Navbar() {
               href="/pricing"
               className={`px-4 py-2 text-p2 transition-colors rounded-lg hover:bg-white/[0.03] ${
                 pathname === "/pricing"
-                  ? "text-white/70"
+                  ? "text-white/80"
                   : "text-white/40 hover:text-white/70"
               }`}
             >
@@ -314,11 +511,7 @@ export default function Navbar() {
             className="md:hidden relative z-10 p-2.5 -mr-2 rounded-lg hover:bg-white/[0.05] active:bg-white/[0.08] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
-            {mobileOpen ? (
-              <X className="w-5 h-5 text-white/70" />
-            ) : (
-              <Menu className="w-5 h-5 text-white/70" />
-            )}
+            {mobileOpen ? <X className="w-5 h-5 text-white/70" /> : <Menu className="w-5 h-5 text-white/70" />}
           </button>
         </div>
       </nav>
@@ -326,141 +519,50 @@ export default function Navbar() {
       {/* Mobile menu overlay */}
       <div
         className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
-          mobileOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
+          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       >
-        <div
-          className="absolute inset-0 bg-[#050508]/95 backdrop-blur-xl"
-          onClick={() => setMobileOpen(false)}
-        />
+        <div className="absolute inset-0 bg-[#050508]/95 backdrop-blur-xl" onClick={() => setMobileOpen(false)} />
         <div
           className={`relative h-full overflow-y-auto pt-20 pb-8 px-6 transition-all duration-300 ${
             mobileOpen ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"
           }`}
         >
           <div className="max-w-sm mx-auto space-y-1">
-            {/* Product accordion */}
-            <div>
-              <button
-                onClick={() => setMobileAccordion(mobileAccordion === "products" ? null : "products")}
-                className="w-full flex items-center justify-between text-p1 py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
-              >
-                Product
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    mobileAccordion === "products" ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {mobileAccordion === "products" && (
-                <div className="pl-4 space-y-1 mt-1">
-                  {productLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={`flex items-center gap-3 text-p2 py-2.5 px-4 rounded-lg transition-colors ${
-                        pathname === link.href
-                          ? "text-white/90 bg-white/[0.04]"
-                          : "text-white/40 active:text-white/70"
-                      }`}
-                    >
-                      <link.icon className="w-4 h-4 text-white/30 flex-shrink-0" />
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* PRODUCT */}
+            <MobileAccordion
+              name="product"
+              label="Product"
+              open={mobileAccordion}
+              setOpen={setMobileAccordion}
+            >
+              <MobileSection title="Core Product" links={productCoreLinks} pathname={pathname} />
+              <MobileSection title="By Industry" links={productSolutionsLinks} pathname={pathname} />
+            </MobileAccordion>
 
-            {/* Solutions accordion */}
-            <div>
-              <button
-                onClick={() => setMobileAccordion(mobileAccordion === "solutions" ? null : "solutions")}
-                className="w-full flex items-center justify-between text-p1 py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
-              >
-                Solutions
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    mobileAccordion === "solutions" ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {mobileAccordion === "solutions" && (
-                <div className="pl-4 space-y-1 mt-1">
-                  {solutionLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={`flex items-center gap-3 text-p2 py-2.5 px-4 rounded-lg transition-colors ${
-                        pathname === link.href
-                          ? "text-white/90 bg-white/[0.04]"
-                          : "text-white/40 active:text-white/70"
-                      }`}
-                    >
-                      <link.icon className="w-4 h-4 text-white/30 flex-shrink-0" />
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* WHY OFFICIAL AI */}
+            <MobileAccordion
+              name="why"
+              label="Why Official AI"
+              open={mobileAccordion}
+              setOpen={setMobileAccordion}
+            >
+              <MobileSection title="Why Switch" links={whyLinks} pathname={pathname} />
+              <MobileSection title="Compare" links={compareLinks} pathname={pathname} />
+            </MobileAccordion>
 
-            {/* Resources accordion */}
-            <div>
-              <button
-                onClick={() => setMobileAccordion(mobileAccordion === "resources" ? null : "resources")}
-                className="w-full flex items-center justify-between text-p1 py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
-              >
-                Resources
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    mobileAccordion === "resources" ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {mobileAccordion === "resources" && (
-                <div className="pl-4 space-y-1 mt-1">
-                  <div className="px-4 py-2">
-                    <span className="text-p3 font-medium text-white/25 uppercase tracking-wider">Learn</span>
-                  </div>
-                  {resourceLearnLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={`flex items-center gap-3 text-p2 py-2.5 px-4 rounded-lg transition-colors ${
-                        pathname === link.href
-                          ? "text-white/90 bg-white/[0.04]"
-                          : "text-white/40 active:text-white/70"
-                      }`}
-                    >
-                      <link.icon className="w-4 h-4 text-white/30 flex-shrink-0" />
-                      {link.label}
-                    </Link>
-                  ))}
-                  <div className="px-4 py-2 mt-2">
-                    <span className="text-p3 font-medium text-white/25 uppercase tracking-wider">Topic Guides</span>
-                  </div>
-                  {topicGuideLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={`flex items-center gap-3 text-p2 py-2.5 px-4 rounded-lg transition-colors ${
-                        pathname === link.href
-                          ? "text-white/90 bg-white/[0.04]"
-                          : "text-white/40 active:text-white/70"
-                      }`}
-                    >
-                      <link.icon className="w-4 h-4 flex-shrink-0 text-white/30" />
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* RESOURCES */}
+            <MobileAccordion
+              name="resources"
+              label="Resources"
+              open={mobileAccordion}
+              setOpen={setMobileAccordion}
+            >
+              <MobileSection title="Free Tools" badge="FREE" links={freeToolLinks} pathname={pathname} />
+              <MobileSection title="Learn" links={learnLinks} pathname={pathname} />
+              <MobileSection title="Topic Libraries" links={topicLinks} pathname={pathname} />
+            </MobileAccordion>
 
-            {/* Pricing — standalone */}
             <Link
               href="/pricing"
               className={`block text-p1 py-3 px-4 rounded-lg transition-colors ${
@@ -472,7 +574,6 @@ export default function Navbar() {
               Pricing
             </Link>
 
-            {/* About — standalone */}
             <Link
               href="/about"
               className={`block text-p1 py-3 px-4 rounded-lg transition-colors ${
@@ -512,5 +613,80 @@ export default function Navbar() {
         </div>
       </div>
     </>
+  );
+}
+
+// ─── Mobile sub-components ─────────────────────────────────────────
+function MobileAccordion({
+  name,
+  label,
+  open,
+  setOpen,
+  children,
+}: {
+  name: string;
+  label: string;
+  open: string | null;
+  setOpen: (v: string | null) => void;
+  children: React.ReactNode;
+}) {
+  const isOpen = open === name;
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(isOpen ? null : name)}
+        className="w-full flex items-center justify-between text-p1 py-3 px-4 rounded-lg text-white/50 active:text-white/90 transition-colors"
+      >
+        {label}
+        <ChevronDown
+          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+      {isOpen && <div className="pl-4 space-y-3 mt-1 mb-2">{children}</div>}
+    </div>
+  );
+}
+
+function MobileSection({
+  title,
+  badge,
+  links,
+  pathname,
+}: {
+  title: string;
+  badge?: string;
+  links: NavLink[];
+  pathname: string;
+}) {
+  return (
+    <div>
+      <div className="flex items-center gap-2 px-4 py-2">
+        <span className="text-p3 font-medium text-white/25 uppercase tracking-wider">{title}</span>
+        {badge && (
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 uppercase tracking-wider">
+            {badge}
+          </span>
+        )}
+      </div>
+      <div className="space-y-1">
+        {links.map((link) => {
+          const Icon = link.icon;
+          return (
+            <Link
+              key={link.href + link.label}
+              href={link.href}
+              className={`flex items-center gap-3 text-p2 py-2.5 px-4 rounded-lg transition-colors ${
+                pathname === link.href
+                  ? "text-white/90 bg-white/[0.04]"
+                  : "text-white/40 active:text-white/70"
+              }`}
+            >
+              <Icon className="w-4 h-4 text-white/30 flex-shrink-0" />
+              {link.label}
+            </Link>
+          );
+        })}
+      </div>
+    </div>
   );
 }
