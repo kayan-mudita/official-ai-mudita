@@ -1,55 +1,69 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, Zap, Camera, Sparkles, Send, Play, Star, Quote } from "lucide-react";
+import { ArrowRight, Check, Zap, Sparkles, Play } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
+import { AuroraBackground } from "@/components/marketing/AuroraBackground";
 import FadeIn from "@/components/motion/FadeIn";
 
-const testimonials = [
+const demoVideos = [
   {
-    name: "Marcus Rivera",
-    title: "Managing Partner",
-    industry: "Personal Injury Law",
-    quote:
-      "We were spending $4,000 a month on a videographer who delivered four videos. Official AI gives us 30 for a fraction of the cost and they actually look like me on camera.",
+    id: "attorney",
+    label: "Attorney",
+    title: "Watch AI create a video",
+    subtitle: "in 30 seconds",
+    duration: "0:30",
+    gradient: "from-utility-400/15 via-[#050508] to-special-500/15",
   },
   {
-    name: "Dr. Priya Patel",
-    title: "Board-Certified Dermatologist",
-    industry: "Medical",
-    quote:
-      "My patients constantly tell me they watched my videos before booking. I review the scripts for accuracy, approve them, and they post automatically. It takes me 20 minutes a week.",
+    id: "doctor",
+    label: "Doctor",
+    title: "Watch AI explain a procedure",
+    subtitle: "in 45 seconds",
+    duration: "0:45",
+    gradient: "from-utility-400/25 via-[#050508] to-utility-400/10",
   },
   {
-    name: "Sarah Mitchell",
-    title: "Broker / Owner",
-    industry: "Real Estate",
-    quote:
-      "I went from posting once a month to five times a week. My DMs are full of people saying they see me everywhere. Three new listings came from social this quarter alone.",
+    id: "realtor",
+    label: "Realtor",
+    title: "Watch AI tour a listing",
+    subtitle: "in 60 seconds",
+    duration: "1:00",
+    gradient: "from-special-500/15 via-[#050508] to-utility-400/15",
+  },
+  {
+    id: "advisor",
+    label: "Advisor",
+    title: "Watch AI break down a market move",
+    subtitle: "in 30 seconds",
+    duration: "0:30",
+    gradient: "from-special-500/25 via-[#050508] to-special-500/10",
   },
 ];
 
 export default function HomeClient() {
+  const [activeVideo, setActiveVideo] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setActiveVideo((prev) => (prev + 1) % demoVideos.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
   return (
     <MarketingLayout>
       {/* Hero */}
+      <AuroraBackground>
       <section className="relative pt-32 pb-24 px-6">
-        {/* Subtle gradient orbs */}
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-blue-500/[0.04] rounded-full blur-[120px]" />
-          <div className="absolute top-20 right-1/4 w-[300px] h-[300px] bg-purple-500/[0.04] rounded-full blur-[100px]" />
-        </div>
-
-        {/* Radial gradient glow behind the hero headline */}
-        <div className="absolute top-24 left-1/2 -translate-x-1/2 w-[600px] h-[400px] pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(76,110,245,0.12)_0%,rgba(124,58,237,0.06)_40%,transparent_70%)]" />
-        </div>
-
         <div className="relative max-w-3xl mx-auto text-center">
           <FadeIn delay={0} duration={0.6}>
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] mb-8">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded-full bg-positive-400 animate-pulse" />
               <span className="text-p3 text-white/40 font-medium">
                 Now in beta
               </span>
@@ -60,7 +74,7 @@ export default function HomeClient() {
             <h1 className="text-h1 sm:text-h0 font-bold tracking-[-0.03em] leading-[1.05] text-white mb-6">
               Your AI twin.
               <br />
-              <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-utility-400 via-special-500 to-utility-400 bg-clip-text text-transparent">
                 Posting for you.
               </span>
             </h1>
@@ -97,154 +111,239 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* Hero Demo Video — Item 1 */}
+      {/* Hero Demo Video — stacked deck carousel */}
       <FadeIn delay={0.15} duration={0.8}>
         <section className="pb-24 px-6">
-          <div className="max-w-sm mx-auto">
-            {/* 9:16 video container with glow */}
-            <div className="relative group">
+          <div
+            className="max-w-3xl mx-auto"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            {/* Stacked deck container */}
+            <div className="relative h-[560px] sm:h-[640px] flex items-center justify-center">
               {/* Outer glow */}
-              <div className="absolute -inset-4 bg-gradient-to-b from-blue-500/[0.08] via-violet-500/[0.06] to-transparent rounded-[32px] blur-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[600px] bg-gradient-to-b from-special-500/[0.10] via-utility-400/[0.06] to-transparent rounded-[40px] blur-3xl pointer-events-none" />
 
-              {/* Video frame */}
-              <div className="relative aspect-[9/16] rounded-2xl overflow-hidden border border-white/[0.08] bg-gradient-to-b from-white/[0.03] to-white/[0.01]">
-                {/* Simulated content / poster background */}
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 via-[#0a0e17] to-violet-900/20" />
+              {demoVideos.map((video, i) => {
+                // Circular distance from active (-2..-1..0..1..2)
+                const len = demoVideos.length;
+                let offset = i - activeVideo;
+                if (offset > len / 2) offset -= len;
+                if (offset < -len / 2) offset += len;
 
-                {/* Subtle mesh grid overlay */}
-                <div
-                  className="absolute inset-0 opacity-[0.04]"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-                    backgroundSize: "40px 40px",
+                const isActive = offset === 0;
+                const absOffset = Math.abs(offset);
+
+                // Stack styling — center is full, sides shrink/dim
+                const translateX = offset * 60; // % of card width
+                const scale = isActive ? 1 : absOffset === 1 ? 0.82 : 0.68;
+                const opacity = isActive ? 1 : absOffset === 1 ? 0.45 : 0;
+                const blurPx = isActive ? 0 : absOffset === 1 ? 2 : 6;
+                const zIndex = 10 - absOffset;
+
+                return (
+                  <button
+                    key={video.id}
+                    type="button"
+                    onClick={() => setActiveVideo(i)}
+                    aria-label={`Show ${video.label} demo`}
+                    aria-current={isActive}
+                    tabIndex={isActive ? 0 : -1}
+                    className="absolute w-[260px] sm:w-[300px] aspect-[9/16] rounded-2xl overflow-hidden border border-white/[0.08] bg-gradient-to-b from-white/[0.03] to-white/[0.01] transition-all duration-700 ease-out cursor-pointer focus:outline-none focus:ring-2 focus:ring-utility-400/40"
+                    style={{
+                      transform: `translateX(${translateX}%) scale(${scale})`,
+                      opacity,
+                      filter: `blur(${blurPx}px)`,
+                      zIndex,
+                      pointerEvents: absOffset > 1 ? "none" : "auto",
+                    }}
+                  >
+                    {/* Poster background */}
+                    <div className={`absolute inset-0 bg-gradient-to-b ${video.gradient}`} />
+
+                    {/* Subtle mesh grid */}
+                    <div
+                      className="absolute inset-0 opacity-[0.04]"
+                      style={{
+                        backgroundImage:
+                          "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+                        backgroundSize: "40px 40px",
+                      }}
+                    />
+
+                    {/* AI badge */}
+                    <div className="absolute top-5 left-4 flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm">
+                      <Sparkles className="w-3 h-3 text-utility-400/80" />
+                      <span className="text-[10px] text-white/40 font-medium">
+                        AI Generated
+                      </span>
+                    </div>
+
+                    {/* Duration */}
+                    <div className="absolute top-5 right-4 px-2 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm">
+                      <span className="text-[10px] text-white/40 font-medium">
+                        {video.duration}
+                      </span>
+                    </div>
+
+                    {/* Center play + label */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="relative mb-5">
+                        {isActive && (
+                          <div className="absolute inset-0 bg-white/10 rounded-full blur-xl scale-150 animate-pulse-slow" />
+                        )}
+                        <div className="relative w-14 h-14 rounded-full bg-white/[0.1] border border-white/[0.15] flex items-center justify-center backdrop-blur-sm">
+                          <Play className="w-5 h-5 text-white/90 ml-0.5" />
+                        </div>
+                      </div>
+                      <p className="text-p2 text-white/60 font-medium text-center px-6 leading-snug">
+                        {video.title}
+                        <br />
+                        {video.subtitle}
+                      </p>
+                    </div>
+
+                    {/* Bottom fade */}
+                    <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#050508] to-transparent" />
+
+                    {/* Progress bar — only on active card */}
+                    {isActive && (
+                      <div className="absolute bottom-4 left-5 right-5">
+                        <div className="h-[2px] rounded-full bg-white/[0.06] overflow-hidden">
+                          <div
+                            key={`${activeVideo}-${isPaused}`}
+                            className={`h-full bg-gradient-to-r from-special-500 to-utility-400 rounded-full ${
+                              isPaused ? "w-full opacity-30" : "animate-progress-bar"
+                            }`}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Thumbnail/dot picker */}
+            <div className="flex items-center justify-center gap-2 mt-6">
+              {demoVideos.map((video, i) => (
+                <button
+                  key={video.id}
+                  onClick={() => {
+                    setActiveVideo(i);
                   }}
-                />
-
-                {/* Floating AI generation indicators */}
-                <div className="absolute top-6 left-5 flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm">
-                  <Sparkles className="w-3 h-3 text-blue-400/80" />
-                  <span className="text-[10px] text-white/40 font-medium">
-                    AI Generated
+                  className={`group/dot flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer ${
+                    i === activeVideo
+                      ? "bg-white/[0.08] border-white/[0.15]"
+                      : "bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.1]"
+                  }`}
+                  aria-label={`Play ${video.label} demo`}
+                  aria-current={i === activeVideo}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                      i === activeVideo
+                        ? "bg-gradient-to-r from-utility-400 to-special-500"
+                        : "bg-white/20 group-hover/dot:bg-white/40"
+                    }`}
+                  />
+                  <span
+                    className={`text-[11px] font-medium transition-colors duration-300 ${
+                      i === activeVideo ? "text-white/70" : "text-white/30 group-hover/dot:text-white/50"
+                    }`}
+                  >
+                    {video.label}
                   </span>
-                </div>
-
-                <div className="absolute top-6 right-5">
-                  <div className="px-2.5 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm">
-                    <span className="text-[10px] text-white/40 font-medium">
-                      0:30
-                    </span>
-                  </div>
-                </div>
-
-                {/* Center play button and text */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  {/* Play button with glow ring */}
-                  <div className="relative mb-6">
-                    <div className="absolute inset-0 bg-white/10 rounded-full blur-xl scale-150 animate-pulse-slow" />
-                    <button
-                      className="relative w-16 h-16 rounded-full bg-white/[0.1] border border-white/[0.15] flex items-center justify-center backdrop-blur-sm hover:bg-white/[0.15] hover:border-white/[0.25] hover:scale-105 transition-all duration-300 cursor-pointer"
-                      aria-label="Play demo video"
-                    >
-                      <Play className="w-6 h-6 text-white/90 ml-1" />
-                    </button>
-                  </div>
-
-                  <p className="text-p2 sm:text-p2 text-white/60 font-medium text-center px-8 leading-snug">
-                    Watch AI create a video
-                    <br />
-                    in 30 seconds
-                  </p>
-                </div>
-
-                {/* Bottom gradient fade */}
-                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#050508] to-transparent" />
-
-                {/* Bottom simulated timeline bar */}
-                <div className="absolute bottom-4 left-5 right-5">
-                  <div className="h-[2px] rounded-full bg-white/[0.06] overflow-hidden">
-                    <div className="h-full w-0 bg-gradient-to-r from-blue-400 to-violet-400 rounded-full" />
-                  </div>
-                </div>
-              </div>
+                </button>
+              ))}
             </div>
 
             {/* Caption below video */}
-            <p className="text-center mt-6 text-p2 text-white/30 leading-relaxed font-light">
+            <p className="text-center mt-4 text-p2 text-white/30 leading-relaxed font-light">
               This was made by AI. No camera. No crew. No editing.
             </p>
           </div>
         </section>
       </FadeIn>
+      </AuroraBackground>
 
-      {/* Social Proof Wall — Item 4 */}
+      {/* Stats — Trusted by + credentials + bordered cards */}
       <FadeIn>
-        <section className="py-20 px-6 border-y border-white/[0.04]">
-          <div className="max-w-4xl mx-auto">
-            {/* Trusted counter */}
+        <section className="relative border-b border-white/[0.04] py-28 px-6 overflow-hidden">
+          {/* Ambient glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[400px] pointer-events-none">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(129,0,158,0.06)_0%,transparent_60%)]" />
+          </div>
+
+          <div className="relative max-w-6xl mx-auto">
+            {/* Headline */}
             <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/[0.03] border border-white/[0.06] mb-6">
-                <div className="flex -space-x-1.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-3.5 h-3.5 text-yellow-400/80 fill-yellow-400/80"
-                    />
-                  ))}
-                </div>
-                <span className="text-p3 text-white/50 font-medium">
-                  4.9 average rating
-                </span>
-              </div>
-              <h2 className="text-h3 sm:text-h2 font-bold tracking-tight text-white mb-2">
+              <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
                 Trusted by{" "}
-                <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
-                  200+
-                </span>{" "}
-                professionals
+                <span className="bg-gradient-to-r from-utility-400 to-special-500 bg-clip-text text-transparent">
+                  200+ professionals
+                </span>
+                <br />
+                <span className="text-white/40">creating real results.</span>
               </h2>
-              <p className="text-p2 text-white/25">
-                Attorneys, doctors, real estate agents, and advisors use Official
-                AI every day.
-              </p>
             </div>
 
-            {/* Testimonial cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {testimonials.map((t, i) => (
+            {/* Credentials strip */}
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 mb-16 opacity-50">
+              {[
+                "American Bar Association",
+                "AMA",
+                "NAR",
+                "CFP Board",
+                "FINRA",
+              ].map((org) => (
+                <span
+                  key={org}
+                  className="text-p3 sm:text-p2 text-white/60 font-semibold tracking-wide uppercase"
+                >
+                  {org}
+                </span>
+              ))}
+            </div>
+
+            {/* 3 stat cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {[
+                {
+                  value: "90%",
+                  label: "Less time creating",
+                  caption: "Average across all users compared to traditional content workflows.",
+                },
+                {
+                  value: "60x",
+                  label: "More views on average",
+                  caption: "Multi-platform automation drives compounding reach across every channel.",
+                },
+                {
+                  value: "5 min",
+                  label: "Setup to first video",
+                  caption: "From signing up to publishing your first AI-generated video.",
+                },
+              ].map((stat, i) => (
                 <FadeIn key={i} delay={i * 0.1} duration={0.6}>
-                  <div className="relative p-6 rounded-2xl card-hairline h-full flex flex-col">
-                    {/* Accent gradient top */}
-                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-blue-500/20 via-violet-500/10 to-transparent" />
+                  <div className="relative h-full p-8 rounded-2xl card-hairline overflow-hidden group">
+                    {/* Top accent line */}
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-utility-400/30 via-special-500/20 to-transparent" />
 
-                    {/* Quote icon */}
-                    <Quote className="w-5 h-5 text-blue-400/20 mb-4 flex-shrink-0" />
-
-                    {/* Quote text */}
-                    <p className="text-p3 text-white/40 leading-relaxed mb-6 flex-1">
-                      &ldquo;{t.quote}&rdquo;
-                    </p>
-
-                    {/* Author */}
-                    <div className="flex items-center gap-3 pt-4 border-t border-white/[0.04]">
-                      {/* Avatar placeholder */}
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 border border-white/[0.06] flex items-center justify-center flex-shrink-0">
-                        <span className="text-p3 font-semibold text-white/50">
-                          {t.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </span>
-                      </div>
-                      <div>
-                        <div className="text-p3 font-medium text-white/70">
-                          {t.name}
-                        </div>
-                        <div className="text-p3 text-white/25">
-                          {t.title} &middot; {t.industry}
-                        </div>
-                      </div>
+                    {/* Big number */}
+                    <div className="text-[72px] md:text-[88px] leading-[0.9] font-bold tracking-tighter bg-gradient-to-b from-white via-white to-white/30 bg-clip-text text-transparent mb-6">
+                      {stat.value}
                     </div>
+
+                    {/* Label */}
+                    <div className="text-p1 font-semibold text-white/90 mb-3">
+                      {stat.label}
+                    </div>
+
+                    {/* Caption */}
+                    <p className="text-p3 text-white/30 leading-relaxed">
+                      {stat.caption}
+                    </p>
                   </div>
                 </FadeIn>
               ))}
@@ -253,93 +352,179 @@ export default function HomeClient() {
         </section>
       </FadeIn>
 
-      {/* Stats */}
-      <FadeIn>
-        <section className="border-b border-white/[0.04] py-12 px-6">
-          <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {[
-              { value: "90%", label: "Less time creating" },
-              { value: "60x", label: "More views on average" },
-              { value: "5 min", label: "Setup to first video" },
-              { value: "$79", label: "Per month to start" },
-            ].map((stat, i) => (
-              <div key={i} className="space-y-1">
-                <div className="text-h2 font-bold tracking-tight text-white">
-                  {stat.value}
-                </div>
-                <div className="text-p3 text-white/25">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </FadeIn>
-
-      {/* How it Works */}
+      {/* How it Works — alternating bento with UI mockups */}
       <FadeIn>
         <section id="how" className="py-28 px-6 scroll-mt-20">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-14">
-              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
-                How it works
-              </p>
+          <div className="max-w-6xl mx-auto">
+            {/* Section header */}
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-utility-400/[0.06] border border-utility-400/[0.15] mb-6">
+                <span className="text-p3 text-utility-400/80 font-medium">
+                  Never been easier
+                </span>
+              </div>
               <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
-                Three steps. Five minutes.
-                <br />
-                <span className="text-white/40">Content on autopilot.</span>
+                Create AI{" "}
+                <span className="bg-gradient-to-r from-utility-400 to-special-500 bg-clip-text text-transparent">
+                  videos
+                </span>{" "}
+                in minutes
               </h2>
+              <p className="text-p1 text-white/40 mt-4">
+                From idea to video in minutes — ready to use instantly.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {[
-                {
-                  icon: Camera,
-                  num: "01",
-                  title: "Upload your photos",
-                  desc: "A few selfies or headshots from your phone. The AI builds a consistent character model of you for every video.",
-                  accent: "from-blue-500/20 to-blue-500/0",
-                },
-                {
-                  icon: Sparkles,
-                  num: "02",
-                  title: "AI creates your content",
-                  desc: "Type what you want or let AI decide. It writes the script, plans the shots, and builds a multi-cut video that looks professionally produced.",
-                  accent: "from-violet-500/20 to-violet-500/0",
-                },
-                {
-                  icon: Send,
-                  num: "03",
-                  title: "Review and publish",
-                  desc: "Every video hits your approval queue first. Approve it, schedule it, and it auto-posts to Instagram, TikTok, LinkedIn, YouTube, and Facebook.",
-                  accent: "from-emerald-500/20 to-emerald-500/0",
-                },
-              ].map((step) => (
-                <div
-                  key={step.num}
-                  className="group relative p-6 rounded-2xl card-hairline"
-                >
-                  <div
-                    className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${step.accent}`}
-                  />
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5 group-hover:border-white/[0.1] transition-colors">
-                    <step.icon className="w-4.5 h-4.5 text-white/40" />
+            {/* 3 alternating bento rows */}
+            <div className="space-y-5">
+              {/* Row 1 — text left, script editor mockup right */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="relative p-10 rounded-2xl card-hairline flex flex-col justify-center min-h-[280px] overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-utility-400/30 to-transparent" />
+                  {/* Step progress */}
+                  <div className="flex items-center gap-1.5 mb-8">
+                    <div className="w-8 h-1 rounded-full bg-gradient-to-r from-utility-400 to-utility-400/40" />
+                    <div className="w-8 h-1 rounded-full bg-white/[0.08]" />
+                    <div className="w-8 h-1 rounded-full bg-white/[0.08]" />
                   </div>
-                  <div className="text-p3 text-white/15 font-mono mb-2">
-                    {step.num}
-                  </div>
-                  <h3 className="text-p1 font-semibold text-white/90 mb-2.5">
-                    {step.title}
+                  <h3 className="text-h3 font-bold text-white mb-3">
+                    Upload your photos
                   </h3>
-                  <p className="text-p3 text-white/30 leading-relaxed">
-                    {step.desc}
+                  <p className="text-p2 text-white/40 leading-relaxed">
+                    A few selfies or headshots from your phone. The AI builds a
+                    consistent character model of you for every video.
                   </p>
                 </div>
-              ))}
+
+                {/* Script editor mockup */}
+                <div className="relative p-8 rounded-2xl card-hairline min-h-[280px] overflow-hidden flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-br from-utility-400/[0.04] via-transparent to-special-500/[0.04]" />
+                  <div className="relative w-full max-w-md p-5 rounded-xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-p3 text-white/30">Write your script…</span>
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-utility-400/[0.08] border border-utility-400/[0.15]">
+                        <Sparkles className="w-2.5 h-2.5 text-utility-400/80" />
+                        <span className="text-[10px] text-utility-400/80 font-medium">AI Script writer</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2 mb-6">
+                      <div className="h-2 rounded-full bg-white/[0.06] w-full" />
+                      <div className="h-2 rounded-full bg-white/[0.06] w-5/6" />
+                      <div className="h-2 rounded-full bg-white/[0.06] w-3/4" />
+                    </div>
+                    <div className="flex items-center gap-2 pt-4 border-t border-white/[0.06]">
+                      <div className="px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
+                        <span className="text-[10px] text-white/40 font-medium">+ Credits 6</span>
+                      </div>
+                      <div className="px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
+                        <span className="text-[10px] text-white/40 font-medium">Talking Actors</span>
+                      </div>
+                      <div className="px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.06]">
+                        <span className="text-[10px] text-white/40 font-medium">Edit Voice</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 2 — avatar grid mockup left, text right */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Avatar grid mockup */}
+                <div className="relative p-8 rounded-2xl card-hairline min-h-[280px] overflow-hidden flex items-center justify-center order-2 md:order-1">
+                  <div className="absolute inset-0 bg-gradient-to-br from-special-500/[0.05] via-transparent to-utility-400/[0.04]" />
+                  <div className="relative flex items-end gap-2">
+                    {[
+                      { h: "h-32", scale: "scale-90", grad: "from-utility-400/30 to-transparent" },
+                      { h: "h-36", scale: "scale-95", grad: "from-special-500/30 to-transparent" },
+                      { h: "h-44", scale: "scale-100", grad: "from-utility-400/40 to-special-500/20", active: true },
+                      { h: "h-36", scale: "scale-95", grad: "from-special-500/30 to-transparent" },
+                      { h: "h-32", scale: "scale-90", grad: "from-utility-400/30 to-transparent" },
+                    ].map((card, i) => (
+                      <div
+                        key={i}
+                        className={`relative w-16 ${card.h} ${card.scale} rounded-xl border ${card.active ? "border-white/20" : "border-white/[0.08]"} overflow-hidden`}
+                      >
+                        <div className={`absolute inset-0 bg-gradient-to-b ${card.grad}`} />
+                        <div className="absolute bottom-1 left-1 right-1 px-1.5 py-0.5 rounded bg-black/40 backdrop-blur-sm">
+                          <div className="h-1 rounded-full bg-white/30" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="relative p-10 rounded-2xl card-hairline flex flex-col justify-center min-h-[280px] overflow-hidden order-1 md:order-2">
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-special-500/30 to-transparent" />
+                  {/* Step progress */}
+                  <div className="flex items-center gap-1.5 mb-8">
+                    <div className="w-8 h-1 rounded-full bg-white/[0.08]" />
+                    <div className="w-8 h-1 rounded-full bg-gradient-to-r from-special-500 to-special-500/40" />
+                    <div className="w-8 h-1 rounded-full bg-white/[0.08]" />
+                  </div>
+                  <h3 className="text-h3 font-bold text-white mb-3">
+                    AI creates your content
+                  </h3>
+                  <p className="text-p2 text-white/40 leading-relaxed">
+                    Type what you want or let AI decide. It writes the script,
+                    plans the shots, and builds a multi-cut video that looks
+                    professionally produced.
+                  </p>
+                </div>
+              </div>
+
+              {/* Row 3 — text left, video stack mockup right */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="relative p-10 rounded-2xl card-hairline flex flex-col justify-center min-h-[280px] overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-utility-400/30 via-special-500/20 to-transparent" />
+                  {/* Step progress */}
+                  <div className="flex items-center gap-1.5 mb-8">
+                    <div className="w-8 h-1 rounded-full bg-white/[0.08]" />
+                    <div className="w-8 h-1 rounded-full bg-white/[0.08]" />
+                    <div className="w-8 h-1 rounded-full bg-gradient-to-r from-utility-400 to-special-500" />
+                  </div>
+                  <h3 className="text-h3 font-bold text-white mb-3">
+                    Review and publish
+                  </h3>
+                  <p className="text-p2 text-white/40 leading-relaxed">
+                    Every video hits your approval queue first. Approve it,
+                    schedule it, and it auto-posts to Instagram, TikTok,
+                    LinkedIn, YouTube, and Facebook.
+                  </p>
+                </div>
+
+                {/* Video stack mockup */}
+                <div className="relative p-8 rounded-2xl card-hairline min-h-[280px] overflow-hidden flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-br from-utility-400/[0.04] via-transparent to-special-500/[0.05]" />
+                  <div className="relative">
+                    {/* Back card */}
+                    <div className="absolute -left-12 top-2 w-24 h-40 rounded-xl border border-white/[0.08] overflow-hidden -rotate-12">
+                      <div className="absolute inset-0 bg-gradient-to-b from-special-500/30 via-black/40 to-utility-400/20" />
+                    </div>
+                    {/* Right back card */}
+                    <div className="absolute -right-12 top-2 w-24 h-40 rounded-xl border border-white/[0.08] overflow-hidden rotate-12">
+                      <div className="absolute inset-0 bg-gradient-to-b from-utility-400/30 via-black/40 to-special-500/20" />
+                    </div>
+                    {/* Front center card */}
+                    <div className="relative w-28 h-44 rounded-xl border border-white/20 overflow-hidden shadow-2xl">
+                      <div className="absolute inset-0 bg-gradient-to-b from-utility-400/30 via-black/30 to-special-500/30" />
+                      <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full bg-black/50 backdrop-blur-sm">
+                        <span className="text-[8px] text-white/70 font-medium">01:48</span>
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full bg-white/[0.15] border border-white/[0.25] flex items-center justify-center backdrop-blur-sm">
+                          <Play className="w-3 h-3 text-white/90 ml-0.5" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="mt-8 text-center">
+            <div className="mt-10 text-center">
               <Link
                 href="/how-it-works"
-                className="text-p3 text-blue-400/70 hover:text-blue-400 transition-colors"
+                className="text-p3 text-utility-400/70 hover:text-utility-400 transition-colors"
               >
                 Learn more about our process &rarr;
               </Link>
@@ -348,12 +533,83 @@ export default function HomeClient() {
         </section>
       </FadeIn>
 
+      {/* Looping reel strip — visual proof of the process at scale */}
+      <FadeIn delay={0.1} duration={0.8}>
+        <section className="relative py-20 overflow-hidden border-y border-white/[0.04]">
+          {/* Section label */}
+          <div className="max-w-4xl mx-auto px-6 mb-12 text-center">
+            <p className="text-p3 font-medium text-utility-400/70 uppercase tracking-widest mb-3">
+              The output
+            </p>
+            <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
+              This is what you get.
+              <br />
+              <span className="text-white/40">Every single day.</span>
+            </h2>
+          </div>
+
+          {/* Edge fade masks */}
+          <div className="absolute left-0 bottom-20 top-44 w-32 bg-gradient-to-r from-[#050508] to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 bottom-20 top-44 w-32 bg-gradient-to-l from-[#050508] to-transparent z-10 pointer-events-none" />
+
+          {/* Looping track */}
+          <div className="flex gap-5 animate-loop-left hover:[animation-play-state:paused] w-max">
+            {[...Array(2)].map((_, dupIdx) =>
+              [
+                "from-utility-400/20 via-[#050508] to-special-500/15",
+                "from-special-500/20 via-[#050508] to-utility-400/15",
+                "from-utility-400/25 via-[#050508] to-utility-400/10",
+                "from-special-500/25 via-[#050508] to-special-500/10",
+                "from-utility-400/15 via-[#050508] to-special-500/25",
+                "from-special-500/15 via-[#050508] to-utility-400/25",
+                "from-utility-400/20 via-[#050508] to-utility-400/20",
+                "from-special-500/20 via-[#050508] to-special-500/20",
+              ].map((gradient, i) => (
+                <div
+                  key={`${dupIdx}-${i}`}
+                  className="relative w-[180px] sm:w-[220px] aspect-[9/16] flex-shrink-0 rounded-2xl overflow-hidden border border-white/[0.06] bg-gradient-to-b from-white/[0.02] to-transparent group/reel"
+                >
+                  <div className={`absolute inset-0 bg-gradient-to-b ${gradient}`} />
+                  {/* Subtle mesh */}
+                  <div
+                    className="absolute inset-0 opacity-[0.04]"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+                      backgroundSize: "30px 30px",
+                    }}
+                  />
+                  {/* AI badge */}
+                  <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] backdrop-blur-sm">
+                    <Sparkles className="w-2.5 h-2.5 text-utility-400/70" />
+                    <span className="text-[9px] text-white/40 font-medium">AI</span>
+                  </div>
+                  {/* Center play */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-60 group-hover/reel:opacity-100 transition-opacity duration-300">
+                    <div className="w-10 h-10 rounded-full bg-white/[0.08] border border-white/[0.12] flex items-center justify-center backdrop-blur-sm">
+                      <Play className="w-4 h-4 text-white/80 ml-0.5" />
+                    </div>
+                  </div>
+                  {/* Bottom fade */}
+                  <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#050508] to-transparent" />
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Caption */}
+          <p className="text-center mt-10 text-p3 text-white/30 font-light">
+            Every video on this page was generated by Official AI
+          </p>
+        </section>
+      </FadeIn>
+
       {/* Features */}
       <FadeIn>
         <section id="features" className="py-28 px-6 border-t border-white/[0.04] scroll-mt-20">
           <div className="max-w-4xl mx-auto">
             <div className="mb-14">
-              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-medium text-utility-400/70 uppercase tracking-widest mb-3">
                 What you get
               </p>
               <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
@@ -407,7 +663,7 @@ export default function HomeClient() {
             <div className="mt-8 text-center">
               <Link
                 href="/features"
-                className="text-p3 text-blue-400/70 hover:text-blue-400 transition-colors"
+                className="text-p3 text-utility-400/70 hover:text-utility-400 transition-colors"
               >
                 See all features &rarr;
               </Link>
@@ -421,7 +677,7 @@ export default function HomeClient() {
         <section className="py-28 px-6 border-t border-white/[0.04]">
           <div className="max-w-4xl mx-auto">
             <div className="mb-14">
-              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-medium text-utility-400/70 uppercase tracking-widest mb-3">
                 Built for
               </p>
               <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
@@ -467,7 +723,7 @@ export default function HomeClient() {
             <div className="mt-8 text-center">
               <Link
                 href="/use-cases"
-                className="text-p3 text-blue-400/70 hover:text-blue-400 transition-colors"
+                className="text-p3 text-utility-400/70 hover:text-utility-400 transition-colors"
               >
                 Explore all use cases &rarr;
               </Link>
@@ -481,7 +737,7 @@ export default function HomeClient() {
         <section id="pricing" className="py-28 px-6 border-t border-white/[0.04] scroll-mt-20">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-14">
-              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-medium text-utility-400/70 uppercase tracking-widest mb-3">
                 Pricing
               </p>
               <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white mb-3">
@@ -496,7 +752,7 @@ export default function HomeClient() {
               {/* Main plan */}
               <div className="relative p-7 rounded-2xl !border-white/[0.1] !bg-white/[0.025] card-hairline">
                 <div className="absolute -top-3 left-6">
-                  <span className="text-p3 font-semibold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
+                  <span className="text-p3 font-semibold text-utility-400 bg-utility-400/10 border border-utility-400/20 px-3 py-1 rounded-full">
                     Everything included
                   </span>
                 </div>
@@ -519,7 +775,7 @@ export default function HomeClient() {
                       key={j}
                       className="flex items-center gap-2.5 text-p3 text-white/40"
                     >
-                      <Check className="w-3.5 h-3.5 text-emerald-400/40 flex-shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-positive-400/40 flex-shrink-0" />
                       {f}
                     </li>
                   ))}
@@ -569,7 +825,7 @@ export default function HomeClient() {
             <div className="mt-8 text-center">
               <Link
                 href="/pricing"
-                className="text-p3 text-blue-400/70 hover:text-blue-400 transition-colors"
+                className="text-p3 text-utility-400/70 hover:text-utility-400 transition-colors"
               >
                 See full pricing details &rarr;
               </Link>
@@ -583,7 +839,7 @@ export default function HomeClient() {
         <section className="py-28 px-6 border-t border-white/[0.04]">
           <div className="relative max-w-2xl mx-auto text-center">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] pointer-events-none">
-              <div className="absolute inset-0 bg-blue-500/[0.03] rounded-full blur-[80px]" />
+              <div className="absolute inset-0 bg-utility-400/[0.03] rounded-full blur-[80px]" />
             </div>
 
             <div className="relative">
