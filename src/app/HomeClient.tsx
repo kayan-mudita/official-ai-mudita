@@ -45,6 +45,7 @@ const demoVideos = [
 export default function HomeClient() {
   const [activeVideo, setActiveVideo] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [billing, setBilling] = useState<"monthly" | "annual">("annual");
 
   useEffect(() => {
     if (isPaused) return;
@@ -604,63 +605,136 @@ export default function HomeClient() {
         </section>
       </FadeIn>
 
-      {/* Features */}
+      {/* Features — bento with hero card + 5 supporting */}
       <FadeIn>
         <section id="features" className="py-28 px-6 border-t border-white/[0.04] scroll-mt-20">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-14">
-              <p className="text-p3 font-medium text-utility-400/70 uppercase tracking-widest mb-3">
-                What you get
-              </p>
+          <div className="max-w-6xl mx-auto">
+            {/* Section header */}
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-utility-400/[0.06] border border-utility-400/[0.15] mb-6">
+                <span className="text-p3 text-utility-400/80 font-medium">
+                  What you get
+                </span>
+              </div>
               <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
-                A content team
-                <br />
-                <span className="text-white/40">that never sleeps.</span>
+                A content team{" "}
+                <span className="bg-gradient-to-r from-utility-400 to-special-500 bg-clip-text text-transparent">
+                  that never sleeps.
+                </span>
               </h2>
+              <p className="text-p1 text-white/40 mt-4">
+                Everything you need to show up every day — without showing up.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 6-col bento: hero (col-span-4 row-span-2) + 5 smalls */}
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-5 auto-rows-fr">
+              {/* Hero feature */}
+              <div className="relative md:col-span-4 md:row-span-2 rounded-2xl card-hairline overflow-hidden group">
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-utility-400/40 via-special-500/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-br from-utility-400/[0.05] via-transparent to-special-500/[0.05]" />
+
+                <div className="relative h-full grid grid-cols-1 md:grid-cols-5 gap-0">
+                  {/* Copy */}
+                  <div className="md:col-span-3 p-10 md:p-12 flex flex-col justify-center">
+                    <div className="w-12 h-12 rounded-xl bg-utility-400/[0.08] border border-utility-400/[0.15] flex items-center justify-center mb-6">
+                      <Sparkles className="w-5 h-5 text-utility-400/90" />
+                    </div>
+                    <h3 className="text-h3 font-bold text-white mb-3">
+                      Your face, your voice
+                    </h3>
+                    <p className="text-p2 text-white/40 leading-relaxed">
+                      Character sheets and voice cloning ensure every video
+                      looks and sounds like you — not a generic avatar. Once
+                      you upload, your AI twin is consistent across every
+                      post, forever.
+                    </p>
+                  </div>
+
+                  {/* Mockup — character cards */}
+                  <div className="md:col-span-2 relative min-h-[200px] md:min-h-0 flex items-center justify-center p-8">
+                    <div className="relative flex items-end gap-2">
+                      <div className="relative w-16 h-28 rounded-xl border border-white/[0.08] overflow-hidden -rotate-6 translate-y-2">
+                        <div className="absolute inset-0 bg-gradient-to-b from-utility-400/30 via-black/40 to-special-500/20" />
+                      </div>
+                      <div className="relative w-20 h-36 rounded-xl border border-white/20 overflow-hidden shadow-2xl z-10">
+                        <div className="absolute inset-0 bg-gradient-to-b from-utility-400/40 via-black/30 to-special-500/30" />
+                        <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-full bg-black/50 backdrop-blur-sm">
+                          <span className="text-[8px] text-white/70 font-medium">YOU · HD</span>
+                        </div>
+                        <div className="absolute bottom-2 left-2 right-2">
+                          <div className="h-1 rounded-full bg-white/20 overflow-hidden">
+                            <div className="h-full w-2/3 bg-gradient-to-r from-utility-400 to-special-500" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="relative w-16 h-28 rounded-xl border border-white/[0.08] overflow-hidden rotate-6 translate-y-2">
+                        <div className="absolute inset-0 bg-gradient-to-b from-special-500/30 via-black/40 to-utility-400/20" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 5 supporting feature cards */}
               {[
                 {
+                  icon: Sparkles,
                   title: "AI content team",
-                  desc: "A full creative team powered by AI -- writing scripts, generating videos, and building your brand presence daily.",
+                  desc: "A full creative team powered by AI — writing scripts, generating videos, and building your brand presence daily.",
+                  accent: "from-utility-400/30 to-transparent",
                 },
                 {
+                  icon: Zap,
                   title: "Automated posting",
-                  desc: "Schedule and publish to Instagram, TikTok, LinkedIn, YouTube, and Facebook from one dashboard. Set it and forget it.",
+                  desc: "Schedule to Instagram, TikTok, LinkedIn, YouTube, and Facebook from one dashboard. Set it and forget it.",
+                  accent: "from-special-500/30 to-transparent",
                 },
                 {
-                  title: "Your face, your voice",
-                  desc: "Character sheets and voice cloning ensure every video looks and sounds like you. Not a generic avatar.",
-                },
-                {
+                  icon: ArrowRight,
                   title: "Performance insights",
-                  desc: "Track views, engagement, and ROI across all platforms. Know what content drives real results.",
+                  desc: "Track views, engagement, and ROI across every platform. Know what drives real results.",
+                  accent: "from-utility-400/30 to-transparent",
                 },
                 {
+                  icon: Check,
                   title: "Content calendar",
                   desc: "Plan, preview, and approve your entire week of content in one place. Nothing posts without your sign-off.",
+                  accent: "from-special-500/30 to-transparent",
                 },
                 {
+                  icon: Play,
                   title: "Multi-platform optimization",
-                  desc: "Every video is automatically optimized for each platform -- aspect ratios, captions, and posting times.",
+                  desc: "Every video is automatically optimized per platform — aspect ratios, captions, and posting times.",
+                  accent: "from-utility-400/20 via-special-500/20 to-transparent",
                 },
-              ].map((feature, i) => (
-                <div
-                  key={i}
-                  className="p-5 rounded-xl card-hairline"
-                >
-                  <h3 className="text-p2 font-medium text-white/80 mb-1.5">
-                    {feature.title}
-                  </h3>
-                  <p className="text-p3 text-white/25 leading-relaxed">
-                    {feature.desc}
-                  </p>
-                </div>
-              ))}
+              ].map((feature, i) => {
+                // First 2 small cards take col-span-2 next to hero (top-right area)
+                // Remaining 3 form the bottom row
+                const span = i < 2 ? "md:col-span-2" : "md:col-span-2";
+                return (
+                  <div
+                    key={i}
+                    className={`relative ${span} p-7 rounded-2xl card-hairline overflow-hidden group`}
+                  >
+                    <div
+                      className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${feature.accent}`}
+                    />
+                    <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5 group-hover:border-white/[0.12] transition-colors">
+                      <feature.icon className="w-4 h-4 text-white/50" />
+                    </div>
+                    <h3 className="text-p1 font-semibold text-white/90 mb-2.5">
+                      {feature.title}
+                    </h3>
+                    <p className="text-p3 text-white/30 leading-relaxed">
+                      {feature.desc}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
 
-            <div className="mt-8 text-center">
+            <div className="mt-10 text-center">
               <Link
                 href="/features"
                 className="text-p3 text-utility-400/70 hover:text-utility-400 transition-colors"
@@ -672,55 +746,129 @@ export default function HomeClient() {
         </section>
       </FadeIn>
 
-      {/* Industries */}
+      {/* Real results spotlight — replaces flat industries section */}
       <FadeIn>
         <section className="py-28 px-6 border-t border-white/[0.04]">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-14">
-              <p className="text-p3 font-medium text-utility-400/70 uppercase tracking-widest mb-3">
-                Built for
-              </p>
+          <div className="max-w-6xl mx-auto">
+            {/* Section header */}
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-special-500/[0.06] border border-special-500/[0.15] mb-6">
+                <span className="text-p3 text-special-500/90 font-medium">
+                  Real results
+                </span>
+              </div>
               <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
-                Professionals who need
-                <br />
-                <span className="text-white/40">to be everywhere.</span>
+                Built for{" "}
+                <span className="bg-gradient-to-r from-utility-400 to-special-500 bg-clip-text text-transparent">
+                  professionals
+                </span>{" "}
+                who need to be everywhere.
               </h2>
+              <p className="text-p1 text-white/40 mt-4">
+                Real outcomes from people using Official AI today.
+              </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* 4 spotlight cards — one per ICP */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {[
                 {
-                  title: "Legal",
-                  desc: "Know-your-rights, case results, legal tips",
+                  industry: "Legal",
+                  metric: "3",
+                  unit: "new clients",
+                  outcome: "from a single TikTok clip in week one",
+                  name: "Marcus Rivera",
+                  title: "Managing Partner · Personal Injury Law",
+                  initials: "MR",
+                  accent: "from-utility-400/30 to-transparent",
+                  glow: "from-utility-400/[0.08]",
                 },
                 {
-                  title: "Medical",
-                  desc: "Health tips, procedure explainers, wellness",
+                  industry: "Medical",
+                  metric: "60%",
+                  unit: "of new patients",
+                  outcome: "mention seeing my videos before booking",
+                  name: "Dr. Priya Patel",
+                  title: "Board-Certified Dermatologist",
+                  initials: "PP",
+                  accent: "from-special-500/30 to-transparent",
+                  glow: "from-special-500/[0.08]",
                 },
                 {
-                  title: "Real Estate",
-                  desc: "Listing tours, market updates, testimonials",
+                  industry: "Real Estate",
+                  metric: "$2.4M",
+                  unit: "in listings",
+                  outcome: "sourced from social this quarter alone",
+                  name: "Sarah Mitchell",
+                  title: "Broker / Owner",
+                  initials: "SM",
+                  accent: "from-utility-400/20 via-special-500/20 to-transparent",
+                  glow: "from-utility-400/[0.06]",
                 },
                 {
-                  title: "Creators",
-                  desc: "Brand intros, thought leadership, daily tips",
+                  industry: "Advisors",
+                  metric: "5x",
+                  unit: "discovery calls",
+                  outcome: "after switching from monthly to daily content",
+                  name: "James Chen",
+                  title: "CFP · Wealth Management",
+                  initials: "JC",
+                  accent: "from-special-500/30 to-transparent",
+                  glow: "from-special-500/[0.08]",
                 },
-              ].map((ind, i) => (
-                <div
-                  key={i}
-                  className="p-5 rounded-xl card-hairline"
-                >
-                  <h3 className="text-p2 font-medium text-white/80 mb-1.5">
-                    {ind.title}
-                  </h3>
-                  <p className="text-p3 text-white/20 leading-relaxed">
-                    {ind.desc}
-                  </p>
-                </div>
+              ].map((card, i) => (
+                <FadeIn key={i} delay={i * 0.08} duration={0.6}>
+                  <div className="relative h-full p-8 md:p-10 rounded-2xl card-hairline overflow-hidden group">
+                    {/* Top accent line */}
+                    <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${card.accent}`} />
+                    {/* Ambient corner glow */}
+                    <div className={`absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl ${card.glow} to-transparent rounded-full blur-3xl pointer-events-none`} />
+
+                    {/* Industry tag */}
+                    <div className="relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] mb-6">
+                      <div className="w-1 h-1 rounded-full bg-gradient-to-r from-utility-400 to-special-500" />
+                      <span className="text-[11px] text-white/50 font-medium uppercase tracking-wider">
+                        {card.industry}
+                      </span>
+                    </div>
+
+                    {/* Big metric */}
+                    <div className="relative mb-4">
+                      <div className="text-[56px] md:text-[72px] leading-[0.9] font-bold tracking-tighter bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent">
+                        {card.metric}
+                      </div>
+                      <div className="text-p2 text-white/50 font-medium mt-1">
+                        {card.unit}
+                      </div>
+                    </div>
+
+                    {/* Outcome */}
+                    <p className="relative text-p2 text-white/60 leading-relaxed mb-8">
+                      {card.outcome}
+                    </p>
+
+                    {/* Author */}
+                    <div className="relative flex items-center gap-3 pt-6 border-t border-white/[0.04]">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-utility-400/20 to-special-500/20 border border-white/[0.08] flex items-center justify-center flex-shrink-0">
+                        <span className="text-p3 font-semibold text-white/60">
+                          {card.initials}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="text-p3 font-medium text-white/80">
+                          {card.name}
+                        </div>
+                        <div className="text-p3 text-white/30">
+                          {card.title}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </FadeIn>
               ))}
             </div>
 
-            <div className="mt-8 text-center">
+            <div className="mt-10 text-center">
               <Link
                 href="/use-cases"
                 className="text-p3 text-utility-400/70 hover:text-utility-400 transition-colors"
@@ -732,94 +880,213 @@ export default function HomeClient() {
         </section>
       </FadeIn>
 
-      {/* Pricing — Item 36: One plan, everything included */}
+      {/* Pricing — elevated main plan + enterprise */}
       <FadeIn>
         <section id="pricing" className="py-28 px-6 border-t border-white/[0.04] scroll-mt-20">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-14">
-              <p className="text-p3 font-medium text-utility-400/70 uppercase tracking-widest mb-3">
-                Pricing
-              </p>
-              <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white mb-3">
-                One plan. Everything included.
+          <div className="max-w-5xl mx-auto">
+            {/* Section header */}
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-utility-400/[0.06] border border-utility-400/[0.15] mb-6">
+                <span className="text-p3 text-utility-400/80 font-medium">
+                  Pricing
+                </span>
+              </div>
+              <h2 className="text-h2 sm:text-h1 font-bold tracking-tight text-white leading-tight">
+                One plan. Everything{" "}
+                <span className="bg-gradient-to-r from-utility-400 to-special-500 bg-clip-text text-transparent">
+                  included.
+                </span>
               </h2>
-              <p className="text-p2 text-white/25">
-                Start free. Upgrade when you are ready.
+              <p className="text-p1 text-white/40 mt-4">
+                Replaces a $4,000/mo videographer. Costs less than your morning coffee.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-2xl mx-auto">
-              {/* Main plan */}
-              <div className="relative p-7 rounded-2xl !border-white/[0.1] !bg-white/[0.025] card-hairline">
-                <div className="absolute -top-3 left-6">
-                  <span className="text-p3 font-semibold text-utility-400 bg-utility-400/10 border border-utility-400/20 px-3 py-1 rounded-full">
-                    Everything included
+            {/* Billing toggle */}
+            <div className="flex items-center justify-center gap-3 mb-12">
+              <button
+                type="button"
+                onClick={() => setBilling("monthly")}
+                className={`px-5 py-2 rounded-full text-p3 font-medium transition-all cursor-pointer ${
+                  billing === "monthly"
+                    ? "bg-white/[0.08] border border-white/[0.15] text-white"
+                    : "border border-transparent text-white/40 hover:text-white/60"
+                }`}
+              >
+                Monthly
+              </button>
+              <button
+                type="button"
+                onClick={() => setBilling("annual")}
+                className={`relative px-5 py-2 rounded-full text-p3 font-medium transition-all cursor-pointer ${
+                  billing === "annual"
+                    ? "bg-white/[0.08] border border-white/[0.15] text-white"
+                    : "border border-transparent text-white/40 hover:text-white/60"
+                }`}
+              >
+                Annual
+                <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full bg-gradient-to-r from-utility-400/20 to-special-500/20 border border-utility-400/30 text-[10px] text-utility-400 font-semibold">
+                  Save 20%
+                </span>
+              </button>
+            </div>
+
+            {/* Plans grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+              {/* Main plan — elevated */}
+              <div className="relative">
+                {/* "Most popular" badge — outside overflow-hidden container so it doesn't clip */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+                  <span className="inline-flex items-center gap-1.5 text-p3 font-semibold text-white bg-gradient-to-r from-utility-400 to-special-500 px-4 py-1 rounded-full shadow-lg whitespace-nowrap">
+                    <Sparkles className="w-3 h-3" />
+                    Most popular
                   </span>
                 </div>
-                <h3 className="text-p2 font-semibold text-white/90 mt-1">
-                  Official AI
-                </h3>
-                <div className="flex items-baseline gap-1 mt-3 mb-6">
-                  <span className="text-h2 font-bold text-white">$79</span>
-                  <span className="text-p3 text-white/20">/mo</span>
+
+                <div className="relative p-8 md:p-10 rounded-2xl overflow-hidden">
+                  {/* Brand-gradient ring */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-utility-400/40 via-special-500/30 to-white/[0.06] p-px">
+                    <div className="h-full w-full rounded-2xl bg-[#050508]" />
+                  </div>
+                  {/* Ambient corner glow */}
+                  <div className="absolute -top-20 -right-20 w-64 h-64 bg-utility-400/[0.10] rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-special-500/[0.08] rounded-full blur-3xl pointer-events-none" />
+
+                  <div className="relative">
+                  <h3 className="text-p1 font-semibold text-white/90 mt-2">
+                    Official AI
+                  </h3>
+                  <div className="flex items-baseline gap-1.5 mt-4 mb-2">
+                    <span className="text-[64px] leading-none font-bold tracking-tighter text-white">
+                      ${billing === "annual" ? "63" : "79"}
+                    </span>
+                    <span className="text-p2 text-white/40">/mo</span>
+                  </div>
+                  <p className="text-p3 text-white/30 mb-8">
+                    {billing === "annual"
+                      ? "Billed $756 annually — save $192/yr"
+                      : "Billed monthly. Cancel anytime."}
+                  </p>
+
+                  {/* Grouped features */}
+                  <div className="space-y-5 mb-8">
+                    <div>
+                      <p className="text-[11px] font-semibold text-utility-400/70 uppercase tracking-wider mb-3">
+                        Create
+                      </p>
+                      <ul className="space-y-2.5">
+                        {[
+                          "30 videos per month",
+                          "Voice cloning + character sheets",
+                          "Multi-cut composition",
+                        ].map((f, j) => (
+                          <li
+                            key={j}
+                            className="flex items-center gap-2.5 text-p3 text-white/60"
+                          >
+                            <Check className="w-3.5 h-3.5 text-positive-400/70 flex-shrink-0" />
+                            {f}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="pt-4 border-t border-white/[0.04]">
+                      <p className="text-[11px] font-semibold text-special-500/80 uppercase tracking-wider mb-3">
+                        Distribute
+                      </p>
+                      <ul className="space-y-2.5">
+                        {[
+                          "Auto-post to all platforms",
+                          "Approval queue + content calendar",
+                          "Performance analytics",
+                        ].map((f, j) => (
+                          <li
+                            key={j}
+                            className="flex items-center gap-2.5 text-p3 text-white/60"
+                          >
+                            <Check className="w-3.5 h-3.5 text-positive-400/70 flex-shrink-0" />
+                            {f}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <Link
+                    href="/auth/signup"
+                    className="group relative block text-center text-p2 font-semibold py-4 min-h-[52px] flex items-center justify-center rounded-xl bg-white text-[#050508] hover:bg-white/95 transition-all shadow-xl"
+                  >
+                    Start free trial
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
                 </div>
-                <ul className="space-y-3 mb-6">
-                  {[
-                    "30 videos per month",
-                    "All platforms",
-                    "Voice cloning",
-                    "Multi-cut composition",
-                    "Analytics & auto-posting",
-                  ].map((f, j) => (
-                    <li
-                      key={j}
-                      className="flex items-center gap-2.5 text-p3 text-white/40"
-                    >
-                      <Check className="w-3.5 h-3.5 text-positive-400/40 flex-shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/auth/signup"
-                  className="block text-center text-p3 font-medium py-3 min-h-[44px] flex items-center justify-center rounded-lg transition-all btn-cta-glow bg-white text-[#050508] hover:bg-white/90 active:bg-white/80"
-                >
-                  Start your free week — $79/mo after
-                </Link>
+                </div>
               </div>
 
               {/* Enterprise */}
-              <div className="relative p-7 rounded-2xl card-hairline">
-                <h3 className="text-p2 font-semibold text-white/90 mt-1">
+              <div className="relative p-8 md:p-10 rounded-2xl card-hairline overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-white/[0.1] to-transparent" />
+
+                <h3 className="text-p1 font-semibold text-white/90 mt-2">
                   Enterprise
                 </h3>
-                <div className="flex items-baseline gap-1 mt-3 mb-6">
-                  <span className="text-h2 font-bold text-white">Custom</span>
+                <div className="flex items-baseline gap-1.5 mt-4 mb-2">
+                  <span className="text-[64px] leading-none font-bold tracking-tighter text-white">
+                    Custom
+                  </span>
                 </div>
-                <ul className="space-y-3 mb-6">
-                  {[
-                    "Unlimited videos",
-                    "Dedicated support",
-                    "Custom AI models",
-                    "API access",
-                    "Multi-user accounts",
-                  ].map((f, j) => (
-                    <li
-                      key={j}
-                      className="flex items-center gap-2.5 text-p3 text-white/40"
-                    >
-                      <Check className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-p3 text-white/30 mb-8">
+                  Volume pricing for teams of 10+
+                </p>
+
+                <div className="space-y-5 mb-8">
+                  <div>
+                    <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider mb-3">
+                      Everything in Official AI, plus
+                    </p>
+                    <ul className="space-y-2.5">
+                      {[
+                        "Unlimited videos",
+                        "Dedicated success manager",
+                        "Custom AI models",
+                        "API access",
+                        "Multi-user accounts + SSO",
+                        "Priority support + SLA",
+                      ].map((f, j) => (
+                        <li
+                          key={j}
+                          className="flex items-center gap-2.5 text-p3 text-white/50"
+                        >
+                          <Check className="w-3.5 h-3.5 text-white/30 flex-shrink-0" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
                 <Link
                   href="mailto:hello@officialai.com?subject=Enterprise%20Inquiry"
-                  className="block text-center text-p3 font-medium py-3 min-h-[44px] flex items-center justify-center rounded-lg transition-all border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.12] active:bg-white/[0.04]"
+                  className="group block text-center text-p2 font-semibold py-4 min-h-[52px] flex items-center justify-center rounded-xl border border-white/[0.1] text-white/80 hover:text-white hover:border-white/[0.2] hover:bg-white/[0.02] transition-all"
                 >
-                  Contact sales
+                  Talk to sales
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
               </div>
+            </div>
+
+            {/* Reassurance row */}
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+              {[
+                "No credit card required",
+                "7-day free trial",
+                "Cancel anytime",
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-positive-400/60" />
+                  <span className="text-p3 text-white/40 font-medium">{item}</span>
+                </div>
+              ))}
             </div>
 
             <div className="mt-8 text-center">
