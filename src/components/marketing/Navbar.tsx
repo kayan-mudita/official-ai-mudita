@@ -22,6 +22,9 @@ import {
   Video,
   BarChart3,
   Share2,
+  Camera,
+  Mic,
+  Calendar,
   Briefcase,
   Layers,
   Calculator,
@@ -71,6 +74,14 @@ const productCoreLinks: NavLink[] = [
     iconBg: "bg-emerald-500/10",
     iconBorder: "border-emerald-500/20",
   },
+];
+
+const productFeatureLinks: NavLink[] = [
+  { label: "AI Video Studio", href: "/features", icon: Camera },
+  { label: "AI Twin & Voice", href: "/features", icon: Mic },
+  { label: "Auto-Posting", href: "/features", icon: Calendar },
+  { label: "Script Engine", href: "/features", icon: Wand2 },
+  { label: "Analytics", href: "/features", icon: BarChart3 },
 ];
 
 const productSolutionsLinks: NavLink[] = [
@@ -320,13 +331,32 @@ export default function Navbar() {
                 />
               </button>
               {activeDropdown === "product" && (
-                <div className="absolute top-full left-0 mt-2 w-[640px] rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
-                  <div className="grid grid-cols-2 divide-x divide-white/[0.06]">
+                <div className="absolute top-full left-0 mt-2 w-[820px] rounded-xl border border-white/[0.08] bg-[#0a0e17]/95 backdrop-blur-xl shadow-2xl shadow-black/40">
+                  <div className="grid grid-cols-3 divide-x divide-white/[0.06]">
                     <div className="p-4">
                       <ColumnHeader>Core Product</ColumnHeader>
                       {productCoreLinks.map((link) => (
                         <FeaturedItem key={link.href} link={link} />
                       ))}
+                    </div>
+                    <div className="p-4">
+                      <ColumnHeader>Features</ColumnHeader>
+                      <div className="space-y-0.5">
+                        {productFeatureLinks.map((link) => (
+                          <CompactItem key={link.label} link={link} />
+                        ))}
+                      </div>
+                      <div className="mt-2 pt-2 border-t border-white/[0.06]">
+                        <Link
+                          href="/features"
+                          className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-colors group"
+                        >
+                          <span className="text-p3 text-white/30 group-hover:text-white/50 transition-colors">
+                            All features
+                          </span>
+                          <ArrowRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
+                        </Link>
+                      </div>
                     </div>
                     <div className="p-4">
                       <ColumnHeader>By Industry</ColumnHeader>
@@ -537,6 +567,7 @@ export default function Navbar() {
               setOpen={setMobileAccordion}
             >
               <MobileSection title="Core Product" links={productCoreLinks} pathname={pathname} />
+              <MobileSection title="Features" links={productFeatureLinks} pathname={pathname} />
               <MobileSection title="By Industry" links={productSolutionsLinks} pathname={pathname} />
             </MobileAccordion>
 
