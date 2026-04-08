@@ -4,6 +4,10 @@ import Link from "next/link";
 import { ArrowRight, Target, Lightbulb, Eye, Users } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
 import CTASection from "@/components/marketing/CTASection";
+import HeroAurora from "@/components/marketing/HeroAurora";
+import GradientText from "@/components/marketing/GradientText";
+import PageBackdrop from "@/components/marketing/PageBackdrop";
+import FadeIn from "@/components/motion/FadeIn";
 
 const team = [
   {
@@ -58,37 +62,28 @@ const values = [
 export default function AboutClient() {
   return (
     <MarketingLayout>
-      {/* Hero */}
-      <section className="relative pt-32 pb-20 px-6">
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[500px] pointer-events-none">
-          <div className="absolute top-0 left-1/3 w-[400px] h-[400px] bg-blue-500/[0.03] rounded-full blur-[120px]" />
-          <div className="absolute top-10 right-1/3 w-[200px] h-[200px] bg-violet-500/[0.03] rounded-full blur-[80px]" />
-        </div>
+      <PageBackdrop intensity={0.05} />
 
-        <div className="relative max-w-3xl mx-auto text-center">
-          <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-4">
-            About
-          </p>
-          <h1 className="text-h1 sm:text-h0 font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
-            Make every professional
-            <br />
-            <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
-              a content creator.
-            </span>
-          </h1>
-          <p className="text-title text-white/35 max-w-xl mx-auto leading-relaxed font-light">
-            Official AI exists because the best experts in every field are
-            invisible online. We are changing that.
-          </p>
-        </div>
-      </section>
+      <HeroAurora
+        eyebrow="About"
+        eyebrowVariant="utility"
+        spacing="pt-32 pb-16"
+        headline={
+          <>
+            Make every professional{" "}
+            <GradientText tone="brand">a content creator.</GradientText>
+          </>
+        }
+        description="Official AI exists because the best experts in every field are invisible online. We are changing that."
+      />
+
 
       {/* The Problem */}
       <section className="py-24 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <div>
-              <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+              <p className="text-p3 font-semibold text-utility-300/80 uppercase tracking-widest mb-3">
                 The problem
               </p>
               <h2 className="text-h2 font-bold tracking-tight text-white leading-tight mb-6">
@@ -122,31 +117,41 @@ export default function AboutClient() {
                 {
                   stat: "73%",
                   text: "of professionals say they should post more content online",
+                  accent: "utility" as const,
                 },
                 {
                   stat: "91%",
                   text: "cite lack of time as the primary reason they do not post",
+                  accent: "special" as const,
                 },
                 {
                   stat: "4x",
                   text: "more leads for professionals who post content weekly",
+                  accent: "utility" as const,
                 },
                 {
                   stat: "$60K+",
                   text: "average annual cost of a video production team",
+                  accent: "special" as const,
                 },
               ].map((item, i) => (
-                <div
-                  key={i}
-                  className="p-5 rounded-xl border border-white/[0.04] bg-white/[0.015] flex items-start gap-4"
-                >
-                  <span className="text-h3 font-bold text-white flex-shrink-0 w-16">
-                    {item.stat}
-                  </span>
-                  <p className="text-p3 text-white/30 leading-relaxed pt-1.5">
-                    {item.text}
-                  </p>
-                </div>
+                <FadeIn key={i} delay={i * 0.05}>
+                  <div className="relative overflow-hidden p-5 rounded-xl card-hairline flex items-start gap-4">
+                    <div
+                      className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${
+                        item.accent === "utility"
+                          ? "from-utility-400/40 via-utility-400/15 to-transparent"
+                          : "from-special-500/40 via-special-500/15 to-transparent"
+                      }`}
+                    />
+                    <span className="text-h2 font-bold text-white flex-shrink-0 w-20 tabular-nums">
+                      <GradientText tone="white">{item.stat}</GradientText>
+                    </span>
+                    <p className="text-p2 text-white/45 leading-relaxed pt-1">
+                      {item.text}
+                    </p>
+                  </div>
+                </FadeIn>
               ))}
             </div>
           </div>
@@ -156,7 +161,7 @@ export default function AboutClient() {
       {/* The Insight */}
       <section className="py-24 px-6 border-t border-white/[0.04]">
         <div className="max-w-3xl mx-auto">
-          <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+          <p className="text-p3 font-semibold text-utility-300/80 uppercase tracking-widest mb-3">
             The insight
           </p>
           <h2 className="text-h2 font-bold tracking-tight text-white leading-tight mb-8">
@@ -236,7 +241,7 @@ export default function AboutClient() {
       <section className="py-24 px-6 border-t border-white/[0.04]">
         <div className="max-w-4xl mx-auto">
           <div className="mb-14">
-            <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+            <p className="text-p3 font-semibold text-utility-300/80 uppercase tracking-widest mb-3">
               Our approach
             </p>
             <h2 className="text-h2 font-bold tracking-tight text-white leading-tight">
@@ -284,7 +289,7 @@ export default function AboutClient() {
       <section className="py-24 px-6 border-t border-white/[0.04]">
         <div className="max-w-4xl mx-auto">
           <div className="mb-14">
-            <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+            <p className="text-p3 font-semibold text-utility-300/80 uppercase tracking-widest mb-3">
               Values
             </p>
             <h2 className="text-h2 font-bold tracking-tight text-white leading-tight">
@@ -294,20 +299,36 @@ export default function AboutClient() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {values.map((value, i) => (
-              <div
-                key={i}
-                className="group p-6 rounded-2xl border border-white/[0.04] bg-white/[0.015] hover:border-white/[0.08] hover:bg-white/[0.025] transition-all duration-300"
-              >
-                <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-4 group-hover:border-white/[0.1] transition-colors">
-                  <value.icon className="w-4 h-4 text-white/30" />
+              <FadeIn key={i} delay={i * 0.06}>
+                <div className="group relative overflow-hidden p-6 rounded-2xl card-hairline transition-all duration-300 h-full">
+                  <div
+                    className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${
+                      i % 2 === 0
+                        ? "from-utility-400/40 via-utility-400/15 to-transparent"
+                        : "from-special-500/40 via-special-500/15 to-transparent"
+                    }`}
+                  />
+                  <div
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 border ${
+                      i % 2 === 0
+                        ? "bg-utility-400/[0.08] border-utility-400/25"
+                        : "bg-special-500/[0.08] border-special-500/25"
+                    }`}
+                  >
+                    <value.icon
+                      className={`w-4 h-4 ${
+                        i % 2 === 0 ? "text-utility-300" : "text-special-300"
+                      }`}
+                    />
+                  </div>
+                  <h3 className="text-p1 font-semibold text-white/90 mb-2">
+                    {value.title}
+                  </h3>
+                  <p className="text-p2 text-white/45 leading-relaxed">
+                    {value.description}
+                  </p>
                 </div>
-                <h3 className="text-p2 font-semibold text-white/80 mb-2">
-                  {value.title}
-                </h3>
-                <p className="text-p3 text-white/25 leading-relaxed">
-                  {value.description}
-                </p>
-              </div>
+              </FadeIn>
             ))}
           </div>
         </div>
@@ -317,7 +338,7 @@ export default function AboutClient() {
       <section className="py-24 px-6 border-t border-white/[0.04]">
         <div className="max-w-4xl mx-auto">
           <div className="mb-14">
-            <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-3">
+            <p className="text-p3 font-semibold text-utility-300/80 uppercase tracking-widest mb-3">
               Team
             </p>
             <h2 className="text-h2 font-bold tracking-tight text-white leading-tight">
@@ -329,27 +350,28 @@ export default function AboutClient() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {team.map((member, i) => (
-              <div
-                key={i}
-                className="p-6 rounded-2xl border border-white/[0.04] bg-white/[0.015] hover:border-white/[0.08] transition-all duration-300"
-              >
-                {/* Avatar placeholder */}
-                <div className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-4">
-                  <span className="text-p2 font-semibold text-white/30">
-                    {member.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </span>
+              <FadeIn key={i} delay={i * 0.06}>
+                <div className="group relative overflow-hidden p-6 rounded-2xl card-hairline transition-all duration-300 h-full">
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-utility-400/30 via-special-500/15 to-transparent" />
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-utility-400/15 to-special-500/15 border border-white/[0.10] flex items-center justify-center mb-4">
+                    <span className="text-p2 font-bold text-white/70">
+                      {member.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </span>
+                  </div>
+                  <h3 className="text-p1 font-semibold text-white/90">
+                    {member.name}
+                  </h3>
+                  <p className="text-p3 text-utility-300/80 mb-3 font-semibold">
+                    {member.role}
+                  </p>
+                  <p className="text-p3 text-white/35 leading-relaxed">
+                    {member.bio}
+                  </p>
                 </div>
-                <h3 className="text-p2 font-semibold text-white/80">
-                  {member.name}
-                </h3>
-                <p className="text-p3 text-blue-400/60 mb-3">{member.role}</p>
-                <p className="text-p3 text-white/20 leading-relaxed">
-                  {member.bio}
-                </p>
-              </div>
+              </FadeIn>
             ))}
           </div>
         </div>

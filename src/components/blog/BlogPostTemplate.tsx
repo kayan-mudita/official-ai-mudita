@@ -1,11 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, ArrowRight, Calendar, Clock, Sparkles, User } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
 import Breadcrumbs from "@/components/marketing/Breadcrumbs";
 import ShareButtons from "@/components/marketing/ShareButtons";
 import FadeIn from "@/components/motion/FadeIn";
+import HeroAurora from "@/components/marketing/HeroAurora";
+import GradientText from "@/components/marketing/GradientText";
+import PageBackdrop from "@/components/marketing/PageBackdrop";
+import GlowBlob from "@/components/marketing/GlowBlob";
+import Eyebrow from "@/components/marketing/Eyebrow";
+import MeshMockup from "@/components/marketing/MeshMockup";
 
 interface BlogPostProps {
   title: string;
@@ -16,15 +23,29 @@ interface BlogPostProps {
   category: string;
   slug: string;
   children: React.ReactNode;
+  featuredImage?: { src: string; alt: string };
 }
 
-const categoryColors: Record<string, string> = {
-  "AI Video": "text-blue-400/80 bg-blue-500/[0.08] border-blue-500/[0.12]",
-  "Content Strategy": "text-violet-400/80 bg-violet-500/[0.08] border-violet-500/[0.12]",
-  "Social Media": "text-emerald-400/80 bg-emerald-500/[0.08] border-emerald-500/[0.12]",
-  "Industry Tips": "text-amber-400/80 bg-amber-500/[0.08] border-amber-500/[0.12]",
-  "Product Updates": "text-rose-400/80 bg-rose-500/[0.08] border-rose-500/[0.12]",
+/** Brand-token tone per category — utility (cyan) or special (magenta). */
+const categoryBrand: Record<
+  string,
+  { tone: "utility" | "special"; eyebrow: "utility" | "special" }
+> = {
+  "AI Video": { tone: "utility", eyebrow: "utility" },
+  "Content Strategy": { tone: "special", eyebrow: "special" },
+  "Social Media": { tone: "utility", eyebrow: "utility" },
+  "Industry Tips": { tone: "special", eyebrow: "special" },
+  "Product Updates": { tone: "special", eyebrow: "special" },
 };
+
+function splitHeadline(headline: string, n = 3) {
+  const words = headline.trim().split(/\s+/);
+  if (words.length <= n) return { lead: "", tail: headline };
+  return {
+    lead: words.slice(0, words.length - n).join(" "),
+    tail: words.slice(words.length - n).join(" "),
+  };
+}
 
 export default function BlogPostTemplate({
   title,
@@ -35,10 +56,12 @@ export default function BlogPostTemplate({
   category,
   slug,
   children,
+  featuredImage,
 }: BlogPostProps) {
   const siteUrl = "https://officialai.com";
   const postUrl = `${siteUrl}/blog/${slug}`;
-  const categoryStyle = categoryColors[category] || categoryColors["AI Video"];
+  const brand = categoryBrand[category] ?? categoryBrand["AI Video"];
+  const { lead, tail } = splitHeadline(title, 3);
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -64,62 +87,86 @@ export default function BlogPostTemplate({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
 
-      <article className="pt-32 pb-24 px-6">
+      <PageBackdrop intensity={0.04} />
+
+      {/* Hero — aurora + brand-tinted */}
+      <HeroAurora
+        spacing="pt-32 pb-12"
+        align="left"
+        eyebrow={category}
+        eyebrowVariant={brand.eyebrow}
+        aboveEyebrow={
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Blog", href: "/blog" },
+              { label: title },
+            ]}
+          />
+        }
+        headline={
+          <>
+            {lead && <span className="text-white">{lead} </span>}
+            <GradientText tone={brand.tone}>{tail}</GradientText>
+          </>
+        }
+        description={description}
+        belowActions={
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3 text-p3 text-white/45">
+            <span className="inline-flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5" />
+              {author}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5" />
+              {date}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5" />
+              {readTime}
+            </span>
+            <span className="ml-0 sm:ml-2">
+              <ShareButtons url={postUrl} title={title} />
+            </span>
+          </div>
+        }
+      />
+
+      <article className="relative px-6 pt-12 pb-24">
         <div className="max-w-3xl mx-auto">
-          <FadeIn duration={0.6}>
-            <Breadcrumbs
-              items={[
-                { label: "Home", href: "/" },
-                { label: "Blog", href: "/blog" },
-                { label: title },
-              ]}
-            />
-
-            {/* Category badge */}
-            <div className={`inline-flex items-center px-3 py-1 rounded-full border text-p3 font-medium mb-6 ${categoryStyle}`}>
-              {category}
-            </div>
-
-            {/* Title */}
-            <h1 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
-              {title}
-            </h1>
-
-            {/* Meta */}
-            <div className="flex flex-wrap items-center gap-4 text-p3 text-white/30 mb-8 pb-8 border-b border-white/[0.06]">
-              <div className="flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5" />
-                {author}
+          {/* Featured image banner */}
+          {featuredImage && (
+            <FadeIn duration={0.6}>
+              <div className="mb-12">
+                <MeshMockup aspect="aspect-[16/9]">
+                  <Image
+                    src={featuredImage.src}
+                    alt={featuredImage.alt}
+                    fill
+                    sizes="(min-width: 1024px) 768px, 100vw"
+                    className="object-cover"
+                    priority
+                  />
+                </MeshMockup>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5" />
-                {date}
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5" />
-                {readTime}
-              </div>
-              <div className="ml-auto">
-                <ShareButtons url={postUrl} title={title} />
-              </div>
-            </div>
-          </FadeIn>
+            </FadeIn>
+          )}
 
           {/* Content */}
-          <FadeIn delay={0.1} duration={0.6}>
-            <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:tracking-tight prose-p:text-white/50 prose-p:leading-relaxed prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/70 prose-li:text-white/50 prose-code:text-blue-300 prose-blockquote:border-blue-500/30 prose-blockquote:text-white/40">
+          <FadeIn delay={0.05} duration={0.6}>
+            <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:tracking-[-0.02em] prose-p:text-white/55 prose-p:leading-relaxed prose-a:text-utility-300 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/85 prose-li:text-white/55 prose-code:text-utility-300 prose-blockquote:border-special-500/40 prose-blockquote:bg-white/[0.02] prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-white/65 prose-h2:text-h3 prose-h2:mt-14 prose-h2:mb-4 prose-h3:text-title prose-h3:mt-10 prose-h3:mb-3 prose-figcaption:text-p3 prose-figcaption:text-white/35 prose-figcaption:text-center prose-figcaption:mt-2">
               {children}
             </div>
           </FadeIn>
 
           {/* Bottom share + back */}
-          <FadeIn delay={0.2} duration={0.6}>
-            <div className="flex items-center justify-between mt-12 pt-8 border-t border-white/[0.06]">
+          <FadeIn delay={0.15} duration={0.6}>
+            <div className="flex items-center justify-between mt-16 pt-8 border-t border-white/[0.06]">
               <Link
                 href="/blog"
-                className="inline-flex items-center gap-2 text-p3 text-white/30 hover:text-white/50 transition-colors"
+                className="group inline-flex items-center gap-2 text-p3 font-medium text-white/45 hover:text-white/85 transition-colors"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
+                <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
                 Back to blog
               </Link>
               <ShareButtons url={postUrl} title={title} />
@@ -127,20 +174,34 @@ export default function BlogPostTemplate({
           </FadeIn>
 
           {/* CTA */}
-          <FadeIn delay={0.3} duration={0.6}>
-            <div className="mt-16 p-8 rounded-2xl card-hairline text-center">
-              <h3 className="text-h4 font-bold text-white mb-2">
-                Ready to try it yourself?
-              </h3>
-              <p className="text-p2 text-white/30 mb-6">
-                Upload a photo and see AI create a video of you in 30 seconds.
-              </p>
-              <Link
-                href="/demo"
-                className="btn-cta-glow inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 transition-all"
-              >
-                Try the free demo
-              </Link>
+          <FadeIn delay={0.25} duration={0.6}>
+            <div className="relative mt-16 overflow-hidden rounded-3xl card-hairline">
+              <GlowBlob
+                color={brand.tone}
+                size="lg"
+                position="center"
+                intensity={0.10}
+              />
+              <div className="relative p-10 sm:p-14 text-center">
+                <div className="flex justify-center mb-5">
+                  <Eyebrow icon={Sparkles} variant={brand.eyebrow}>
+                    Try Official AI
+                  </Eyebrow>
+                </div>
+                <h3 className="text-h3 sm:text-h2 font-bold text-white tracking-[-0.02em] mb-3">
+                  Ready to try it yourself?
+                </h3>
+                <p className="text-p1 text-white/45 mb-8 max-w-md mx-auto leading-relaxed">
+                  Upload a photo and see AI create a video of you in 30 seconds.
+                </p>
+                <Link
+                  href="/demo"
+                  className="btn-cta-glow inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-white text-[#050508] text-p2 font-semibold min-h-[48px] hover:bg-white/95 transition-all"
+                >
+                  Try the free demo
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
           </FadeIn>
         </div>

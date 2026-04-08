@@ -5,6 +5,10 @@ import { ArrowRight, Scale, Quote } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
 import FadeIn from "@/components/motion/FadeIn";
 import CTASection from "@/components/marketing/CTASection";
+import HeroAurora from "@/components/marketing/HeroAurora";
+import GradientText from "@/components/marketing/GradientText";
+import PageBackdrop from "@/components/marketing/PageBackdrop";
+import StatCard from "@/components/marketing/StatCard";
 
 const results = [
   { value: "240K+", label: "Views per month" },
@@ -34,79 +38,61 @@ const testimonial = {
 export default function ForAttorneysClient() {
   return (
     <MarketingLayout>
-      {/* Hero */}
-      <section className="relative pt-32 pb-24 px-6">
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[600px] pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-violet-500/[0.04] rounded-full blur-[120px]" />
-          <div className="absolute top-20 right-1/4 w-[300px] h-[300px] bg-blue-500/[0.04] rounded-full blur-[100px]" />
-        </div>
+      <PageBackdrop intensity={0.05} />
 
-        <div className="relative max-w-3xl mx-auto text-center">
-          <FadeIn delay={0} duration={0.6}>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/[0.08] border border-violet-500/[0.12] mb-8">
-              <Scale className="w-3.5 h-3.5 text-violet-400" />
-              <span className="text-p3 text-violet-400/80 font-medium">
-                Built for legal professionals
-              </span>
+      <HeroAurora
+        eyebrow="Built for legal professionals"
+        eyebrowIcon={Scale}
+        eyebrowVariant="special"
+        spacing="pt-32 pb-20"
+        headline={
+          <>
+            Your AI content team.{" "}
+            <GradientText tone="brand">Built for attorneys.</GradientText>
+          </>
+        }
+        description="Generate know-your-rights content, case result videos, and legal tips that drive consultations — using your face and voice. You review every script before it goes live."
+        actions={
+          <>
+            <Link
+              href="/auth/signup"
+              className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 min-h-[48px] rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/95 transition-all"
+            >
+              Start your free week
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+            <Link
+              href="/use-cases#legal"
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 min-h-[48px] rounded-xl border border-white/[0.10] bg-white/[0.04] text-p2 text-white/70 hover:text-white hover:border-white/[0.20] transition-all"
+            >
+              See legal examples
+            </Link>
+          </>
+        }
+        belowActions={
+          <p className="text-p3 text-white/35">
+            Try free for 7 days. Cancel anytime.
+          </p>
+        }
+      />
+
+      {/* Results */}
+      <section className="relative px-6 -mt-6 pb-16">
+        <div className="max-w-5xl mx-auto">
+          <FadeIn>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+              {results.map((stat, i) => (
+                <StatCard
+                  key={i}
+                  value={stat.value}
+                  label={stat.label}
+                  accent={i % 2 === 0 ? "special" : "utility"}
+                />
+              ))}
             </div>
-          </FadeIn>
-
-          <FadeIn delay={0.1} duration={0.7}>
-            <h1 className="text-h0 font-bold tracking-[-0.03em] leading-[1.05] text-white mb-6">
-              Your AI content team.
-              <br />
-              <span className="bg-gradient-to-r from-violet-400 via-blue-400 to-violet-400 bg-clip-text text-transparent">
-                Built for attorneys.
-              </span>
-            </h1>
-          </FadeIn>
-
-          <FadeIn delay={0.2} duration={0.7}>
-            <p className="text-title text-white/35 max-w-xl mx-auto mb-10 leading-relaxed font-light">
-              Generate know-your-rights content, case result videos, and legal
-              tips that drive consultations -- using your face and voice. You review
-              every script before it goes live.
-            </p>
-          </FadeIn>
-
-          <FadeIn delay={0.3} duration={0.7}>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-              <Link
-                href="/auth/signup"
-                className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
-              >
-                Start your free week
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-              <Link
-                href="/use-cases#legal"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl text-p2 text-white/40 hover:text-white/60 active:text-white/70 transition-all"
-              >
-                See legal examples
-              </Link>
-            </div>
-            <p className="text-p3 text-white/15">
-              Try free for 7 days. Cancel anytime.
-            </p>
           </FadeIn>
         </div>
       </section>
-
-      {/* Results */}
-      <FadeIn>
-        <section className="border-y border-white/[0.04] py-12 px-6">
-          <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {results.map((stat, i) => (
-              <div key={i} className="space-y-1">
-                <div className="text-h2 font-bold tracking-tight text-white">
-                  {stat.value}
-                </div>
-                <div className="text-p3 text-white/25">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </FadeIn>
 
       {/* Content types */}
       <FadeIn>

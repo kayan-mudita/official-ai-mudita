@@ -13,6 +13,10 @@ export default function TiktokProfessionalGuideClient() {
       readTime="6 min read"
       category="Social Media"
       slug="tiktok-professional-guide"
+      featuredImage={{
+        src: "/images/featured/blog/tiktok-professional-guide.png",
+        alt: "A single luminous vertical bar of light rising through dark space, surrounded by motion blur and particle dust",
+      }}
     >
       <p>
         The objection is always the same: "TikTok is for teenagers doing dance challenges.

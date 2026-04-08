@@ -13,6 +13,10 @@ export default function NeighborhoodVideoSeoClient() {
       readTime="5 min read"
       category="Industry Tips"
       slug="neighborhood-video-seo"
+      featuredImage={{
+        src: "/images/featured/blog/neighborhood-video-seo.png",
+        alt: "Aerial topographic abstraction of glowing contour lines in cyan and magenta",
+      }}
     >
       <p>
         The listing appointment is not where you win the business. It is where you confirm

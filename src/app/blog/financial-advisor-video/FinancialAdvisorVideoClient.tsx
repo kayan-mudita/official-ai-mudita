@@ -13,6 +13,10 @@ export default function FinancialAdvisorVideoClient() {
       readTime="6 min read"
       category="Industry Tips"
       slug="financial-advisor-video"
+      featuredImage={{
+        src: "/images/featured/blog/financial-advisor-video.png",
+        alt: "A vertical column of stacked translucent layers ascending from dark space, lit by magenta and cyan",
+      }}
     >
       <p>
         Financial advisory is a relationship business, and relationships start with trust.

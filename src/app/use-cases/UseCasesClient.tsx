@@ -11,9 +11,15 @@ import {
   Play,
   Clock,
   BarChart3,
+  Layers,
 } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
 import CTASection from "@/components/marketing/CTASection";
+import HeroAurora from "@/components/marketing/HeroAurora";
+import GradientText from "@/components/marketing/GradientText";
+import PageBackdrop from "@/components/marketing/PageBackdrop";
+import StatCard from "@/components/marketing/StatCard";
+import FadeIn from "@/components/motion/FadeIn";
 
 const useCases = [
   {
@@ -133,55 +139,95 @@ const useCases = [
   },
 ];
 
-const accentMap: Record<string, { bg: string; border: string; text: string; dot: string }> = {
-  blue: { bg: "bg-blue-500/[0.06]", border: "border-blue-500/20", text: "text-blue-400", dot: "bg-blue-400" },
-  violet: { bg: "bg-violet-500/[0.06]", border: "border-violet-500/20", text: "text-violet-400", dot: "bg-violet-400" },
-  emerald: { bg: "bg-emerald-500/[0.06]", border: "border-emerald-500/20", text: "text-emerald-400", dot: "bg-emerald-400" },
-  rose: { bg: "bg-rose-500/[0.06]", border: "border-rose-500/20", text: "text-rose-400", dot: "bg-rose-400" },
-  amber: { bg: "bg-amber-500/[0.06]", border: "border-amber-500/20", text: "text-amber-400", dot: "bg-amber-400" },
+type AccentTone = "utility" | "special";
+
+const accentMap: Record<
+  string,
+  {
+    bg: string;
+    border: string;
+    text: string;
+    dot: string;
+    line: string;
+    tone: AccentTone;
+  }
+> = {
+  blue: {
+    bg: "bg-utility-400/[0.06]",
+    border: "border-utility-400/25",
+    text: "text-utility-300",
+    dot: "bg-utility-400",
+    line: "from-utility-400/40 via-utility-400/15 to-transparent",
+    tone: "utility",
+  },
+  emerald: {
+    bg: "bg-utility-400/[0.06]",
+    border: "border-utility-400/25",
+    text: "text-utility-300",
+    dot: "bg-utility-400",
+    line: "from-utility-400/40 via-utility-400/15 to-transparent",
+    tone: "utility",
+  },
+  violet: {
+    bg: "bg-special-500/[0.06]",
+    border: "border-special-500/25",
+    text: "text-special-300",
+    dot: "bg-special-400",
+    line: "from-special-500/40 via-special-500/15 to-transparent",
+    tone: "special",
+  },
+  rose: {
+    bg: "bg-special-500/[0.06]",
+    border: "border-special-500/25",
+    text: "text-special-300",
+    dot: "bg-special-400",
+    line: "from-special-500/40 via-special-500/15 to-transparent",
+    tone: "special",
+  },
+  amber: {
+    bg: "bg-special-500/[0.06]",
+    border: "border-special-500/25",
+    text: "text-special-300",
+    dot: "bg-special-400",
+    line: "from-special-500/40 via-special-500/15 to-transparent",
+    tone: "special",
+  },
 };
 
 export default function UseCasesClient() {
   return (
     <MarketingLayout>
-      {/* Hero */}
-      <section className="relative pt-32 pb-20 px-6">
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[500px] pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-blue-500/[0.03] rounded-full blur-[120px]" />
-          <div className="absolute top-10 right-1/4 w-[300px] h-[300px] bg-violet-500/[0.03] rounded-full blur-[100px]" />
-        </div>
+      <PageBackdrop intensity={0.05} />
 
-        <div className="relative max-w-3xl mx-auto text-center">
-          <p className="text-[13px] font-medium text-blue-400/70 uppercase tracking-widest mb-4">
-            Use cases
-          </p>
-          <h1 className="text-[42px] sm:text-[56px] font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
-            Built for people
-            <br />
-            <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
-              who are too busy to film.
-            </span>
-          </h1>
-          <p className="text-[17px] text-white/35 max-w-xl mx-auto leading-relaxed font-light">
-            Professionals across every industry are using Official AI to post
-            daily content without ever touching a camera. Here is how.
-          </p>
-        </div>
-      </section>
+      <HeroAurora
+        eyebrow="Use cases"
+        eyebrowIcon={Layers}
+        eyebrowVariant="utility"
+        spacing="pt-32 pb-16"
+        headline={
+          <>
+            Built for people{" "}
+            <GradientText tone="brand">who are too busy to film.</GradientText>
+          </>
+        }
+        description="Professionals across every industry are using Official AI to post daily content without ever touching a camera. Here is how."
+      />
 
       {/* Quick industry nav */}
-      <section className="pb-16 px-6">
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-2">
+      <section className="relative pb-16 px-6">
+        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-2">
           {useCases.map((uc) => {
             const colors = accentMap[uc.accent];
             return (
               <a
                 key={uc.industry}
                 href={`#${uc.industry.toLowerCase().replace(/\s+/g, "-")}`}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border ${colors.border} ${colors.bg} transition-all hover:scale-[1.02]`}
+                className={`group inline-flex items-center gap-2 px-4 py-2 rounded-lg border ${colors.border} ${colors.bg} transition-all hover:scale-[1.03]`}
               >
-                <uc.icon className={`w-3.5 h-3.5 ${colors.text}`} />
-                <span className={`text-[13px] font-medium ${colors.text}`}>
+                <uc.icon
+                  className={`w-3.5 h-3.5 ${colors.text} group-hover:opacity-100 opacity-80 transition-opacity`}
+                />
+                <span className={`text-p3 font-semibold ${colors.text}`}>
                   {uc.industry}
                 </span>
               </a>
@@ -197,105 +243,121 @@ export default function UseCasesClient() {
           <section
             key={uc.industry}
             id={uc.industry.toLowerCase().replace(/\s+/g, "-")}
-            className={`py-24 px-6 scroll-mt-20 ${
+            className={`relative py-24 px-6 scroll-mt-20 ${
               index > 0 ? "border-t border-white/[0.04]" : ""
             }`}
           >
             <div className="max-w-5xl mx-auto">
               {/* Header */}
-              <div className="mb-12">
-                <div className="flex items-center gap-3 mb-4">
-                  <div
-                    className={`w-10 h-10 rounded-xl ${colors.bg} ${colors.border} border flex items-center justify-center`}
-                  >
-                    <uc.icon className={`w-4.5 h-4.5 ${colors.text}`} />
+              <FadeIn>
+                <div className="mb-12">
+                  <div className="flex items-center gap-3 mb-5">
+                    <div
+                      className={`w-11 h-11 rounded-xl ${colors.bg} ${colors.border} border flex items-center justify-center`}
+                    >
+                      <uc.icon className={`w-5 h-5 ${colors.text}`} />
+                    </div>
+                    <span
+                      className={`text-p3 font-semibold uppercase tracking-wider ${colors.text}`}
+                    >
+                      {uc.industry}
+                    </span>
                   </div>
-                  <span className={`text-[13px] font-medium ${colors.text}`}>
-                    {uc.industry}
-                  </span>
+                  <h2 className="text-h3 sm:text-h2 font-bold tracking-[-0.02em] text-white leading-[1.1] max-w-2xl">
+                    {uc.headline}
+                  </h2>
                 </div>
-                <h2 className="text-[28px] sm:text-[34px] font-bold tracking-tight text-white leading-tight max-w-2xl">
-                  {uc.headline}
-                </h2>
-              </div>
+              </FadeIn>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 {/* Story */}
-                <div className="lg:col-span-7 space-y-6">
-                  <div className="p-6 rounded-2xl border border-white/[0.04] bg-white/[0.015]">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Clock className="w-3.5 h-3.5 text-white/20" />
-                      <span className="text-[12px] font-medium text-white/30 uppercase tracking-wider">
-                        The problem
-                      </span>
-                    </div>
-                    <p className="text-[14px] text-white/35 leading-relaxed">
-                      {uc.scenario}
-                    </p>
-                  </div>
-
-                  <div className="p-6 rounded-2xl border border-white/[0.04] bg-white/[0.015]">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Play className="w-3.5 h-3.5 text-white/20" />
-                      <span className="text-[12px] font-medium text-white/30 uppercase tracking-wider">
-                        The solution
-                      </span>
-                    </div>
-                    <p className="text-[14px] text-white/35 leading-relaxed">
-                      {uc.solution}
-                    </p>
-                  </div>
-
-                  {/* Results */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                    {uc.results.map((result, i) => (
+                <div className="lg:col-span-7 space-y-5">
+                  <FadeIn delay={0.05}>
+                    <div className="relative overflow-hidden p-6 rounded-2xl card-hairline">
                       <div
-                        key={i}
-                        className="p-4 rounded-xl border border-white/[0.04] bg-white/[0.015] text-center"
-                      >
-                        <div className="text-[22px] font-bold text-white mb-1">
-                          {result.value}
-                        </div>
-                        <div className="text-[11px] text-white/25">
-                          {result.label}
-                        </div>
+                        className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${colors.line}`}
+                      />
+                      <div className="flex items-center gap-2 mb-3">
+                        <Clock className="w-3.5 h-3.5 text-white/30" />
+                        <span className="text-p3 font-semibold text-white/45 uppercase tracking-wider">
+                          The problem
+                        </span>
                       </div>
-                    ))}
-                  </div>
+                      <p className="text-p2 text-white/55 leading-relaxed">
+                        {uc.scenario}
+                      </p>
+                    </div>
+                  </FadeIn>
+
+                  <FadeIn delay={0.1}>
+                    <div className="relative overflow-hidden p-6 rounded-2xl card-hairline">
+                      <div
+                        className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${colors.line}`}
+                      />
+                      <div className="flex items-center gap-2 mb-3">
+                        <Play className="w-3.5 h-3.5 text-white/30" />
+                        <span className="text-p3 font-semibold text-white/45 uppercase tracking-wider">
+                          The solution
+                        </span>
+                      </div>
+                      <p className="text-p2 text-white/55 leading-relaxed">
+                        {uc.solution}
+                      </p>
+                    </div>
+                  </FadeIn>
+
+                  {/* Results — StatCards */}
+                  <FadeIn delay={0.15}>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                      {uc.results.map((result, i) => (
+                        <StatCard
+                          key={i}
+                          value={result.value}
+                          label={result.label}
+                          accent={colors.tone}
+                        />
+                      ))}
+                    </div>
+                  </FadeIn>
                 </div>
 
                 {/* Content types */}
                 <div className="lg:col-span-5">
-                  <div className="p-6 rounded-2xl border border-white/[0.04] bg-white/[0.015] sticky top-24">
-                    <div className="flex items-center gap-2 mb-4">
-                      <BarChart3 className="w-3.5 h-3.5 text-white/20" />
-                      <span className="text-[12px] font-medium text-white/30 uppercase tracking-wider">
-                        Content types
-                      </span>
-                    </div>
-                    <ul className="space-y-2.5">
-                      {uc.contentTypes.map((type, i) => (
-                        <li
-                          key={i}
-                          className="flex items-center gap-3 text-[13px] text-white/40"
-                        >
-                          <div
-                            className={`w-1.5 h-1.5 rounded-full ${colors.dot}`}
-                          />
-                          {type}
-                        </li>
-                      ))}
-                    </ul>
+                  <FadeIn delay={0.2}>
+                    <div className="relative overflow-hidden p-6 rounded-2xl card-hairline sticky top-24">
+                      <div
+                        className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${colors.line}`}
+                      />
+                      <div className="flex items-center gap-2 mb-4">
+                        <BarChart3 className="w-3.5 h-3.5 text-white/30" />
+                        <span className="text-p3 font-semibold text-white/45 uppercase tracking-wider">
+                          Content types
+                        </span>
+                      </div>
+                      <ul className="space-y-2.5">
+                        {uc.contentTypes.map((type, i) => (
+                          <li
+                            key={i}
+                            className="flex items-center gap-3 text-p2 text-white/55"
+                          >
+                            <div
+                              className={`w-1.5 h-1.5 rounded-full ${colors.dot}`}
+                            />
+                            {type}
+                          </li>
+                        ))}
+                      </ul>
 
-                    <div className="mt-6 pt-5 border-t border-white/[0.04]">
-                      <Link
-                        href="/auth/signup"
-                        className="block text-center text-[13px] font-medium py-3 min-h-[44px] flex items-center justify-center rounded-lg bg-white text-[#050508] hover:bg-white/90 active:bg-white/80 transition-all"
-                      >
-                        Try it for {uc.industry.toLowerCase()}
-                      </Link>
+                      <div className="mt-6 pt-5 border-t border-white/[0.06]">
+                        <Link
+                          href="/auth/signup"
+                          className="btn-cta-glow block text-center text-p3 font-semibold py-3 min-h-[44px] flex items-center justify-center rounded-lg bg-white text-[#050508] hover:bg-white/95 transition-all"
+                        >
+                          Try it for {uc.industry.toLowerCase()}
+                        </Link>
+                      </div>
                     </div>
-                  </div>
+                  </FadeIn>
                 </div>
               </div>
             </div>
@@ -304,32 +366,32 @@ export default function UseCasesClient() {
       })}
 
       {/* Cross-links */}
-      <section className="py-16 px-6 border-t border-white/[0.04]">
-        <div className="max-w-3xl mx-auto text-center space-y-4">
-          <p className="text-[15px] text-white/30">
+      <section className="relative py-16 px-6 border-t border-white/[0.04]">
+        <div className="max-w-3xl mx-auto text-center space-y-5">
+          <p className="text-p1 text-white/40">
             Same technology, same quality — regardless of your industry.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-5">
             <Link
               href="/how-it-works"
-              className="inline-flex items-center gap-2 text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+              className="group inline-flex items-center gap-2 text-p3 font-semibold text-utility-300 hover:text-utility-200 transition-colors"
             >
               See how it works
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
             <Link
               href="/features"
-              className="inline-flex items-center gap-2 text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+              className="group inline-flex items-center gap-2 text-p3 font-semibold text-utility-300 hover:text-utility-200 transition-colors"
             >
               Explore features
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-2 text-[13px] text-blue-400/70 hover:text-blue-400 transition-colors"
+              className="group inline-flex items-center gap-2 text-p3 font-semibold text-utility-300 hover:text-utility-200 transition-colors"
             >
               View pricing
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
         </div>

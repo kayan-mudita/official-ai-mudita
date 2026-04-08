@@ -13,6 +13,10 @@ export default function RealEstateAgentsAiClient() {
       readTime="7 min read"
       category="Industry Tips"
       slug="real-estate-agents-ai"
+      featuredImage={{
+        src: "/images/featured/blog/real-estate-agents-ai.png",
+        alt: "Abstract architectural forms — luminous planes and edges assembled from cyan and magenta light",
+      }}
     >
       <p>
         There is a direct correlation between content frequency and lead generation in real

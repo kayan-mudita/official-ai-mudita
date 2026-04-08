@@ -17,6 +17,11 @@ export interface Reference {
   accessDate?: string;
 }
 
+export interface FeaturedImage {
+  src: string;
+  alt: string;
+}
+
 export interface SubTopic {
   slug: string;
   title: string;
@@ -27,6 +32,7 @@ export interface SubTopic {
   industryPageSlugs: string[];
   crossLinkSubTopicSlugs: string[];
   references?: Reference[];
+  featuredImage?: FeaturedImage;
 }
 
 export interface Pillar {
@@ -45,6 +51,7 @@ export interface Pillar {
   relatedIndustryPageSlugs: string[];
   leadMagnet: { title: string; description: string; ctaText: string };
   references?: Reference[];
+  featuredImage?: FeaturedImage;
 }
 
 /* ── Pillar Data ── */
@@ -66,10 +73,18 @@ export const pillars: Pillar[] = [
     icon: Video,
     accentColor: "blue",
     navDescription: "How AI video generation works",
+    featuredImage: {
+      src: "/images/featured/pillars/ai-video-creation.png",
+      alt: "A luminous monolithic pillar of fragmented light beams reassembling into one cohesive vertical column",
+    },
     subTopics: [
       {
         slug: "how-ai-video-works",
         title: "How AI Video Generation Works",
+        featuredImage: {
+          src: "/images/featured/subtopics/how-ai-video-works.png",
+          alt: "Abstract layered diagram of luminous nested rings being assembled by streams of light particles",
+        },
         description:
           "A technical overview of AI video generation — from text prompts to finished clips. Understand the models, pipelines, and quality factors behind modern AI video.",
         primaryKeyword: "how ai video generation works",
@@ -89,6 +104,10 @@ export const pillars: Pillar[] = [
       {
         slug: "ai-avatar-video-guide",
         title: "AI Avatar Video: The Complete Guide",
+        featuredImage: {
+          src: "/images/featured/subtopics/ai-avatar-video-guide.png",
+          alt: "Ethereal silhouette form emerging from a cloud of magenta and cyan particles, no facial features",
+        },
         description:
           "How AI avatars work, what makes a good digital twin, and how professionals use avatar video to scale their personal brand without ever stepping in front of a camera.",
         primaryKeyword: "ai avatar video",
@@ -108,6 +127,10 @@ export const pillars: Pillar[] = [
       {
         slug: "voice-cloning-for-video",
         title: "Voice Cloning for Video Content",
+        featuredImage: {
+          src: "/images/featured/subtopics/voice-cloning-for-video.png",
+          alt: "Two parallel waveform ribbons running side by side, merging into a single luminous unified beam",
+        },
         description:
           "How voice cloning technology works, what it takes to create a natural-sounding AI voice, and how to use cloned voice consistently across all your video content.",
         primaryKeyword: "voice cloning for video",
@@ -119,6 +142,10 @@ export const pillars: Pillar[] = [
       {
         slug: "create-videos-without-filming",
         title: "How to Create Videos Without Filming",
+        featuredImage: {
+          src: "/images/featured/subtopics/create-videos-without-filming.png",
+          alt: "Glowing aperture-shaped ring with no camera body, dissolving outward into particle dust",
+        },
         description:
           "Practical methods for creating professional video content without a camera, crew, or studio. From AI generation to repurposing existing assets.",
         primaryKeyword: "create videos without filming",
@@ -130,6 +157,10 @@ export const pillars: Pillar[] = [
       {
         slug: "multi-cut-video-editing",
         title: "The Multi-Cut Method for AI Video",
+        featuredImage: {
+          src: "/images/featured/subtopics/multi-cut-video-editing.png",
+          alt: "Abstract strip of separate light rectangles joining into a continuous flowing luminous beam",
+        },
         description:
           "Why single-shot AI video looks fake and how multi-cut composition — using 3-8 separate clips stitched together — creates videos that feel professionally produced.",
         primaryKeyword: "multi cut video editing",
@@ -178,10 +209,18 @@ export const pillars: Pillar[] = [
     icon: BarChart3,
     accentColor: "violet",
     navDescription: "Strategy, metrics & ROI",
+    featuredImage: {
+      src: "/images/featured/pillars/video-marketing-professionals.png",
+      alt: "An ascending lattice of luminous concentric rings stacked vertically through deep space",
+    },
     subTopics: [
       {
         slug: "video-marketing-roi",
         title: "How to Measure Video Marketing ROI",
+        featuredImage: {
+          src: "/images/featured/subtopics/video-marketing-roi.png",
+          alt: "A single rising luminous arc traced through dark space, ending in a brilliant burst of light",
+        },
         description:
           "Frameworks for calculating the real return on your video marketing investment — from views and engagement to leads, consultations, and revenue attribution.",
         primaryKeyword: "video marketing roi",
@@ -193,6 +232,10 @@ export const pillars: Pillar[] = [
       {
         slug: "video-content-strategy",
         title: "Video Content Strategy for Professionals",
+        featuredImage: {
+          src: "/images/featured/subtopics/video-content-strategy.png",
+          alt: "Constellation of glowing nodes connected by deliberate luminous threads forming an intentional shape",
+        },
         description:
           "How to plan a video content strategy that builds authority, attracts clients, and compounds over time. Includes content pillars, posting cadence, and platform selection.",
         primaryKeyword: "video content strategy",
@@ -204,6 +247,10 @@ export const pillars: Pillar[] = [
       {
         slug: "professional-video-branding",
         title: "Building Your Brand Through Video",
+        featuredImage: {
+          src: "/images/featured/subtopics/professional-video-branding.png",
+          alt: "A single tall vertical beam of light surrounded by a halo of refracted echoes",
+        },
         description:
           "How to use video to establish professional authority, create brand consistency, and become the go-to expert in your market.",
         primaryKeyword: "professional video branding",
@@ -215,6 +262,10 @@ export const pillars: Pillar[] = [
       {
         slug: "video-marketing-metrics",
         title: "Video Marketing Metrics That Matter",
+        featuredImage: {
+          src: "/images/featured/subtopics/video-marketing-metrics.png",
+          alt: "Vertical column of stacked horizontal light bars of varying widths floating in dark space",
+        },
         description:
           "The metrics that actually predict business outcomes from video marketing. Cut through vanity metrics and focus on what drives revenue.",
         primaryKeyword: "video marketing metrics",
@@ -226,6 +277,10 @@ export const pillars: Pillar[] = [
       {
         slug: "video-marketing-funnel",
         title: "The Video Marketing Funnel",
+        featuredImage: {
+          src: "/images/featured/subtopics/video-marketing-funnel.png",
+          alt: "Downward-tapering luminous cone made of nested rings, narrowing to a single brilliant point",
+        },
         description:
           "How to structure your video content across awareness, consideration, and decision stages. Map content types to buyer journey stages.",
         primaryKeyword: "video marketing funnel",
@@ -260,10 +315,18 @@ export const pillars: Pillar[] = [
     icon: Share2,
     accentColor: "emerald",
     navDescription: "Platform-by-platform video guide",
+    featuredImage: {
+      src: "/images/featured/pillars/social-media-video-strategy.png",
+      alt: "Five interconnected luminous orbs orbiting a central glowing core, threads of light connecting them",
+    },
     subTopics: [
       {
         slug: "linkedin-video-strategy",
         title: "LinkedIn Video Strategy for Professionals",
+        featuredImage: {
+          src: "/images/featured/subtopics/linkedin-video-strategy.png",
+          alt: "Tall vertical luminous beam ascending through a structured grid of softly glowing nodes",
+        },
         description:
           "How to use video on LinkedIn to build professional authority, generate leads, and grow your network. Optimal formats, posting times, and content that resonates.",
         primaryKeyword: "linkedin video strategy",
@@ -275,6 +338,10 @@ export const pillars: Pillar[] = [
       {
         slug: "tiktok-for-professionals",
         title: "TikTok for Professionals: The Complete Guide",
+        featuredImage: {
+          src: "/images/featured/subtopics/tiktok-for-professionals.png",
+          alt: "Single luminous vertical column rising rapidly through dark space, trailed by motion blur and particle bursts",
+        },
         description:
           "Why professionals are winning on TikTok, how the algorithm works, and tactical advice for creating content that builds authority without feeling unprofessional.",
         primaryKeyword: "tiktok for professionals",
@@ -286,6 +353,10 @@ export const pillars: Pillar[] = [
       {
         slug: "instagram-reels-for-business",
         title: "Instagram Reels for Business Growth",
+        featuredImage: {
+          src: "/images/featured/subtopics/instagram-reels-for-business.png",
+          alt: "Series of vertical light bars in a tight rhythm, like an abstract motion-picture filmstrip in light",
+        },
         description:
           "How to use Instagram Reels to reach new audiences, showcase expertise, and convert followers into clients. Content formats, hooks, and growth tactics.",
         primaryKeyword: "instagram reels for business",
@@ -297,6 +368,10 @@ export const pillars: Pillar[] = [
       {
         slug: "social-media-video-automation",
         title: "How to Automate Your Social Media Video",
+        featuredImage: {
+          src: "/images/featured/subtopics/social-media-video-automation.png",
+          alt: "Closed circular loop of luminous threads with light pulses traveling smoothly around it",
+        },
         description:
           "Tools, workflows, and strategies for automating video content creation, scheduling, and cross-platform posting without sacrificing quality or authenticity.",
         primaryKeyword: "social media video automation",
@@ -308,6 +383,10 @@ export const pillars: Pillar[] = [
       {
         slug: "content-calendar-strategy",
         title: "Content Calendar Strategy That Works",
+        featuredImage: {
+          src: "/images/featured/subtopics/content-calendar-strategy.png",
+          alt: "Tessellated grid of softly glowing rectangular cells extending across dark space, rhythmic and ordered",
+        },
         description:
           "How to plan, build, and maintain a content calendar that keeps you posting consistently. Templates, tools, and workflows for busy professionals.",
         primaryKeyword: "content calendar strategy",
@@ -342,10 +421,18 @@ export const pillars: Pillar[] = [
     icon: Home,
     accentColor: "amber",
     navDescription: "AI video for real estate agents",
+    featuredImage: {
+      src: "/images/featured/pillars/ai-video-real-estate.png",
+      alt: "Abstract translucent geometric architectural planes rendered in light, floating in dark space",
+    },
     subTopics: [
       {
         slug: "listing-tour-videos",
         title: "Listing Tour Videos That Sell",
+        featuredImage: {
+          src: "/images/featured/subtopics/listing-tour-videos.png",
+          alt: "Abstract floor-plan of luminous lines floating in dark space, no walls, just glowing edges",
+        },
         description:
           "How to create compelling listing tour videos using AI — from scripting and shot planning to posting strategies that generate buyer inquiries.",
         primaryKeyword: "listing tour video ideas",
@@ -357,6 +444,10 @@ export const pillars: Pillar[] = [
       {
         slug: "real-estate-market-updates",
         title: "Real Estate Market Update Videos",
+        featuredImage: {
+          src: "/images/featured/subtopics/real-estate-market-updates.png",
+          alt: "Ascending stair-step pattern of glowing horizontal bars rendered in light",
+        },
         description:
           "How to create weekly market update videos that position you as the local market expert. Scripts, data sources, and posting cadence.",
         primaryKeyword: "real estate market update video",
@@ -368,6 +459,10 @@ export const pillars: Pillar[] = [
       {
         slug: "neighborhood-spotlight-videos",
         title: "Neighborhood Spotlight Videos",
+        featuredImage: {
+          src: "/images/featured/subtopics/neighborhood-spotlight-videos.png",
+          alt: "Glowing circular topographic map made of concentric contour rings, lit from within",
+        },
         description:
           "How to create neighborhood spotlight videos that attract buyers and establish area expertise. Content frameworks, SEO strategies, and distribution tactics.",
         primaryKeyword: "neighborhood video marketing",
@@ -379,6 +474,10 @@ export const pillars: Pillar[] = [
       {
         slug: "real-estate-social-media",
         title: "Real Estate Social Media Strategy",
+        featuredImage: {
+          src: "/images/featured/subtopics/real-estate-social-media.png",
+          alt: "Network of glowing abstract dwelling-shaped silhouettes connected by luminous threads",
+        },
         description:
           "A platform-by-platform social media strategy for real estate agents. What to post, where, and how often to maximize reach and generate leads.",
         primaryKeyword: "real estate social media strategy",
@@ -390,6 +489,10 @@ export const pillars: Pillar[] = [
       {
         slug: "real-estate-video-roi",
         title: "Real Estate Video Marketing ROI",
+        featuredImage: {
+          src: "/images/featured/subtopics/real-estate-video-roi.png",
+          alt: "Abstract upward-rising bar chart rendered as floating columns of light, no axes or labels",
+        },
         description:
           "How to measure the real business impact of video marketing in real estate — from listing inquiries to closed deals. Benchmarks, attribution, and tracking.",
         primaryKeyword: "real estate video marketing roi",
@@ -424,10 +527,18 @@ export const pillars: Pillar[] = [
     icon: Briefcase,
     accentColor: "cyan",
     navDescription: "Video for legal, medical & financial",
+    featuredImage: {
+      src: "/images/featured/pillars/ai-video-professional-services.png",
+      alt: "Three towering parallel columns of light rising from dark space, surrounded by a soft halo",
+    },
     subTopics: [
       {
         slug: "video-marketing-for-lawyers",
         title: "Video Marketing for Lawyers",
+        featuredImage: {
+          src: "/images/featured/subtopics/video-marketing-for-lawyers.png",
+          alt: "Single perfectly balanced vertical column of light flanked by symmetric horizontal beams",
+        },
         description:
           "How law firms use video to generate consultations, build trust, and establish thought leadership — while staying within ethical advertising guidelines.",
         primaryKeyword: "video marketing for lawyers",
@@ -439,6 +550,10 @@ export const pillars: Pillar[] = [
       {
         slug: "video-marketing-for-doctors",
         title: "Video Marketing for Doctors",
+        featuredImage: {
+          src: "/images/featured/subtopics/video-marketing-for-doctors.png",
+          alt: "Glowing abstract heart-shape made entirely of luminous interwoven threads, suspended in dark space",
+        },
         description:
           "How medical professionals use video for patient education, practice marketing, and community trust-building — while maintaining clinical accuracy.",
         primaryKeyword: "patient education video",
@@ -450,6 +565,10 @@ export const pillars: Pillar[] = [
       {
         slug: "video-marketing-for-advisors",
         title: "Video Marketing for Financial Advisors",
+        featuredImage: {
+          src: "/images/featured/subtopics/video-marketing-for-advisors.png",
+          alt: "Vertical column of stacked translucent layers ascending and brightening — abstract compounding",
+        },
         description:
           "How financial advisors use video to build AUM, establish market expertise, and connect with prospects — with compliance-friendly content strategies.",
         primaryKeyword: "financial advisor video marketing",
@@ -461,6 +580,10 @@ export const pillars: Pillar[] = [
       {
         slug: "legal-video-content-ideas",
         title: "Legal Video Content Ideas",
+        featuredImage: {
+          src: "/images/featured/subtopics/legal-video-content-ideas.png",
+          alt: "Abstract scroll-like ribbon of luminous text-less marks unfurling diagonally across dark space",
+        },
         description:
           "50+ video content ideas for law firms — organized by practice area, content type, and funnel stage. Know-your-rights tips, case results, FAQ videos, and more.",
         primaryKeyword: "legal content video ideas",
@@ -472,6 +595,10 @@ export const pillars: Pillar[] = [
       {
         slug: "building-authority-with-video",
         title: "Building Professional Authority With Video",
+        featuredImage: {
+          src: "/images/featured/subtopics/building-authority-with-video.png",
+          alt: "Tall monolithic luminous pillar growing upward from a smaller seed of light at its base",
+        },
         description:
           "How video accelerates trust and authority for service professionals. The psychology of video trust, content frameworks, and long-term positioning strategies.",
         primaryKeyword: "authority building video content",
@@ -506,10 +633,18 @@ export const pillars: Pillar[] = [
     icon: Layers,
     accentColor: "rose",
     navDescription: "Scale from 1 to 30 videos/month",
+    featuredImage: {
+      src: "/images/featured/pillars/ai-content-at-scale.png",
+      alt: "A single seed of light multiplying into a vast tessellated grid extending to the horizon",
+    },
     subTopics: [
       {
         slug: "ai-content-repurposing",
         title: "AI Content Repurposing Guide",
+        featuredImage: {
+          src: "/images/featured/subtopics/ai-content-repurposing.png",
+          alt: "Single luminous seed splitting into multiple smaller orbs fanning out in different directions",
+        },
         description:
           "How to turn one piece of content into 10+ assets across platforms. Repurposing frameworks, AI tools, and distribution strategies.",
         primaryKeyword: "ai content repurposing",
@@ -521,6 +656,10 @@ export const pillars: Pillar[] = [
       {
         slug: "batch-video-creation",
         title: "Batch Video Creation Workflow",
+        featuredImage: {
+          src: "/images/featured/subtopics/batch-video-creation.png",
+          alt: "Tessellated wall of small glowing rectangular tiles, suggesting a wall of finished output",
+        },
         description:
           "How to batch-produce a week or month of video content in a single session. Workflows, templates, and tools for efficient production at scale.",
         primaryKeyword: "batch video creation",
@@ -532,6 +671,10 @@ export const pillars: Pillar[] = [
       {
         slug: "ai-vs-traditional-video",
         title: "AI vs Traditional Video Production",
+        featuredImage: {
+          src: "/images/featured/subtopics/ai-vs-traditional-video.png",
+          alt: "Two parallel luminous beams of light running side by side, one richer and more layered than the other",
+        },
         description:
           "A detailed comparison of AI-generated video vs traditional production — cost, quality, speed, scalability, and when to use each approach.",
         primaryKeyword: "ai vs traditional video production",
@@ -543,6 +686,10 @@ export const pillars: Pillar[] = [
       {
         slug: "content-consistency",
         title: "Content Consistency for Brand Building",
+        featuredImage: {
+          src: "/images/featured/subtopics/content-consistency.png",
+          alt: "Perfectly straight horizontal beam of light extending across the frame with a halo of equally-spaced particles",
+        },
         description:
           "Why consistency matters more than virality, how to maintain quality at volume, and systems for never missing a posting day.",
         primaryKeyword: "content consistency brand",
@@ -554,6 +701,10 @@ export const pillars: Pillar[] = [
       {
         slug: "scaling-personal-brand",
         title: "Scaling Your Personal Brand With AI",
+        featuredImage: {
+          src: "/images/featured/subtopics/scaling-personal-brand.png",
+          alt: "A small luminous seed at the center radiating outward in a vast bloom of glowing concentric rings",
+        },
         description:
           "How AI enables solopreneurs and small teams to build personal brands that compete with firms 10x their size. Strategies, tools, and real examples.",
         primaryKeyword: "scaling personal brand content",

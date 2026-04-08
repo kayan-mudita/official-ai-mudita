@@ -13,6 +13,10 @@ export default function VideoMarketingRoiGuideClient() {
       readTime="6 min read"
       category="Content Strategy"
       slug="video-marketing-roi-guide"
+      featuredImage={{
+        src: "/images/featured/blog/video-marketing-roi-guide.png",
+        alt: "A single ascending light curve traced through dark space, surrounded by floating particles",
+      }}
     >
       <p>
         Ask any marketer if video works and they will say yes. Ask them to prove it with

@@ -1,0 +1,364 @@
+{
+  "model": "gemini-3.1-flash-image-preview",
+  "outputDir": "public/images/featured",
+  "concurrency": 3,
+  "brand": {
+    "name": "Official AI",
+    "primary": "#81009E",
+    "secondary": "#0FCBFF",
+    "background": "#050508",
+    "aestheticReference": "Vercel, Linear, Stripe — dark, futuristic, glassmorphic, premium editorial"
+  },
+  "items": [
+    {
+      "key": "ai-video-creation",
+      "outputPath": "pillars/ai-video-creation.png",
+      "aspect": "21:9",
+      "topic": "AI Video Creation: The Complete Guide",
+      "visualMetaphor": "a single luminous monolithic pillar of fragmented light beams suspended in deep space, beams reassembling into one cohesive vertical column — representing how disparate AI elements (avatar, voice, edit) compose a single finished video"
+    },
+    {
+      "key": "voice-cloning-guide",
+      "outputPath": "blog/voice-cloning-guide.png",
+      "aspect": "16:9",
+      "topic": "How Voice Cloning Works (And Why It Matters for Video)",
+      "visualMetaphor": "abstract sound waves emanating from a glowing point, dissolving into a holographic field of suspended particles — the voice as light"
+    },
+    {
+      "key": "multi-cut-method",
+      "outputPath": "blog/multi-cut-method.png",
+      "aspect": "16:9",
+      "topic": "The Multi-Cut Method: Why One-Shot AI Video Looks Like Garbage",
+      "visualMetaphor": "a strip of fragmented light shards floating across the frame, each shard a different angle, joining seamlessly into a single continuous beam — the visual logic of a multi-cut edit"
+    },
+    {
+      "key": "ai-ugc-future",
+      "outputPath": "blog/ai-ugc-future.png",
+      "aspect": "16:9",
+      "topic": "Why AI-Generated UGC Is the Future of Professional Content",
+      "visualMetaphor": "an ethereal cloud of magenta and cyan particles coalescing into a glowing abstract figure-shape, no facial features — the emergence of authentic synthetic presence"
+    },
+    {
+      "key": "batch-video-workflow",
+      "outputPath": "blog/batch-video-workflow.png",
+      "aspect": "16:9",
+      "topic": "How to Create 30 Videos in One Sitting",
+      "visualMetaphor": "a tessellated grid of softly glowing rectangular cards floating in dark space, each card slightly different in luminosity, suggesting a wall of finished output flowing from a single source"
+    },
+    {
+      "key": "video-marketing-roi-guide",
+      "outputPath": "blog/video-marketing-roi-guide.png",
+      "aspect": "16:9",
+      "topic": "How to Measure Video Marketing ROI Without Expensive Tools",
+      "visualMetaphor": "a single ascending light curve traced through dark space, surrounded by floating particles, the curve glowing brighter as it rises — abstract growth without literal charts"
+    },
+    {
+      "key": "real-estate-agents-ai",
+      "outputPath": "blog/real-estate-agents-ai.png",
+      "aspect": "16:9",
+      "topic": "How Real Estate Agents Are Using AI to Post Daily Without Filming",
+      "visualMetaphor": "abstract geometric architectural forms — luminous planes and edges suggesting a building façade — assembled from cyan and magenta light, dissolving at the corners"
+    },
+    {
+      "key": "financial-advisor-video",
+      "outputPath": "blog/financial-advisor-video.png",
+      "aspect": "16:9",
+      "topic": "How Financial Advisors Use Video to Build AUM",
+      "visualMetaphor": "a vertical column of stacked translucent layers ascending from dark space, each layer slightly larger and brighter than the one below — the abstract notion of compounding value"
+    },
+    {
+      "key": "linkedin-video-tips",
+      "outputPath": "blog/linkedin-video-tips.png",
+      "aspect": "16:9",
+      "topic": "7 LinkedIn Video Strategies That Actually Generate Leads",
+      "visualMetaphor": "a network of glowing nodes connected by luminous threads forming an abstract constellation, edges pulsing with magenta and cyan — connection without literal logos"
+    },
+    {
+      "key": "lawyer-video-marketing",
+      "outputPath": "blog/lawyer-video-marketing.png",
+      "aspect": "16:9",
+      "topic": "Video Marketing for Lawyers: A Compliance-Friendly Guide",
+      "visualMetaphor": "a single tall luminous column of light flanked by two parallel beams, perfectly balanced and symmetric — abstract notion of authority and structure without literal scales or pillars of justice"
+    },
+    {
+      "key": "scaling-personal-brand-ai",
+      "outputPath": "blog/scaling-personal-brand-ai.png",
+      "aspect": "16:9",
+      "topic": "How Solo Professionals Scale a Personal Brand With AI",
+      "visualMetaphor": "a single seed of light at the center radiating outward into a vast bloom of refracted echoes, each echo slightly delayed and dimmer — a single voice multiplying into many"
+    },
+    {
+      "key": "five-content-formats",
+      "outputPath": "blog/five-content-formats.png",
+      "aspect": "16:9",
+      "topic": "5 Content Formats That Work for Every Industry",
+      "visualMetaphor": "five distinct abstract geometric crystals suspended in dark space, each a different shape and luminance, arranged in a loose constellation, each lit from within"
+    },
+    {
+      "key": "neighborhood-video-seo",
+      "outputPath": "blog/neighborhood-video-seo.png",
+      "aspect": "16:9",
+      "topic": "How Neighborhood Spotlight Videos Win Listings Before the Pitch",
+      "visualMetaphor": "an aerial topographic abstraction — glowing contour lines and elevation rings rendered in cyan and magenta light, suggesting a place from above without any literal map elements"
+    },
+    {
+      "key": "tiktok-professional-guide",
+      "outputPath": "blog/tiktok-professional-guide.png",
+      "aspect": "16:9",
+      "topic": "TikTok for Professionals: How to Build Authority Without Dancing",
+      "visualMetaphor": "a single luminous vertical bar of light rising through dark space, surrounded by a soft halo of motion blur and particle dust — the vertical format as an abstract idea, no phone or screen"
+    },
+
+    {
+      "key": "video-marketing-professionals",
+      "outputPath": "pillars/video-marketing-professionals.png",
+      "aspect": "21:9",
+      "topic": "Video Marketing for Professionals: Strategy, Metrics & ROI",
+      "visualMetaphor": "an ascending lattice of luminous concentric rings stacked vertically through deep space, each ring brighter than the last, suggesting structured measurable progression"
+    },
+    {
+      "key": "social-media-video-strategy",
+      "outputPath": "pillars/social-media-video-strategy.png",
+      "aspect": "21:9",
+      "topic": "Social Media Video Strategy: Platform-by-Platform Guide",
+      "visualMetaphor": "five interconnected luminous orbs orbiting a central glowing core, each orb a different size, threads of light connecting them — abstract notion of multi-platform reach"
+    },
+    {
+      "key": "ai-video-real-estate",
+      "outputPath": "pillars/ai-video-real-estate.png",
+      "aspect": "21:9",
+      "topic": "AI Video for Real Estate: The Agent's Complete Guide",
+      "visualMetaphor": "an abstract translucent geometric structure resembling architectural blueprint planes rendered in light — clean luminous edges, depth, dimensional layers floating in dark space"
+    },
+    {
+      "key": "ai-video-professional-services",
+      "outputPath": "pillars/ai-video-professional-services.png",
+      "aspect": "21:9",
+      "topic": "AI Video for Professional Services: Legal, Medical & Financial",
+      "visualMetaphor": "three towering parallel columns of light rising from dark space, each column a slightly different luminance, surrounded by a soft volumetric halo — abstract authority"
+    },
+    {
+      "key": "ai-content-at-scale",
+      "outputPath": "pillars/ai-content-at-scale.png",
+      "aspect": "21:9",
+      "topic": "AI Content at Scale: From 1 Video to 30 Per Month",
+      "visualMetaphor": "a single seed of light at the center multiplying into a vast tessellated grid of glowing tiles extending to the horizon, each tile a slightly different brightness — abstract scale"
+    },
+
+    {
+      "key": "subtopic-how-ai-video-works",
+      "outputPath": "subtopics/how-ai-video-works.png",
+      "aspect": "16:9",
+      "topic": "How AI Video Generation Works",
+      "visualMetaphor": "an abstract layered diagram of luminous nested rings being assembled by streams of light particles flowing inward from deep space"
+    },
+    {
+      "key": "subtopic-ai-avatar-video-guide",
+      "outputPath": "subtopics/ai-avatar-video-guide.png",
+      "aspect": "16:9",
+      "topic": "AI Avatar Video: The Complete Guide",
+      "visualMetaphor": "an ethereal silhouette form emerging from a cloud of magenta and cyan particles, no facial features, just luminous abstract presence"
+    },
+    {
+      "key": "subtopic-voice-cloning-for-video",
+      "outputPath": "subtopics/voice-cloning-for-video.png",
+      "aspect": "16:9",
+      "topic": "Voice Cloning for Video Content",
+      "visualMetaphor": "two parallel waveform ribbons running side by side through dark space, one slightly displaced, merging into a single luminous unified beam"
+    },
+    {
+      "key": "subtopic-create-videos-without-filming",
+      "outputPath": "subtopics/create-videos-without-filming.png",
+      "aspect": "16:9",
+      "topic": "How to Create Videos Without Filming",
+      "visualMetaphor": "a glowing aperture-shaped ring with no camera body, dissolving outward into particle dust, surrounded by deep negative space"
+    },
+    {
+      "key": "subtopic-multi-cut-video-editing",
+      "outputPath": "subtopics/multi-cut-video-editing.png",
+      "aspect": "16:9",
+      "topic": "The Multi-Cut Method for AI Video",
+      "visualMetaphor": "an abstract strip of separate light rectangles floating in a row, each at a slightly different angle, joining into a continuous flowing luminous beam"
+    },
+
+    {
+      "key": "subtopic-video-marketing-roi",
+      "outputPath": "subtopics/video-marketing-roi.png",
+      "aspect": "16:9",
+      "topic": "How to Measure Video Marketing ROI",
+      "visualMetaphor": "a single rising luminous arc traced through dark space, ending in a brilliant burst of light — abstract trajectory of growth"
+    },
+    {
+      "key": "subtopic-video-content-strategy",
+      "outputPath": "subtopics/video-content-strategy.png",
+      "aspect": "16:9",
+      "topic": "Video Content Strategy for Professionals",
+      "visualMetaphor": "a constellation of small glowing nodes connected by deliberate luminous threads forming an intentional planned shape against deep space"
+    },
+    {
+      "key": "subtopic-professional-video-branding",
+      "outputPath": "subtopics/professional-video-branding.png",
+      "aspect": "16:9",
+      "topic": "Building Your Brand Through Video",
+      "visualMetaphor": "a single tall vertical beam of light surrounded by a halo of refracted echoes radiating outward — the abstract notion of a recognizable signature"
+    },
+    {
+      "key": "subtopic-video-marketing-metrics",
+      "outputPath": "subtopics/video-marketing-metrics.png",
+      "aspect": "16:9",
+      "topic": "Video Marketing Metrics That Matter",
+      "visualMetaphor": "a vertical column of stacked horizontal light bars of varying widths, each lit slightly differently, floating in dark space"
+    },
+    {
+      "key": "subtopic-video-marketing-funnel",
+      "outputPath": "subtopics/video-marketing-funnel.png",
+      "aspect": "16:9",
+      "topic": "The Video Marketing Funnel",
+      "visualMetaphor": "a downward-tapering luminous cone made of nested rings, narrowing to a single brilliant point at the bottom"
+    },
+
+    {
+      "key": "subtopic-linkedin-video-strategy",
+      "outputPath": "subtopics/linkedin-video-strategy.png",
+      "aspect": "16:9",
+      "topic": "LinkedIn Video Strategy for Professionals",
+      "visualMetaphor": "a single tall vertical luminous beam ascending through a structured grid of softly glowing nodes — abstract notion of professional ascent"
+    },
+    {
+      "key": "subtopic-tiktok-for-professionals",
+      "outputPath": "subtopics/tiktok-for-professionals.png",
+      "aspect": "16:9",
+      "topic": "TikTok for Professionals: The Complete Guide",
+      "visualMetaphor": "a single luminous vertical column rising rapidly through dark space, trailed by streaks of motion blur and particle bursts"
+    },
+    {
+      "key": "subtopic-instagram-reels-for-business",
+      "outputPath": "subtopics/instagram-reels-for-business.png",
+      "aspect": "16:9",
+      "topic": "Instagram Reels for Business Growth",
+      "visualMetaphor": "a series of vertical light bars arranged in a tight rhythm across the frame, like an abstract motion-picture filmstrip rendered entirely in luminous beams"
+    },
+    {
+      "key": "subtopic-social-media-video-automation",
+      "outputPath": "subtopics/social-media-video-automation.png",
+      "aspect": "16:9",
+      "topic": "How to Automate Your Social Media Video",
+      "visualMetaphor": "a closed circular loop of luminous threads with light pulses traveling smoothly around it — abstract notion of an autonomous self-sustaining cycle"
+    },
+    {
+      "key": "subtopic-content-calendar-strategy",
+      "outputPath": "subtopics/content-calendar-strategy.png",
+      "aspect": "16:9",
+      "topic": "Content Calendar Strategy That Works",
+      "visualMetaphor": "a tessellated grid of softly glowing rectangular cells extending across dark space, each cell a slightly different luminance — rhythmic and ordered"
+    },
+
+    {
+      "key": "subtopic-listing-tour-videos",
+      "outputPath": "subtopics/listing-tour-videos.png",
+      "aspect": "16:9",
+      "topic": "Listing Tour Videos That Sell",
+      "visualMetaphor": "an abstract floor-plan of luminous lines rendered as if floating in dark space — no walls, no rooms, just glowing edges suggesting a dwelling"
+    },
+    {
+      "key": "subtopic-real-estate-market-updates",
+      "outputPath": "subtopics/real-estate-market-updates.png",
+      "aspect": "16:9",
+      "topic": "Real Estate Market Update Videos",
+      "visualMetaphor": "an ascending stair-step pattern of glowing horizontal bars rendered in light, each step slightly higher and brighter than the last"
+    },
+    {
+      "key": "subtopic-neighborhood-spotlight-videos",
+      "outputPath": "subtopics/neighborhood-spotlight-videos.png",
+      "aspect": "16:9",
+      "topic": "Neighborhood Spotlight Videos",
+      "visualMetaphor": "a glowing circular topographic map made of concentric contour rings, lit from within with magenta and cyan, floating in deep space"
+    },
+    {
+      "key": "subtopic-real-estate-social-media",
+      "outputPath": "subtopics/real-estate-social-media.png",
+      "aspect": "16:9",
+      "topic": "Real Estate Social Media Strategy",
+      "visualMetaphor": "a network of glowing abstract dwelling-shaped silhouettes connected by luminous threads — abstract neighborhood network without any literal houses"
+    },
+    {
+      "key": "subtopic-real-estate-video-roi",
+      "outputPath": "subtopics/real-estate-video-roi.png",
+      "aspect": "16:9",
+      "topic": "Real Estate Video Marketing ROI",
+      "visualMetaphor": "an abstract upward-rising bar chart rendered as floating columns of light, no axes or labels, just luminous form against deep space"
+    },
+
+    {
+      "key": "subtopic-video-marketing-for-lawyers",
+      "outputPath": "subtopics/video-marketing-for-lawyers.png",
+      "aspect": "16:9",
+      "topic": "Video Marketing for Lawyers",
+      "visualMetaphor": "a single perfectly balanced vertical column of light flanked by symmetric horizontal beams — abstract notion of legal balance and structure"
+    },
+    {
+      "key": "subtopic-video-marketing-for-doctors",
+      "outputPath": "subtopics/video-marketing-for-doctors.png",
+      "aspect": "16:9",
+      "topic": "Video Marketing for Doctors",
+      "visualMetaphor": "a glowing abstract heart-shape made entirely of luminous interwoven threads, no realism, suspended in dark space"
+    },
+    {
+      "key": "subtopic-video-marketing-for-advisors",
+      "outputPath": "subtopics/video-marketing-for-advisors.png",
+      "aspect": "16:9",
+      "topic": "Video Marketing for Financial Advisors",
+      "visualMetaphor": "a vertical column of stacked translucent layers ascending and brightening, each layer slightly larger than the one below — abstract compounding"
+    },
+    {
+      "key": "subtopic-legal-video-content-ideas",
+      "outputPath": "subtopics/legal-video-content-ideas.png",
+      "aspect": "16:9",
+      "topic": "Legal Video Content Ideas",
+      "visualMetaphor": "an abstract scroll-like ribbon of luminous text-less marks unfurling diagonally across dark space, lit by magenta and cyan"
+    },
+    {
+      "key": "subtopic-building-authority-with-video",
+      "outputPath": "subtopics/building-authority-with-video.png",
+      "aspect": "16:9",
+      "topic": "Building Professional Authority With Video",
+      "visualMetaphor": "a single tall monolithic luminous pillar growing upward from a smaller seed of light at its base, surrounded by a soft halo"
+    },
+
+    {
+      "key": "subtopic-ai-content-repurposing",
+      "outputPath": "subtopics/ai-content-repurposing.png",
+      "aspect": "16:9",
+      "topic": "AI Content Repurposing Guide",
+      "visualMetaphor": "a single luminous seed splitting into multiple smaller orbs that fan out in different directions, all retaining the original glow signature"
+    },
+    {
+      "key": "subtopic-batch-video-creation",
+      "outputPath": "subtopics/batch-video-creation.png",
+      "aspect": "16:9",
+      "topic": "Batch Video Creation Workflow",
+      "visualMetaphor": "a tessellated wall of small glowing rectangular tiles, each slightly different in luminosity, suggesting a wall of finished output flowing from a single source"
+    },
+    {
+      "key": "subtopic-ai-vs-traditional-video",
+      "outputPath": "subtopics/ai-vs-traditional-video.png",
+      "aspect": "16:9",
+      "topic": "AI vs Traditional Video Production",
+      "visualMetaphor": "two parallel luminous beams of light running side by side, one richer and more layered than the other, both rendered abstractly"
+    },
+    {
+      "key": "subtopic-content-consistency",
+      "outputPath": "subtopics/content-consistency.png",
+      "aspect": "16:9",
+      "topic": "Content Consistency for Brand Building",
+      "visualMetaphor": "a perfectly straight horizontal beam of light extending across the entire frame, surrounded by a soft halo of equally-spaced luminous particles"
+    },
+    {
+      "key": "subtopic-scaling-personal-brand",
+      "outputPath": "subtopics/scaling-personal-brand.png",
+      "aspect": "16:9",
+      "topic": "Scaling Your Personal Brand With AI",
+      "visualMetaphor": "a small luminous seed at the center radiating outward in a vast bloom of glowing concentric rings, each ring larger and softer than the last"
+    }
+  ]
+}

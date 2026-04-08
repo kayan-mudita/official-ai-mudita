@@ -13,6 +13,10 @@ export default function BatchVideoWorkflowClient() {
       readTime="5 min read"
       category="AI Video"
       slug="batch-video-workflow"
+      featuredImage={{
+        src: "/images/featured/blog/batch-video-workflow.png",
+        alt: "A tessellated grid of softly glowing rectangular cards floating in dark space",
+      }}
     >
       <p>
         The creators who post daily are not spending hours every day on content. They are

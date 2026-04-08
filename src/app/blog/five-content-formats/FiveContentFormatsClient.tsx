@@ -13,6 +13,10 @@ export default function FiveContentFormatsClient() {
       readTime="4 min read"
       category="Content Strategy"
       slug="five-content-formats"
+      featuredImage={{
+        src: "/images/featured/blog/five-content-formats.png",
+        alt: "Five distinct abstract geometric crystals suspended in dark space, lit from within with magenta and cyan",
+      }}
     >
       <p>
         Most professionals overthink content. They assume they need a production team, a

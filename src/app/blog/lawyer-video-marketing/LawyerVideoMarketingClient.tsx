@@ -13,6 +13,10 @@ export default function LawyerVideoMarketingClient() {
       readTime="7 min read"
       category="Industry Tips"
       slug="lawyer-video-marketing"
+      featuredImage={{
+        src: "/images/featured/blog/lawyer-video-marketing.png",
+        alt: "A single tall luminous column of light flanked by two parallel beams, perfectly balanced and symmetric",
+      }}
     >
       <p>
         Lawyers have a unique problem with video marketing: it works exceptionally well, but

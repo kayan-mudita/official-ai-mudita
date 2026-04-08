@@ -13,6 +13,10 @@ export default function ScalingPersonalBrandAiClient() {
       readTime="6 min read"
       category="Content Strategy"
       slug="scaling-personal-brand-ai"
+      featuredImage={{
+        src: "/images/featured/blog/scaling-personal-brand-ai.png",
+        alt: "A single seed of light radiating outward into a vast bloom of refracted echoes",
+      }}
     >
       <p>
         The biggest disadvantage solo professionals face is not expertise — it is visibility.

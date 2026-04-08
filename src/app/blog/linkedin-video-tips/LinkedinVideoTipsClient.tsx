@@ -13,6 +13,10 @@ export default function LinkedinVideoTipsClient() {
       readTime="7 min read"
       category="Social Media"
       slug="linkedin-video-tips"
+      featuredImage={{
+        src: "/images/featured/blog/linkedin-video-tips.png",
+        alt: "A constellation of glowing nodes connected by luminous threads pulsing with magenta and cyan",
+      }}
     >
       <p>
         LinkedIn video is booming — the platform reports that video posts get 5x more

@@ -72,22 +72,24 @@ export default function PillarSidebar({
   const [blogsOpen, setBlogsOpen] = useState(true);
   const [industryOpen, setIndustryOpen] = useState(true);
 
-  const accentBorder = {
-    blue: "border-l-blue-400",
-    violet: "border-l-violet-400",
-    emerald: "border-l-emerald-400",
-    amber: "border-l-amber-400",
-    cyan: "border-l-cyan-400",
-    rose: "border-l-rose-400",
-  }[accentColor] || "border-l-blue-400";
+  const isUtility = ["blue", "cyan", "emerald"].includes(accentColor);
+  const accentBorder = isUtility
+    ? "border-l-utility-400"
+    : "border-l-special-500";
+  const accentText = isUtility ? "text-utility-300" : "text-special-300";
+  const accentTextHover = isUtility
+    ? "hover:text-utility-200"
+    : "hover:text-special-200";
 
   return (
     <aside className="hidden lg:block w-[220px] flex-shrink-0">
-      <div className="sticky top-20 space-y-6">
+      <div className="sticky top-24 space-y-6">
         {/* Pillar title */}
         <div className={`border-l-2 ${accentBorder} pl-3`}>
-          <div className="text-p3 text-white/20 uppercase tracking-wider mb-1">Guide</div>
-          <div className="text-p2 font-semibold text-white/70">{pillarTitle}</div>
+          <div className="text-p3 text-white/25 uppercase tracking-wider mb-1 font-semibold">
+            Guide
+          </div>
+          <div className="text-p2 font-semibold text-white/80">{pillarTitle}</div>
         </div>
 
         {/* Subtopics */}
@@ -191,12 +193,23 @@ export default function PillarSidebar({
         )}
 
         {/* CTA */}
-        <div className="p-4 rounded-xl card-hairline">
-          <p className="text-p3 font-medium text-white/60 mb-2">See it in action</p>
-          <p className="text-p3 text-white/25 mb-3">Try the free demo — no signup required.</p>
+        <div className="relative overflow-hidden p-4 rounded-xl card-hairline">
+          <div
+            className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${
+              isUtility
+                ? "from-utility-400/40 via-utility-400/15 to-transparent"
+                : "from-special-500/40 via-special-500/15 to-transparent"
+            }`}
+          />
+          <p className="text-p3 font-semibold text-white/70 mb-1">
+            See it in action
+          </p>
+          <p className="text-p3 text-white/30 mb-3 leading-relaxed">
+            Try the free demo — no signup required.
+          </p>
           <Link
             href="/demo"
-            className="inline-flex items-center gap-1.5 text-p3 font-medium text-blue-400/80 hover:text-blue-400 transition-colors"
+            className={`inline-flex items-center gap-1.5 text-p3 font-semibold ${accentText} ${accentTextHover} transition-colors`}
           >
             Try the demo <ArrowRight className="w-3 h-3" />
           </Link>

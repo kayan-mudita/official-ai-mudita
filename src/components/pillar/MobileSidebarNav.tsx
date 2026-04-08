@@ -72,23 +72,13 @@ export default function MobileSidebarNav({
 }: MobileSidebarNavProps) {
   const [open, setOpen] = useState(false);
 
-  const accentBorder = {
-    blue: "border-blue-400/30",
-    violet: "border-violet-400/30",
-    emerald: "border-emerald-400/30",
-    amber: "border-amber-400/30",
-    cyan: "border-cyan-400/30",
-    rose: "border-rose-400/30",
-  }[accentColor] || "border-blue-400/30";
-
-  const activeBg = {
-    blue: "bg-blue-500/[0.08]",
-    violet: "bg-violet-500/[0.08]",
-    emerald: "bg-emerald-500/[0.08]",
-    amber: "bg-amber-500/[0.08]",
-    cyan: "bg-cyan-500/[0.08]",
-    rose: "bg-rose-500/[0.08]",
-  }[accentColor] || "bg-blue-500/[0.08]";
+  const isUtility = ["blue", "cyan", "emerald"].includes(accentColor);
+  const accentBorder = isUtility
+    ? "border-utility-400/30"
+    : "border-special-500/30";
+  const activeBg = isUtility
+    ? "bg-utility-400/[0.08]"
+    : "bg-special-500/[0.08]";
 
   return (
     <div className="lg:hidden mb-6">

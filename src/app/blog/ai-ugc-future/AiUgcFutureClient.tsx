@@ -13,6 +13,10 @@ export default function AiUgcFutureClient() {
       readTime="5 min read"
       category="AI Video"
       slug="ai-ugc-future"
+      featuredImage={{
+        src: "/images/featured/blog/ai-ugc-future.png",
+        alt: "Magenta and cyan particles coalescing into an abstract glowing figure-shape in deep space",
+      }}
     >
       <p>
         Scroll through LinkedIn, Instagram, or TikTok for five minutes. The posts that stop

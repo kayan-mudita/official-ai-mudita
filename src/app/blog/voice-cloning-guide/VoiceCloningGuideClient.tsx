@@ -13,6 +13,10 @@ export default function VoiceCloningGuideClient() {
       readTime="6 min read"
       category="AI Video"
       slug="voice-cloning-guide"
+      featuredImage={{
+        src: "/images/featured/blog/voice-cloning-guide.png",
+        alt: "Abstract sound waves dissolving into a holographic particle field, lit by magenta and cyan",
+      }}
     >
       <p>
         The single biggest giveaway in AI-generated video is the voice. You can have a
