@@ -20,6 +20,7 @@ import PillarSidebar from "@/components/pillar/PillarSidebar";
 import MobileSidebarNav from "@/components/pillar/MobileSidebarNav";
 import ReferencesSection from "@/components/pillar/ReferencesSection";
 import { getPillarBySlug } from "@/data/topic-libraries";
+import { getFeaturesForPillar } from "@/data/pillar-feature-map";
 
 interface TocItem {
   id: string;
@@ -297,38 +298,129 @@ export default function PillarPageTemplate({
               </section>
             </FadeIn>
 
-            {/* Lead magnet CTA */}
-            <FadeIn delay={0.3} duration={0.6}>
-              <div className="relative mt-20 overflow-hidden rounded-3xl card-hairline">
-                <GlowBlob
-                  color={brand.tone}
-                  size="lg"
-                  position="center"
-                  intensity={0.10}
-                />
-                <div className="relative p-10 sm:p-14 text-center">
-                  <div className="flex justify-center mb-5">
-                    <Eyebrow icon={Sparkles} variant={brand.eyebrow}>
-                      Ready to start?
-                    </Eyebrow>
-                  </div>
-                  <h3 className="text-h3 sm:text-h2 font-bold text-white tracking-[-0.02em] mb-3">
-                    {pillar.leadMagnet.title}
-                  </h3>
-                  <p className="text-p1 text-white/45 mb-8 max-w-md mx-auto leading-relaxed">
-                    {pillar.leadMagnet.description}
-                  </p>
-                  <Link
-                    href="/demo"
-                    className="btn-cta-glow inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-white text-[#050508] text-p2 font-semibold min-h-[48px] hover:bg-white/95 transition-all"
-                  >
-                    {pillar.leadMagnet.ctaText}
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-            </FadeIn>
           </div>
+        </div>
+      </section>
+
+      {/* Related features — full width */}
+      {(() => {
+        const relatedFeatures = getFeaturesForPillar(slug);
+        if (relatedFeatures.length === 0) return null;
+        return (
+          <section className="relative py-20 px-6 border-t border-white/[0.04]">
+            <div className="max-w-6xl mx-auto">
+              <FadeIn>
+                <div className="mb-10">
+                  <Eyebrow icon={Sparkles} variant={brand.eyebrow}>
+                    Powered by
+                  </Eyebrow>
+                  <h2 className="text-h3 sm:text-h2 font-bold tracking-[-0.02em] text-white leading-[1.1] mt-4">
+                    The features that make this work.
+                  </h2>
+                </div>
+              </FadeIn>
+              <FadeIn delay={0.1}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  {relatedFeatures.map((feature) => {
+                    const FeatureIcon = feature.icon;
+                    const isUtility = feature.accent === "utility";
+                    const isSpecial = feature.accent === "special";
+                    return (
+                      <Link
+                        key={feature.slug}
+                        href={`/features/${feature.slug}`}
+                        className="group relative block p-7 rounded-2xl card-hairline overflow-hidden h-full hover:border-white/[0.12] transition-colors"
+                      >
+                        <div
+                          className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${
+                            isUtility
+                              ? "from-utility-400/50 via-utility-400/15 to-transparent"
+                              : isSpecial
+                                ? "from-special-500/50 via-special-500/15 to-transparent"
+                                : "from-utility-400/40 via-special-500/30 to-transparent"
+                          }`}
+                        />
+                        <div className="flex items-start gap-4">
+                          <div
+                            className={`flex-shrink-0 w-11 h-11 rounded-xl border flex items-center justify-center ${
+                              isUtility
+                                ? "bg-utility-400/[0.08] border-utility-400/25"
+                                : isSpecial
+                                  ? "bg-special-500/[0.08] border-special-500/30"
+                                  : "bg-white/[0.04] border-white/[0.10]"
+                            }`}
+                          >
+                            <FeatureIcon
+                              className={`w-5 h-5 ${
+                                isUtility
+                                  ? "text-utility-300"
+                                  : isSpecial
+                                    ? "text-special-300"
+                                    : "text-white"
+                              }`}
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-p1 font-semibold text-white/90 mb-1">
+                              {feature.shortLabel}
+                            </h3>
+                            <p className="text-p2 text-white/45 leading-relaxed">
+                              {feature.subtitle}
+                            </p>
+                          </div>
+                          <ArrowRight className="flex-shrink-0 w-4 h-4 text-white/30 group-hover:text-white/70 group-hover:translate-x-0.5 transition-all mt-1" />
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </FadeIn>
+            </div>
+          </section>
+        );
+      })()}
+
+      {/* Lead magnet CTA outro — full width with dual GlowBlobs */}
+      <section className="relative py-28 px-6 border-t border-white/[0.04] overflow-hidden">
+        <GlowBlob color="special" size="xl" position="top" intensity={0.08} />
+        <GlowBlob color="utility" size="lg" position="bottom" intensity={0.06} />
+
+        <div className="relative max-w-3xl mx-auto text-center">
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-6">
+              <Sparkles className="w-3 h-3 text-utility-300" />
+              <span className="text-p3 text-white/60 font-medium">
+                Ready to start?
+              </span>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.05}>
+            <h2 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] text-white leading-[1.08] mb-5">
+              <GradientText tone="brand">{pillar.leadMagnet.title}</GradientText>
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+              {pillar.leadMagnet.description}
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/demo"
+                className="btn-cta-glow inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-p2 font-semibold hover:bg-white/90 transition-colors"
+              >
+                {pillar.leadMagnet.ctaText}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.10] text-white/80 text-p2 font-semibold hover:bg-white/[0.04] hover:text-white transition-colors"
+              >
+                See pricing
+              </Link>
+            </div>
+          </FadeIn>
         </div>
       </section>
     </MarketingLayout>
