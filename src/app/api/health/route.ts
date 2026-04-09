@@ -69,18 +69,13 @@ export async function GET() {
     ? { status: "ok" }
     : { status: "not_configured", message: "OPENROUTER_API_KEY missing — research agents won't work" };
 
-  // 9. Voice
+  // 9. Voice cloning (ElevenLabs — only provider needed for clone)
   checks.elevenlabs = process.env.ELEVENLABS_API_KEY
     ? { status: "ok" }
-    : { status: "not_configured", message: "ELEVENLABS_API_KEY missing — voice cloning won't work" };
+    : { status: "not_configured", message: "ELEVENLABS_API_KEY missing — voice cloning won't work (TTS still works via FAL)" };
 
-  // 10. HeyGen (premium avatar track)
+  // 10. HeyGen (premium avatar track — optional)
   checks.heygen = process.env.HEYGEN_API_KEY
-    ? { status: "ok" }
-    : { status: "not_configured", message: "HEYGEN_API_KEY missing — premium avatar generation unavailable" };
-
-  // 11. Fish Audio (TTS)
-  checks.fishAudio = process.env.FISH_AUDIO_API_KEY
     ? { status: "ok" }
     : { status: "not_configured", message: "FISH_AUDIO_API_KEY missing — cheapest TTS provider unavailable" };
 

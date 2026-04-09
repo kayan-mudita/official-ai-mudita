@@ -1,12 +1,13 @@
 /**
  * Pipeline Step: POST-PROCESS
  *
- * Runs after video generation (stitch or single-cut) to enhance the output:
- * 1. Speed correction — Kling outputs are slightly slow (1.2-1.35x fix)
- * 2. Upscale — FAL Real-ESRGAN for 2x resolution
- * 3. Caption generation — Whisper transcription → burned-in subtitles
+ * Runs after video generation to enhance the output.
+ * ALL processing goes through FAL — one API key, one billing.
  *
- * Each step is optional and configured via PipelineMeta.postProcess.
+ * Steps (all optional, configured via PipelineMeta.postProcess):
+ * 1. Speed correction — FAL video speed adjustment (Kling outputs are slow)
+ * 2. Upscale — FAL Real-ESRGAN for 2x resolution
+ * 3. Caption generation — FAL Whisper for transcription
  */
 
 import prisma from "@/lib/prisma";
@@ -21,40 +22,49 @@ export interface PostProcessOptions {
   speedMultiplier?: number; // default 1.25
 }
 
+// ─── Shared FAL Helper ────────────────────────────────────────────
+
+function getFalKey(): string | null {
+  return process.env.FAL_API_KEY || null;
+}
+
+async function falPost(endpoint: string, body: Record<string, unknown>): Promise<any> {
+  const apiKey = getFalKey();
+  if (!apiKey) throw new Error("FAL_API_KEY not set");
+
+  const { result } = await withFalRetry(async () => {
+    const res = await fetch(`https://fal.run/${endpoint}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Key ${apiKey}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`FAL ${endpoint} ${res.status}: ${err.substring(0, 200)}`);
+    }
+
+    return res.json();
+  }, `post-process:${endpoint}`);
+
+  return result;
+}
+
 // ─── Speed Correction via FAL ─────────────────────────────────────
 
 async function applySpeedCorrection(
   videoUrl: string,
   multiplier: number
 ): Promise<string | null> {
-  // Kling models generate slightly slow-mo. Speed up to natural pace.
-  // Using FAL's video processing endpoint
-  const apiKey = process.env.FAL_API_KEY;
-  if (!apiKey) return null;
-
   try {
-    const { result } = await withFalRetry(async () => {
-      const res = await fetch("https://fal.run/fal-ai/video-utils/speed", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Key ${apiKey}`,
-        },
-        body: JSON.stringify({
-          video_url: videoUrl,
-          speed: multiplier,
-        }),
-      });
-
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error(`FAL speed ${res.status}: ${err.substring(0, 200)}`);
-      }
-
-      return res.json();
-    }, "post-process:speed");
-
-    return result?.video?.url || null;
+    const data = await falPost("fal-ai/video-utils/speed", {
+      video_url: videoUrl,
+      speed: multiplier,
+    });
+    return data?.video?.url || null;
   } catch (e: any) {
     console.error("[post-process] Speed correction failed:", e.message);
     return null;
@@ -64,39 +74,19 @@ async function applySpeedCorrection(
 // ─── Upscale via FAL Real-ESRGAN ──────────────────────────────────
 
 async function applyUpscale(videoUrl: string): Promise<string | null> {
-  const apiKey = process.env.FAL_API_KEY;
-  if (!apiKey) return null;
-
   try {
-    const { result } = await withFalRetry(async () => {
-      const res = await fetch("https://fal.run/fal-ai/real-esrgan/video", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Key ${apiKey}`,
-        },
-        body: JSON.stringify({
-          video_url: videoUrl,
-          scale: 2,
-        }),
-      });
-
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error(`FAL upscale ${res.status}: ${err.substring(0, 200)}`);
-      }
-
-      return res.json();
-    }, "post-process:upscale");
-
-    return result?.video?.url || null;
+    const data = await falPost("fal-ai/real-esrgan/video", {
+      video_url: videoUrl,
+      scale: 2,
+    });
+    return data?.video?.url || null;
   } catch (e: any) {
     console.error("[post-process] Upscale failed:", e.message);
     return null;
   }
 }
 
-// ─── Caption Generation via OpenAI Whisper ────────────────────────
+// ─── Caption Generation via FAL Whisper ───────────────────────────
 
 interface CaptionSegment {
   start: number;
@@ -105,51 +95,22 @@ interface CaptionSegment {
 }
 
 async function generateCaptions(videoUrl: string): Promise<CaptionSegment[] | null> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    console.warn("[post-process] OPENAI_API_KEY not set, skipping captions");
-    return null;
-  }
-
   try {
-    // Download the video audio
-    const videoRes = await fetch(videoUrl);
-    if (!videoRes.ok) return null;
-    const videoBuffer = await videoRes.arrayBuffer();
+    const data = await falPost("fal-ai/whisper", {
+      audio_url: videoUrl,
+      task: "transcribe",
+      language: "en",
+      chunk_level: "segment",
+    });
 
-    // Send to Whisper
-    const formData = new FormData();
-    formData.append("file", new Blob([videoBuffer], { type: "video/mp4" }), "video.mp4");
-    formData.append("model", "whisper-1");
-    formData.append("response_format", "verbose_json");
-    formData.append("timestamp_granularities[]", "segment");
+    const chunks = data?.chunks || data?.segments || [];
+    if (!chunks.length) return null;
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60_000);
-
-    try {
-      const res = await fetch("https://api.openai.com/v1/audio/transcriptions", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${apiKey}` },
-        body: formData,
-        signal: controller.signal,
-      });
-
-      if (!res.ok) {
-        const err = await res.text();
-        console.error("[post-process] Whisper failed:", err.substring(0, 200));
-        return null;
-      }
-
-      const data = await res.json();
-      return (data.segments || []).map((seg: any) => ({
-        start: seg.start,
-        end: seg.end,
-        text: seg.text.trim(),
-      }));
-    } finally {
-      clearTimeout(timeoutId);
-    }
+    return chunks.map((c: any) => ({
+      start: c.timestamp?.[0] ?? c.start ?? 0,
+      end: c.timestamp?.[1] ?? c.end ?? 0,
+      text: (c.text || "").trim(),
+    }));
   } catch (e: any) {
     console.error("[post-process] Caption generation failed:", e.message);
     return null;
@@ -171,6 +132,11 @@ export async function handlePostProcess(
     return { status: "error", error: "No video URL to post-process" };
   }
 
+  if (!getFalKey()) {
+    console.warn("[post-process] FAL_API_KEY not set, skipping post-processing");
+    return { status: "done" };
+  }
+
   const meta = parseMeta(video.sourceReview);
   const options: PostProcessOptions = meta.postProcess || {
     upscale: false,
@@ -180,34 +146,28 @@ export async function handlePostProcess(
 
   let currentUrl = video.videoUrl;
 
-  // Step 1: Speed correction (only for Kling models)
+  // Step 1: Speed correction (only for Kling models which generate slightly slow)
   if (options.speedCorrect) {
     const isKling = video.model?.includes("kling");
     const multiplier = options.speedMultiplier || (isKling ? 1.25 : 1.0);
 
     if (multiplier !== 1.0) {
-      console.log(`[post-process] Applying speed correction: ${multiplier}x`);
+      console.log(`[post-process] Speed correction: ${multiplier}x`);
       const sped = await applySpeedCorrection(currentUrl, multiplier);
-      if (sped) {
-        currentUrl = sped;
-        console.log("[post-process] Speed correction done");
-      }
+      if (sped) currentUrl = sped;
     }
   }
 
-  // Step 2: Upscale
+  // Step 2: Upscale via Real-ESRGAN
   if (options.upscale) {
-    console.log("[post-process] Upscaling 2x via Real-ESRGAN");
+    console.log("[post-process] Upscaling 2x via FAL Real-ESRGAN");
     const upscaled = await applyUpscale(currentUrl);
-    if (upscaled) {
-      currentUrl = upscaled;
-      console.log("[post-process] Upscale done");
-    }
+    if (upscaled) currentUrl = upscaled;
   }
 
-  // Step 3: Generate captions (stored in meta, burned in via Shotstack later)
+  // Step 3: Generate captions via FAL Whisper
   if (options.captions) {
-    console.log("[post-process] Generating captions via Whisper");
+    console.log("[post-process] Generating captions via FAL Whisper");
     const segments = await generateCaptions(currentUrl);
     if (segments && segments.length > 0) {
       meta.captions = segments;
@@ -223,12 +183,14 @@ export async function handlePostProcess(
     });
   }
 
-  // Save caption data to meta
   meta.pipelineStep = "done";
   meta.postProcessComplete = true;
   await prisma.video.update({
     where: { id: videoId },
-    data: { sourceReview: stringifyMeta(meta) },
+    data: {
+      status: "review",
+      sourceReview: stringifyMeta(meta),
+    },
   });
 
   return { status: "done" };
