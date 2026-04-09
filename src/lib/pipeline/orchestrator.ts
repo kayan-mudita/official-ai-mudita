@@ -21,6 +21,7 @@ import { handleStitchSubmit } from "./stitch-submit";
 import { handleStitchPoll } from "./stitch-poll";
 import { handleHookGenerate } from "./hook-generate";
 import { handlePostProcess } from "./post-process";
+import { handleMotionEnhance } from "./motion-enhance";
 import { handleTTSAndAnchor } from "./tts-and-anchor";
 import type { StepResult } from "./types";
 
@@ -75,6 +76,9 @@ export async function runStep(
 
     case "hook_generate":
       return handleHookGenerate(videoId, userId);
+
+    case "motion_enhance":
+      return handleMotionEnhance(videoId, userId);
 
     case "post_process":
       return handlePostProcess(videoId, userId);
