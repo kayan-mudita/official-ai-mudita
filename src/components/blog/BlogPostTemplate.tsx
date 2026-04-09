@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, Calendar, Clock, Sparkles, User } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, Calendar, Clock, Sparkles, User } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
 import Breadcrumbs from "@/components/marketing/Breadcrumbs";
 import ShareButtons from "@/components/marketing/ShareButtons";
@@ -13,6 +13,8 @@ import PageBackdrop from "@/components/marketing/PageBackdrop";
 import GlowBlob from "@/components/marketing/GlowBlob";
 import Eyebrow from "@/components/marketing/Eyebrow";
 import MeshMockup from "@/components/marketing/MeshMockup";
+import { getRelatedPosts, type BlogCategory } from "@/data/blog-posts";
+import { getFeaturesForCategory } from "@/data/blog-feature-map";
 
 interface BlogPostProps {
   title: string;
@@ -172,40 +174,195 @@ export default function BlogPostTemplate({
               <ShareButtons url={postUrl} title={title} />
             </div>
           </FadeIn>
+        </div>
+      </article>
 
-          {/* CTA */}
-          <FadeIn delay={0.25} duration={0.6}>
-            <div className="relative mt-16 overflow-hidden rounded-3xl card-hairline">
-              <GlowBlob
-                color={brand.tone}
-                size="lg"
-                position="center"
-                intensity={0.10}
-              />
-              <div className="relative p-10 sm:p-14 text-center">
-                <div className="flex justify-center mb-5">
-                  <Eyebrow icon={Sparkles} variant={brand.eyebrow}>
-                    Try Official AI
+      {/* Related posts mini-bento */}
+      {(() => {
+        const related = getRelatedPosts(slug, 3);
+        if (related.length === 0) return null;
+        return (
+          <section className="relative py-20 px-6 border-t border-white/[0.04]">
+            <div className="max-w-5xl mx-auto">
+              <FadeIn>
+                <div className="mb-10">
+                  <Eyebrow icon={BookOpen} variant={brand.eyebrow}>
+                    Keep reading
                   </Eyebrow>
+                  <h2 className="text-h3 sm:text-h2 font-bold tracking-[-0.02em] text-white leading-[1.1] mt-4">
+                    More from{" "}
+                    <GradientText tone={brand.tone}>{category}</GradientText>.
+                  </h2>
                 </div>
-                <h3 className="text-h3 sm:text-h2 font-bold text-white tracking-[-0.02em] mb-3">
-                  Ready to try it yourself?
-                </h3>
-                <p className="text-p1 text-white/45 mb-8 max-w-md mx-auto leading-relaxed">
-                  Upload a photo and see AI create a video of you in 30 seconds.
-                </p>
-                <Link
-                  href="/demo"
-                  className="btn-cta-glow inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-white text-[#050508] text-p2 font-semibold min-h-[48px] hover:bg-white/95 transition-all"
-                >
-                  Try the free demo
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
+              </FadeIn>
+              <FadeIn delay={0.1}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  {related.map((post) => (
+                    <Link
+                      key={post.slug}
+                      href={`/blog/${post.slug}`}
+                      className="group relative block rounded-2xl card-hairline overflow-hidden h-full hover:border-white/[0.12] hover:-translate-y-0.5 transition-all"
+                    >
+                      <div
+                        className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${
+                          brand.tone === "utility"
+                            ? "from-utility-400/40 via-utility-400/15 to-transparent"
+                            : "from-special-500/40 via-special-500/15 to-transparent"
+                        } z-10`}
+                      />
+                      <div className="relative aspect-[16/10] overflow-hidden">
+                        <Image
+                          src={post.featuredImage.src}
+                          alt={post.featuredImage.alt}
+                          fill
+                          sizes="(min-width: 1024px) 320px, 100vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#050508]/80 via-transparent to-transparent" />
+                      </div>
+                      <div className="p-5">
+                        <div className="text-p3 text-white/30 mb-2">
+                          {post.date}
+                        </div>
+                        <h3 className="text-p1 font-semibold text-white/90 leading-snug mb-2 group-hover:text-white transition-colors line-clamp-2">
+                          {post.title}
+                        </h3>
+                        <span className="inline-flex items-center gap-1.5 text-p3 text-white/50 group-hover:text-white/85 transition-colors">
+                          Read article
+                          <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </FadeIn>
+            </div>
+          </section>
+        );
+      })()}
+
+      {/* Related features */}
+      {(() => {
+        const relatedFeatures = getFeaturesForCategory(category as BlogCategory);
+        if (relatedFeatures.length === 0) return null;
+        return (
+          <section className="relative py-20 px-6 border-t border-white/[0.04]">
+            <div className="max-w-5xl mx-auto">
+              <FadeIn>
+                <div className="mb-10">
+                  <Eyebrow icon={Sparkles} variant={brand.eyebrow}>
+                    Powered by
+                  </Eyebrow>
+                  <h2 className="text-h3 sm:text-h2 font-bold tracking-[-0.02em] text-white leading-[1.1] mt-4">
+                    The features behind this.
+                  </h2>
+                </div>
+              </FadeIn>
+              <FadeIn delay={0.1}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  {relatedFeatures.map((feature) => {
+                    const FeatureIcon = feature.icon;
+                    const isUtility = feature.accent === "utility";
+                    const isSpecial = feature.accent === "special";
+                    return (
+                      <Link
+                        key={feature.slug}
+                        href={`/features/${feature.slug}`}
+                        className="group relative block p-6 rounded-2xl card-hairline overflow-hidden h-full hover:border-white/[0.12] hover:-translate-y-0.5 transition-all"
+                      >
+                        <div
+                          className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${
+                            isUtility
+                              ? "from-utility-400/50 via-utility-400/15 to-transparent"
+                              : isSpecial
+                                ? "from-special-500/50 via-special-500/15 to-transparent"
+                                : "from-utility-400/40 via-special-500/30 to-transparent"
+                          }`}
+                        />
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={`flex-shrink-0 w-10 h-10 rounded-xl border flex items-center justify-center ${
+                              isUtility
+                                ? "bg-utility-400/[0.08] border-utility-400/25"
+                                : isSpecial
+                                  ? "bg-special-500/[0.08] border-special-500/30"
+                                  : "bg-white/[0.04] border-white/[0.10]"
+                            }`}
+                          >
+                            <FeatureIcon
+                              className={`w-4 h-4 ${
+                                isUtility
+                                  ? "text-utility-300"
+                                  : isSpecial
+                                    ? "text-special-300"
+                                    : "text-white"
+                              }`}
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-p1 font-semibold text-white/90 mb-1">
+                              {feature.shortLabel}
+                            </h3>
+                            <p className="text-p2 text-white/45 leading-relaxed">
+                              {feature.subtitle}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </FadeIn>
+            </div>
+          </section>
+        );
+      })()}
+
+      {/* CTA outro */}
+      <section className="relative py-28 px-6 border-t border-white/[0.04] overflow-hidden">
+        <GlowBlob color="special" size="xl" position="top" intensity={0.08} />
+        <GlowBlob color="utility" size="lg" position="bottom" intensity={0.06} />
+
+        <div className="relative max-w-3xl mx-auto text-center">
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-6">
+              <Sparkles className="w-3 h-3 text-utility-300" />
+              <span className="text-p3 text-white/60 font-medium">
+                See it live
+              </span>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.05}>
+            <h2 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] text-white leading-[1.08] mb-5">
+              Ready to{" "}
+              <GradientText tone="brand">try it yourself?</GradientText>
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+              Upload a photo and see AI create a video of you in 30 seconds. No
+              credit card needed.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/demo"
+                className="btn-cta-glow inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-p2 font-semibold hover:bg-white/90 transition-colors"
+              >
+                Try the free demo
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.10] text-white/80 text-p2 font-semibold hover:bg-white/[0.04] hover:text-white transition-colors"
+              >
+                More articles
+              </Link>
             </div>
           </FadeIn>
         </div>
-      </article>
+      </section>
     </MarketingLayout>
   );
 }

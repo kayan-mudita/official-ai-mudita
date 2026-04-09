@@ -1,266 +1,338 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Clock } from "lucide-react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { ArrowRight, Clock, Sparkles } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
-import CTASection from "@/components/marketing/CTASection";
+import HeroAurora from "@/components/marketing/HeroAurora";
+import GradientText from "@/components/marketing/GradientText";
+import PageBackdrop from "@/components/marketing/PageBackdrop";
+import GlowBlob from "@/components/marketing/GlowBlob";
+import StatCard from "@/components/marketing/StatCard";
+import MeshMockup from "@/components/marketing/MeshMockup";
+import FadeIn from "@/components/motion/FadeIn";
+import { staggerChildren, fadeUp } from "@/lib/motion-variants";
+import { blogPosts, type BlogCategory } from "@/data/blog-posts";
 
-const posts = [
+const categoryAccent: Record<
+  BlogCategory,
   {
-    slug: "multi-cut-method",
-    title: "The Multi-Cut Method: Why One-Shot AI Video Looks Like Garbage",
-    excerpt:
-      "Every AI video tool generates a single continuous shot from a prompt. That is why they all look fake. Here is how multi-cut composition changes everything.",
-    category: "AI Video",
-    readTime: "6 min read",
-    date: "March 18, 2026",
-    featured: true,
+    border: string;
+    bg: string;
+    text: string;
+    chip: string;
+    line: string;
+    tone: "utility" | "special";
+  }
+> = {
+  "AI Video": {
+    border: "border-utility-400/25",
+    bg: "bg-utility-400/[0.08]",
+    text: "text-utility-300",
+    chip: "bg-utility-400/[0.10] border-utility-400/25 text-utility-200",
+    line: "from-utility-400/40 via-utility-400/15 to-transparent",
+    tone: "utility",
   },
-  {
-    slug: "ai-ugc-future",
-    title: "Why AI-Generated UGC Is the Future of Professional Content",
-    excerpt:
-      "The content that performs best is not polished corporate video. It is raw, face-to-camera UGC. AI is about to make that accessible to every professional.",
-    category: "AI Video",
-    readTime: "5 min read",
-    date: "March 12, 2026",
-    featured: false,
+  "Content Strategy": {
+    border: "border-special-500/30",
+    bg: "bg-special-500/[0.08]",
+    text: "text-special-300",
+    chip: "bg-special-500/[0.10] border-special-500/25 text-special-200",
+    line: "from-special-500/40 via-special-500/15 to-transparent",
+    tone: "special",
   },
-  {
-    slug: "real-estate-agents-ai",
-    title: "How Real Estate Agents Are Using AI to Post Daily Without Filming",
-    excerpt:
-      "The top-producing agents post content daily. Most agents post once a month. AI is closing that gap for agents who know their stuff but hate being on camera.",
-    category: "Industry Tips",
-    readTime: "7 min read",
-    date: "March 6, 2026",
-    featured: false,
+  "Social Media": {
+    border: "border-utility-400/25",
+    bg: "bg-utility-400/[0.08]",
+    text: "text-utility-300",
+    chip: "bg-utility-400/[0.10] border-utility-400/25 text-utility-200",
+    line: "from-utility-400/40 via-special-500/15 to-transparent",
+    tone: "utility",
   },
-  {
-    slug: "five-content-formats",
-    title: "5 Content Formats That Work for Every Industry",
-    excerpt:
-      "Not all content formats work for all professionals. But these five formats consistently drive engagement regardless of industry, audience, or platform.",
-    category: "Content Strategy",
-    readTime: "4 min read",
-    date: "February 28, 2026",
-    featured: false,
+  "Industry Tips": {
+    border: "border-special-500/30",
+    bg: "bg-special-500/[0.08]",
+    text: "text-special-300",
+    chip: "bg-special-500/[0.10] border-special-500/25 text-special-200",
+    line: "from-special-500/40 via-utility-400/15 to-transparent",
+    tone: "special",
   },
-  {
-    slug: "scaling-personal-brand-ai",
-    title: "How Solo Professionals Scale a Personal Brand With AI",
-    excerpt:
-      "Solo professionals cannot hire a content team. AI makes it possible to build a personal brand at scale without sacrificing quality or authenticity.",
-    category: "Content Strategy",
-    readTime: "6 min read",
-    date: "April 2, 2026",
-    featured: false,
+  "Product Updates": {
+    border: "border-white/[0.12]",
+    bg: "bg-white/[0.04]",
+    text: "text-white",
+    chip: "bg-white/[0.06] border-white/[0.12] text-white/85",
+    line: "from-utility-400/30 via-special-500/20 to-transparent",
+    tone: "utility",
   },
-  {
-    slug: "tiktok-professional-guide",
-    title: "TikTok for Professionals: How to Build Authority Without Dancing",
-    excerpt:
-      "TikTok is not just for teenagers. Professionals are using it to build authority, attract clients, and grow their practice without compromising credibility.",
-    category: "Social Media",
-    readTime: "6 min read",
-    date: "April 1, 2026",
-    featured: false,
-  },
-  {
-    slug: "batch-video-workflow",
-    title: "How to Create 30 Videos in One Sitting",
-    excerpt:
-      "Batch video creation is how top creators maintain a daily posting schedule without burning out. Here is the exact workflow for producing 30 videos in a single session.",
-    category: "AI Video",
-    readTime: "5 min read",
-    date: "March 30, 2026",
-    featured: false,
-  },
-  {
-    slug: "linkedin-video-tips",
-    title: "7 LinkedIn Video Strategies That Actually Generate Leads",
-    excerpt:
-      "Most LinkedIn videos get views but zero leads. These seven strategies turn LinkedIn video content into a consistent source of inbound business.",
-    category: "Social Media",
-    readTime: "7 min read",
-    date: "March 28, 2026",
-    featured: false,
-  },
-  {
-    slug: "voice-cloning-guide",
-    title: "How Voice Cloning Works (And Why It Matters for Video)",
-    excerpt:
-      "Voice cloning lets AI video speak in your actual voice. Here is how the technology works, what it sounds like, and why it matters for professional content.",
-    category: "AI Video",
-    readTime: "6 min read",
-    date: "March 25, 2026",
-    featured: false,
-  },
-  {
-    slug: "lawyer-video-marketing",
-    title: "Video Marketing for Lawyers: A Compliance-Friendly Guide",
-    excerpt:
-      "Video marketing works for law firms, but bar rules add complexity. Here is how to create compelling legal content that stays within ethical guidelines.",
-    category: "Industry Tips",
-    readTime: "7 min read",
-    date: "March 22, 2026",
-    featured: false,
-  },
-  {
-    slug: "video-marketing-roi-guide",
-    title: "How to Measure Video Marketing ROI Without Expensive Tools",
-    excerpt:
-      "Most professionals know video works but cannot prove it. Here is a simple framework for measuring video marketing ROI with tools you already have.",
-    category: "Content Strategy",
-    readTime: "6 min read",
-    date: "March 20, 2026",
-    featured: false,
-  },
-  {
-    slug: "neighborhood-video-seo",
-    title: "How Neighborhood Spotlight Videos Win Listings Before the Pitch",
-    excerpt:
-      "Neighborhood spotlight videos position you as the local expert before a seller even calls. Here is how to create them with AI and win more listings.",
-    category: "Industry Tips",
-    readTime: "5 min read",
-    date: "March 15, 2026",
-    featured: false,
-  },
-  {
-    slug: "financial-advisor-video",
-    title: "How Financial Advisors Use Video to Build AUM",
-    excerpt:
-      "Financial advisors who use video consistently grow AUM faster. Here is how to create compliant, trust-building video content that attracts high-net-worth clients.",
-    category: "Industry Tips",
-    readTime: "6 min read",
-    date: "March 10, 2026",
-    featured: false,
-  },
-];
-
-const categoryColors: Record<string, string> = {
-  "AI Video": "text-blue-400/70 bg-blue-500/10 border-blue-500/20",
-  "Content Strategy": "text-violet-400/70 bg-violet-500/10 border-violet-500/20",
-  "Social Media": "text-emerald-400/70 bg-emerald-500/10 border-emerald-500/20",
-  "Industry Tips": "text-amber-400/70 bg-amber-500/10 border-amber-500/20",
 };
 
+const categories: BlogCategory[] = [
+  "AI Video",
+  "Content Strategy",
+  "Social Media",
+  "Industry Tips",
+];
+
 export default function BlogClient() {
-  const featured = posts.find((p) => p.featured);
-  const rest = posts.filter((p) => !p.featured);
+  const featured = blogPosts.find((p) => p.featured) ?? blogPosts[0];
+  const rest = blogPosts.filter((p) => p.slug !== featured.slug);
+  const featuredColors = categoryAccent[featured.category];
 
   return (
     <MarketingLayout>
-      {/* Hero */}
-      <section className="relative pt-32 pb-20 px-6">
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[500px] pointer-events-none">
-          <div className="absolute top-0 left-1/3 w-[400px] h-[400px] bg-blue-500/[0.03] rounded-full blur-[120px]" />
-        </div>
+      <PageBackdrop intensity={0.05} />
 
-        <div className="relative max-w-3xl mx-auto text-center">
-          <p className="text-p3 font-medium text-blue-400/70 uppercase tracking-widest mb-4">
-            Blog
-          </p>
-          <h1 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] leading-[1.08] text-white mb-6">
-            Insights on AI content
-            <br />
-            <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
-              and professional growth.
-            </span>
-          </h1>
-          <p className="text-title text-white/35 max-w-xl mx-auto leading-relaxed font-light">
-            How AI is changing content creation for professionals. Strategy,
-            technology, and real results.
-          </p>
-        </div>
-      </section>
+      <HeroAurora
+        eyebrow="Blog"
+        eyebrowVariant="utility"
+        spacing="pt-32 pb-16"
+        headline={
+          <>
+            Insights on AI content{" "}
+            <GradientText tone="brand">and professional growth.</GradientText>
+          </>
+        }
+        description="How AI is changing content creation for professionals. Strategy, technology, and real results."
+        belowActions={
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-3xl">
+            {categories.map((cat) => {
+              const colors = categoryAccent[cat];
+              return (
+                <div
+                  key={cat}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-p3 font-medium ${colors.chip}`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full bg-current opacity-80`} />
+                  {cat}
+                </div>
+              );
+            })}
+          </div>
+        }
+      />
 
-      {/* Featured post */}
-      {featured && (
-        <section className="pb-16 px-6">
-          <div className="max-w-4xl mx-auto">
+      {/* Featured post — full bento hero card */}
+      <section className="relative px-6 -mt-4 pb-12">
+        <div className="max-w-6xl mx-auto">
+          <FadeIn>
             <Link
               href={`/blog/${featured.slug}`}
-              className="group block p-8 sm:p-10 rounded-2xl border border-white/[0.04] bg-white/[0.015] hover:border-white/[0.08] hover:bg-white/[0.025] transition-all duration-300"
+              className="group relative block rounded-2xl card-hairline overflow-hidden hover:border-white/[0.12] transition-all"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <span
-                  className={`text-p3 font-medium px-2.5 py-1 rounded-full border ${
-                    categoryColors[featured.category] || "text-white/40 bg-white/[0.04] border-white/[0.06]"
-                  }`}
-                >
-                  {featured.category}
-                </span>
-                <span className="text-p3 text-white/20">{featured.date}</span>
-              </div>
-
-              <h2 className="text-h3 sm:text-h2 font-bold tracking-tight text-white/90 mb-3 group-hover:text-white transition-colors">
-                {featured.title}
-              </h2>
-              <p className="text-p2 text-white/30 leading-relaxed mb-6 max-w-2xl">
-                {featured.excerpt}
-              </p>
-
-              <div className="flex items-center gap-4">
-                <span className="inline-flex items-center gap-1.5 text-p3 text-white/20">
-                  <Clock className="w-3 h-3" />
-                  {featured.readTime}
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-p3 text-blue-400/70 group-hover:text-blue-400 transition-colors">
-                  Read article
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </span>
+              <div
+                className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${featuredColors.line} z-10`}
+              />
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
+                <div className="lg:col-span-7 relative">
+                  <MeshMockup aspect="aspect-[16/10]" className="rounded-none border-0">
+                    <Image
+                      src={featured.featuredImage.src}
+                      alt={featured.featuredImage.alt}
+                      fill
+                      sizes="(min-width: 1024px) 720px, 100vw"
+                      className="object-cover"
+                      priority
+                    />
+                  </MeshMockup>
+                </div>
+                <div className="lg:col-span-5 relative p-8 sm:p-10 flex flex-col justify-center">
+                  <GlowBlob
+                    color={featuredColors.tone}
+                    size="md"
+                    position="top-right"
+                    intensity={0.06}
+                  />
+                  <div className="relative">
+                    <div className="flex items-center gap-3 mb-5">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full border text-p3 font-medium ${featuredColors.chip}`}
+                      >
+                        Featured · {featured.category}
+                      </span>
+                    </div>
+                    <h2 className="text-h3 sm:text-h2 font-bold tracking-[-0.02em] text-white leading-[1.1] mb-4">
+                      {featured.title}
+                    </h2>
+                    <p className="text-p2 text-white/50 leading-relaxed mb-6">
+                      {featured.excerpt}
+                    </p>
+                    <div className="flex items-center gap-4 mb-6">
+                      <span className="text-p3 text-white/35">
+                        {featured.date}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 text-p3 text-white/35">
+                        <Clock className="w-3 h-3" />
+                        {featured.readTime}
+                      </span>
+                    </div>
+                    <span className="inline-flex items-center gap-2 text-p3 font-semibold text-white/85 group-hover:text-white transition-colors">
+                      Read article
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </div>
+                </div>
               </div>
             </Link>
-          </div>
-        </section>
-      )}
-
-      {/* Post grid */}
-      <section className="pb-24 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {rest.map((post) => (
-              <Link
-                key={post.slug}
-                href={`/blog/${post.slug}`}
-                className="group p-6 rounded-2xl border border-white/[0.04] bg-white/[0.015] hover:border-white/[0.08] hover:bg-white/[0.025] transition-all duration-300"
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <span
-                    className={`text-p3 font-medium px-2 py-0.5 rounded-full border ${
-                      categoryColors[post.category] || "text-white/40 bg-white/[0.04] border-white/[0.06]"
-                    }`}
-                  >
-                    {post.category}
-                  </span>
-                </div>
-
-                <h3 className="text-p2 font-semibold text-white/80 mb-2 leading-snug group-hover:text-white transition-colors">
-                  {post.title}
-                </h3>
-                <p className="text-p3 text-white/25 leading-relaxed mb-4">
-                  {post.excerpt}
-                </p>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-p3 text-white/15">{post.date}</span>
-                  <span className="inline-flex items-center gap-1 text-p3 text-white/15">
-                    <Clock className="w-2.5 h-2.5" />
-                    {post.readTime}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
+          </FadeIn>
         </div>
       </section>
 
-      <CTASection
-        heading="See it for yourself."
-        description="Stop reading about AI content. Start creating it. Your first video is free."
-        badge="Free to try, no credit card required"
-      />
+      {/* Stat strip */}
+      <section className="relative px-6 pb-16">
+        <div className="max-w-6xl mx-auto">
+          <FadeIn>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
+              <StatCard
+                value={blogPosts.length}
+                label="Articles"
+                caption="Long-form pieces on AI video, content strategy, and growth."
+                accent="utility"
+              />
+              <StatCard
+                value="4"
+                label="Categories"
+                caption="AI Video, Content Strategy, Social Media, and Industry Tips."
+                accent="mix"
+              />
+              <StatCard
+                value="Weekly"
+                label="New drops"
+                caption="Fresh insights every week — practical, never theoretical."
+                accent="special"
+              />
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* Post grid — bento with featured images */}
+      <section className="relative px-6 pb-24 border-t border-white/[0.04] pt-20">
+        <div className="max-w-6xl mx-auto">
+          <FadeIn>
+            <div className="mb-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-5">
+                <span className="text-p3 text-white/60 font-medium">
+                  Latest articles
+                </span>
+              </div>
+              <h2 className="text-h3 sm:text-h2 font-bold tracking-[-0.02em] text-white leading-[1.1]">
+                Read the rest.
+              </h2>
+            </div>
+          </FadeIn>
+
+          <motion.div
+            variants={staggerChildren}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+          >
+            {rest.map((post) => {
+              const colors = categoryAccent[post.category];
+              return (
+                <motion.div
+                  key={post.slug}
+                  variants={fadeUp}
+                  whileHover={{ y: -3 }}
+                  transition={{ duration: 0.25, ease: [0.25, 0.4, 0.25, 1] }}
+                >
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="group relative block rounded-2xl card-hairline overflow-hidden h-full hover:border-white/[0.12] transition-colors"
+                  >
+                    <div
+                      className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${colors.line} z-10`}
+                    />
+                    <div className="relative aspect-[16/10] overflow-hidden">
+                      <Image
+                        src={post.featuredImage.src}
+                        alt={post.featuredImage.alt}
+                        fill
+                        sizes="(min-width: 1024px) 360px, (min-width: 768px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#050508]/80 via-transparent to-transparent" />
+                      <div className="absolute top-3 left-3">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-medium backdrop-blur-md ${colors.chip}`}
+                        >
+                          {post.category}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-p1 font-semibold text-white/90 leading-snug mb-2 group-hover:text-white transition-colors">
+                        {post.title}
+                      </h3>
+                      <p className="text-p3 text-white/40 leading-relaxed mb-4 line-clamp-2">
+                        {post.excerpt}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-p3 text-white/30">
+                          {post.date}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-p3 text-white/30">
+                          <Clock className="w-2.5 h-2.5" />
+                          {post.readTime}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA outro */}
+      <section className="relative py-28 px-6 border-t border-white/[0.04] overflow-hidden">
+        <GlowBlob color="special" size="xl" position="top" intensity={0.08} />
+        <GlowBlob color="utility" size="lg" position="bottom" intensity={0.06} />
+
+        <div className="relative max-w-3xl mx-auto text-center">
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-6">
+              <Sparkles className="w-3 h-3 text-utility-300" />
+              <span className="text-p3 text-white/60 font-medium">
+                Free to try, no credit card required
+              </span>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.05}>
+            <h2 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] text-white leading-[1.08] mb-5">
+              Stop reading about AI content.{" "}
+              <GradientText tone="brand">Start creating it.</GradientText>
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+              Your first video is free. Upload a photo and see AI create a video
+              of you in 30 seconds.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/demo"
+                className="btn-cta-glow inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-p2 font-semibold hover:bg-white/90 transition-colors"
+              >
+                Try the free demo
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.10] text-white/80 text-p2 font-semibold hover:bg-white/[0.04] hover:text-white transition-colors"
+              >
+                See pricing
+              </Link>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
     </MarketingLayout>
   );
 }

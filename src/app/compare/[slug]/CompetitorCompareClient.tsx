@@ -1,15 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, X, Sparkles, Scale } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  Check,
+  X,
+  Sparkles,
+  Scale,
+  GitCompareArrows,
+} from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
-import CTASection from "@/components/marketing/CTASection";
 import FadeIn from "@/components/motion/FadeIn";
 import HeroAurora from "@/components/marketing/HeroAurora";
 import GradientText from "@/components/marketing/GradientText";
 import PageBackdrop from "@/components/marketing/PageBackdrop";
+import GlowBlob from "@/components/marketing/GlowBlob";
 import Eyebrow from "@/components/marketing/Eyebrow";
-import type { Competitor } from "@/data/competitors";
+import { staggerChildren, fadeUp } from "@/lib/motion-variants";
+import { competitors, type Competitor } from "@/data/competitors";
+import { features } from "@/data/features";
+
+/** Features compare pages cross-link to — the differentiators competitors typically lack. */
+const COMPARE_FEATURE_SLUGS = ["script-engine", "auto-posting", "analytics"];
 
 function Cell({ value, highlight }: { value: string; highlight?: boolean }) {
   if (value === "yes") {
@@ -204,26 +217,226 @@ export default function CompetitorCompareClient({
                 ))}
               </div>
 
-              <div className="mt-12 text-center">
-                <Link
-                  href="/compare"
-                  className="group inline-flex items-center gap-2 text-p3 font-semibold text-white/55 hover:text-white/95 transition-colors"
-                >
-                  See all comparisons
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-              </div>
             </div>
           </section>
         </FadeIn>
       )}
 
-      <CTASection
-        heading={`Ready to switch from ${competitor.name}?`}
-        description="Get 30 professional videos a month, posted across every platform, for $79."
-        badge="$79 flat — no per-seat pricing"
-        buttonText="Start free trial"
-      />
+      {/* Competitor switcher rail */}
+      <section className="relative px-6 pb-20 border-t border-white/[0.04] pt-20">
+        <div className="max-w-5xl mx-auto">
+          <FadeIn>
+            <div className="mb-10">
+              <Eyebrow icon={GitCompareArrows} variant="utility">
+                Other comparisons
+              </Eyebrow>
+              <h2 className="text-h3 sm:text-h2 font-bold tracking-[-0.02em] text-white leading-[1.1] mt-4">
+                Compare us to{" "}
+                <GradientText tone="brand">a different tool.</GradientText>
+              </h2>
+            </div>
+          </FadeIn>
+          <motion.div
+            variants={staggerChildren}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            className="grid grid-cols-2 md:grid-cols-3 gap-4"
+          >
+            {competitors.map((c) => {
+              const isCurrent = c.slug === competitor.slug;
+              return (
+                <motion.div
+                  key={c.slug}
+                  variants={fadeUp}
+                  whileHover={isCurrent ? undefined : { y: -3 }}
+                  transition={{ duration: 0.25, ease: [0.25, 0.4, 0.25, 1] }}
+                >
+                  <Link
+                    href={`/compare/${c.slug}`}
+                    className={`group relative block p-5 rounded-2xl card-hairline overflow-hidden h-full transition-colors ${
+                      isCurrent
+                        ? "border-special-500/30 bg-special-500/[0.04]"
+                        : "hover:border-white/[0.12]"
+                    }`}
+                    aria-current={isCurrent ? "page" : undefined}
+                  >
+                    <div
+                      className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${
+                        isCurrent
+                          ? "from-special-500/60 via-special-500/20 to-transparent"
+                          : "from-utility-400/30 via-special-500/20 to-transparent"
+                      }`}
+                    />
+                    <div className="flex items-center gap-3 mb-3">
+                      <div
+                        className={`w-8 h-8 rounded-lg border flex items-center justify-center ${
+                          isCurrent
+                            ? "bg-special-500/[0.10] border-special-500/30"
+                            : "bg-white/[0.04] border-white/[0.08]"
+                        }`}
+                      >
+                        <GitCompareArrows
+                          className={`w-4 h-4 ${
+                            isCurrent ? "text-special-300" : "text-white/50"
+                          }`}
+                        />
+                      </div>
+                      <h3
+                        className={`text-p2 font-semibold ${
+                          isCurrent ? "text-white" : "text-white/90"
+                        }`}
+                      >
+                        vs {c.name}
+                      </h3>
+                    </div>
+                    <p className="text-p3 text-white/40 leading-relaxed line-clamp-2">
+                      {c.tagline}
+                    </p>
+                    {!isCurrent && (
+                      <span className="mt-4 inline-flex items-center gap-1.5 text-p3 text-white/55 group-hover:text-white/85 transition-colors">
+                        See comparison
+                        <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                      </span>
+                    )}
+                    {isCurrent && (
+                      <span className="mt-4 inline-flex items-center gap-1.5 text-p3 text-special-300 font-semibold">
+                        You are here
+                      </span>
+                    )}
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Related features */}
+      {(() => {
+        const relatedFeatures = COMPARE_FEATURE_SLUGS.map((s) =>
+          features.find((f) => f.slug === s),
+        ).filter((f): f is NonNullable<typeof f> => Boolean(f));
+        if (relatedFeatures.length === 0) return null;
+        return (
+          <section className="relative px-6 pb-20 border-t border-white/[0.04] pt-20">
+            <div className="max-w-5xl mx-auto">
+              <FadeIn>
+                <div className="mb-10">
+                  <Eyebrow icon={Sparkles} variant="utility">
+                    What sets us apart
+                  </Eyebrow>
+                  <h2 className="text-h3 sm:text-h2 font-bold tracking-[-0.02em] text-white leading-[1.1] mt-4">
+                    The features {competitor.name}{" "}
+                    <GradientText tone="brand">doesn&apos;t ship.</GradientText>
+                  </h2>
+                </div>
+              </FadeIn>
+              <FadeIn delay={0.1}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  {relatedFeatures.map((feature) => {
+                    const FeatureIcon = feature.icon;
+                    const isUtility = feature.accent === "utility";
+                    const isSpecial = feature.accent === "special";
+                    return (
+                      <Link
+                        key={feature.slug}
+                        href={`/features/${feature.slug}`}
+                        className="group relative block p-6 rounded-2xl card-hairline overflow-hidden h-full hover:border-white/[0.12] hover:-translate-y-0.5 transition-all"
+                      >
+                        <div
+                          className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${
+                            isUtility
+                              ? "from-utility-400/50 via-utility-400/15 to-transparent"
+                              : isSpecial
+                                ? "from-special-500/50 via-special-500/15 to-transparent"
+                                : "from-utility-400/40 via-special-500/30 to-transparent"
+                          }`}
+                        />
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={`flex-shrink-0 w-10 h-10 rounded-xl border flex items-center justify-center ${
+                              isUtility
+                                ? "bg-utility-400/[0.08] border-utility-400/25"
+                                : isSpecial
+                                  ? "bg-special-500/[0.08] border-special-500/30"
+                                  : "bg-white/[0.04] border-white/[0.10]"
+                            }`}
+                          >
+                            <FeatureIcon
+                              className={`w-4 h-4 ${
+                                isUtility
+                                  ? "text-utility-300"
+                                  : isSpecial
+                                    ? "text-special-300"
+                                    : "text-white"
+                              }`}
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-p1 font-semibold text-white/90 mb-1">
+                              {feature.shortLabel}
+                            </h3>
+                            <p className="text-p2 text-white/45 leading-relaxed">
+                              {feature.subtitle}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </FadeIn>
+            </div>
+          </section>
+        );
+      })()}
+
+      {/* CTA outro */}
+      <section className="relative py-28 px-6 border-t border-white/[0.04] overflow-hidden">
+        <GlowBlob color="special" size="xl" position="top" intensity={0.08} />
+        <GlowBlob color="utility" size="lg" position="bottom" intensity={0.06} />
+
+        <div className="relative max-w-3xl mx-auto text-center">
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-6">
+              <Sparkles className="w-3 h-3 text-utility-300" />
+              <span className="text-p3 text-white/60 font-medium">
+                $79 flat — no per-seat pricing
+              </span>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.05}>
+            <h2 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] text-white leading-[1.08] mb-5">
+              Ready to switch from{" "}
+              <GradientText tone="brand">{competitor.name}?</GradientText>
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+              Get 30 professional videos a month, posted across every platform,
+              for $79.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/auth/signup"
+                className="btn-cta-glow inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-p2 font-semibold hover:bg-white/90 transition-colors"
+              >
+                Start free trial
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/compare"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.10] text-white/80 text-p2 font-semibold hover:bg-white/[0.04] hover:text-white transition-colors"
+              >
+                All comparisons
+              </Link>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
 
       {/* JSON-LD for FAQ schema */}
       {competitor.faqs.length > 0 && (
