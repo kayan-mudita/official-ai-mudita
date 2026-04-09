@@ -22,6 +22,15 @@ const VALID_EVENTS = [
   "onboarding_paywall_viewed",
   "onboarding_trial_started",
   "onboarding_skipped",
+  // Onboarding failure paths
+  "onboarding_camera_denied",
+  "onboarding_photo_upload_failed",
+  "onboarding_character_rejected",    // user clicked "Not feeling it" / regenerate
+  "onboarding_checkout_abandoned",    // started checkout but didn't complete
+  // Strategy
+  "onboarding_research_launched",
+  "onboarding_strategy_approved",
+  "onboarding_strategy_reviewed",
   // Post-checkout
   "onboarding_industry_selected",
   "onboarding_industry_skipped",
@@ -64,6 +73,8 @@ export async function POST(req: NextRequest) {
       "onboarding_paywall_viewed",
       "onboarding_trial_started",
       "onboarding_skipped",
+      "onboarding_camera_denied",
+      "onboarding_character_rejected",
     ];
     if (uniqueEvents.includes(body.event as EventName)) {
       const existing = await prisma.lifecycleEvent.findFirst({

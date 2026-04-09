@@ -25,9 +25,10 @@ model User {
   stripeCurrentPeriodEnd  DateTime?
   emailVerified           Boolean   @default(false)
   signupRef      String?
-  onboarded      Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  onboarded           Boolean  @default(false)
+  onboardingProgress  String?  // JSON: { photoUrl, characterSheetId, voiceId, step, savedAt }
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   photos                  Photo[]
   voiceSamples            VoiceSample[]

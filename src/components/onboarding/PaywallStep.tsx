@@ -78,6 +78,27 @@ export default function PaywallStep({ videoUrl, videoGenerating, demoMode }: Pay
   const skipToDashboard = async () => {
     trackEvent("onboarding_skipped");
     setLoading(true);
+
+    // Save onboarding progress from localStorage to the server before redirecting
+    try {
+      const stored = localStorage.getItem("officialai_onboarding_progress");
+      if (stored) {
+        const progress = JSON.parse(stored);
+        await fetch("/api/onboarding/save-progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            photoUrl: progress.photoUrl || undefined,
+            characterSheetId: progress.characterSheetId || undefined,
+            voiceId: progress.voiceId || undefined,
+            step: progress.step || "paywall",
+          }),
+        });
+      }
+    } catch {
+      // Non-blocking — still redirect even if save fails
+    }
+
     window.location.href = "/dashboard/welcome";
   };
 

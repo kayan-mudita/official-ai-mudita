@@ -23,3 +23,6 @@ CREATE TABLE IF NOT EXISTS "ResearchSession" (
 -- CreateIndex
 CREATE INDEX IF NOT EXISTS "ResearchSession_userId_createdAt_idx" ON "ResearchSession"("userId", "createdAt");
 ALTER TABLE "ResearchSession" ADD COLUMN IF NOT EXISTS "approvedDays" TEXT;
+
+-- Add onboarding progress field to User
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "onboardingProgress" TEXT;

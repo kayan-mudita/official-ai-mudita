@@ -510,6 +510,8 @@ function CalendarPhase({
   const [weekOffset, setWeekOffset] = useState(0);
   const [launching, setLaunching] = useState(false);
   const [regeneratingDay, setRegeneratingDay] = useState<number | null>(null);
+  const [editingDay, setEditingDay] = useState<number | null>(null);
+  const [editDraft, setEditDraft] = useState<{ hook: string; scriptOutline: string }>({ hook: "", scriptOutline: "" });
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounced save of approved days to API (saves 1s after last toggle)
@@ -568,6 +570,36 @@ function CalendarPhase({
     } finally {
       setRegeneratingDay(null);
     }
+  };
+
+  const startEdit = (dayIndex: number) => {
+    const day = calendar[dayIndex];
+    setEditDraft({ hook: day.hook, scriptOutline: day.scriptOutline });
+    setEditingDay(dayIndex);
+  };
+
+  const saveEdit = () => {
+    if (editingDay === null) return;
+    setCalendar((prev) => {
+      const next = [...prev];
+      next[editingDay] = { ...next[editingDay], hook: editDraft.hook, scriptOutline: editDraft.scriptOutline };
+      return next;
+    });
+    // Persist to DB if session exists
+    if (sessionId) {
+      const updated = [...calendar];
+      updated[editingDay] = { ...updated[editingDay], hook: editDraft.hook, scriptOutline: editDraft.scriptOutline };
+      fetch("/api/research/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, approvedDays: Array.from(approvedDays), calendarUpdate: updated }),
+      }).catch(() => {});
+    }
+    setEditingDay(null);
+  };
+
+  const cancelEdit = () => {
+    setEditingDay(null);
   };
 
   const handleLaunch = async () => {
@@ -793,52 +825,104 @@ function CalendarPhase({
                           className="overflow-hidden"
                         >
                           <div className="px-5 pb-5 pt-1 space-y-4 border-t border-white/[0.04]">
-                            {/* Hook */}
-                            <div>
-                              <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Opening Hook</div>
-                              <p className="text-[14px] text-indigo-300 font-medium leading-relaxed">
-                                &ldquo;{day.hook}&rdquo;
-                              </p>
-                            </div>
+                            {editingDay === globalIndex ? (
+                              <>
+                                {/* Editable Hook */}
+                                <div>
+                                  <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Opening Hook</div>
+                                  <input
+                                    type="text"
+                                    value={editDraft.hook}
+                                    onChange={(e) => setEditDraft((d) => ({ ...d, hook: e.target.value }))}
+                                    className="w-full px-3 py-2 rounded-lg bg-indigo-500/[0.08] border border-indigo-500/20 text-[14px] text-indigo-300 font-medium focus:outline-none focus:border-indigo-500/40 transition-all"
+                                  />
+                                </div>
 
-                            {/* Script outline */}
-                            <div>
-                              <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Script Outline</div>
-                              <p className="text-[13px] text-white/60 leading-relaxed">{day.scriptOutline}</p>
-                            </div>
+                                {/* Editable Script */}
+                                <div>
+                                  <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Script Outline</div>
+                                  <textarea
+                                    value={editDraft.scriptOutline}
+                                    onChange={(e) => setEditDraft((d) => ({ ...d, scriptOutline: e.target.value }))}
+                                    rows={4}
+                                    className="w-full px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-[13px] text-white/60 leading-relaxed resize-none focus:outline-none focus:border-indigo-500/30 transition-all"
+                                  />
+                                </div>
 
-                            {/* Why this works */}
-                            <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-purple-500/[0.06] border border-purple-500/10">
-                              <Sparkles className="w-3.5 h-3.5 text-purple-400 mt-0.5 flex-shrink-0" />
-                              <p className="text-[12px] text-purple-300/80">{day.whyThisWorks}</p>
-                            </div>
+                                {/* Save / Cancel */}
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={saveEdit}
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-indigo-500/15 text-indigo-400 hover:bg-indigo-500/25 transition-all"
+                                  >
+                                    <Check className="w-3.5 h-3.5" />
+                                    Save
+                                  </button>
+                                  <button
+                                    onClick={cancelEdit}
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/40 hover:bg-white/[0.06] transition-all"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                    Cancel
+                                  </button>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                {/* Hook (read-only) */}
+                                <div>
+                                  <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Opening Hook</div>
+                                  <p className="text-[14px] text-indigo-300 font-medium leading-relaxed">
+                                    &ldquo;{day.hook}&rdquo;
+                                  </p>
+                                </div>
 
-                            {/* Actions */}
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => toggleApprove(globalIndex)}
-                                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium transition-all ${
-                                  isApproved
-                                    ? "bg-emerald-500/15 text-emerald-400"
-                                    : "bg-white/[0.04] text-white/40 hover:bg-white/[0.06]"
-                                }`}
-                              >
-                                <Check className="w-3.5 h-3.5" />
-                                {isApproved ? "Approved" : "Approve"}
-                              </button>
-                              <button
-                                onClick={() => handleRegenerate(globalIndex)}
-                                disabled={regeneratingDay !== null}
-                                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/40 hover:bg-white/[0.06] disabled:opacity-30 transition-all"
-                              >
-                                {regeneratingDay === globalIndex ? (
-                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                ) : (
-                                  <RefreshCw className="w-3.5 h-3.5" />
-                                )}
-                                {regeneratingDay === globalIndex ? "Regenerating..." : "Regenerate"}
-                              </button>
-                            </div>
+                                {/* Script outline (read-only) */}
+                                <div>
+                                  <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Script Outline</div>
+                                  <p className="text-[13px] text-white/60 leading-relaxed">{day.scriptOutline}</p>
+                                </div>
+
+                                {/* Why this works */}
+                                <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-purple-500/[0.06] border border-purple-500/10">
+                                  <Sparkles className="w-3.5 h-3.5 text-purple-400 mt-0.5 flex-shrink-0" />
+                                  <p className="text-[12px] text-purple-300/80">{day.whyThisWorks}</p>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => toggleApprove(globalIndex)}
+                                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium transition-all ${
+                                      isApproved
+                                        ? "bg-emerald-500/15 text-emerald-400"
+                                        : "bg-white/[0.04] text-white/40 hover:bg-white/[0.06]"
+                                    }`}
+                                  >
+                                    <Check className="w-3.5 h-3.5" />
+                                    {isApproved ? "Approved" : "Approve"}
+                                  </button>
+                                  <button
+                                    onClick={() => startEdit(globalIndex)}
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/40 hover:bg-white/[0.06] transition-all"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleRegenerate(globalIndex)}
+                                    disabled={regeneratingDay !== null}
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/40 hover:bg-white/[0.06] disabled:opacity-30 transition-all"
+                                  >
+                                    {regeneratingDay === globalIndex ? (
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    ) : (
+                                      <RefreshCw className="w-3.5 h-3.5" />
+                                    )}
+                                    {regeneratingDay === globalIndex ? "Regenerating..." : "Regenerate"}
+                                  </button>
+                                </div>
+                              </>
+                            )}
                           </div>
                         </motion.div>
                       )}

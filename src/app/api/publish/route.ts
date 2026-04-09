@@ -130,6 +130,20 @@ export async function POST(req: NextRequest) {
         where: { id: videoId },
         data: { status: "published" },
       });
+
+      // After marking video as published, check if this is the user's first publish
+      const publishCount = await prisma.schedule.count({
+        where: { userId: user.id, status: "published" },
+      });
+      if (publishCount <= 1) {
+        await prisma.lifecycleEvent.create({
+          data: {
+            userId: user.id,
+            event: "first_publish",
+            metadata: JSON.stringify({ videoId, platforms }),
+          },
+        }).catch(() => {}); // non-blocking
+      }
     }
 
     // Create schedule records for each platform

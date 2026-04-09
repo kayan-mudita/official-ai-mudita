@@ -127,12 +127,16 @@ function trackEvent(event: string, metadata?: Record<string, unknown>) {
   }).catch(() => {});
 }
 
+const ONBOARDING_STORAGE_KEY = "officialai_onboarding_progress";
+
 function OnboardingFlow() {
   const [step, setStep] = useState<Step>("photo");
   const [uploading, setUploading] = useState(false);
   const [voiceUploading, setVoiceUploading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [characterSheetId, setCharacterSheetId] = useState<string | null>(null);
   const [characterSheetUrl, setCharacterSheetUrl] = useState<string | null>(null);
+  const [voiceId, setVoiceId] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoGenerating, setVideoGenerating] = useState(false);
   const [videoId, setVideoId] = useState<string | null>(null);
@@ -141,6 +145,22 @@ function OnboardingFlow() {
   useEffect(() => {
     trackEvent(`onboarding_step_${step}`);
   }, [step]);
+
+  // Persist onboarding progress to localStorage on every step/state change
+  useEffect(() => {
+    const progress = {
+      photoUrl,
+      characterSheetId,
+      voiceId,
+      step,
+      savedAt: new Date().toISOString(),
+    };
+    try {
+      localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(progress));
+    } catch {
+      // localStorage not available — ignore
+    }
+  }, [step, photoUrl, characterSheetId, voiceId]);
 
   const handlePhotoCapture = useCallback(async (file: File) => {
     setUploading(true);
@@ -174,9 +194,10 @@ function OnboardingFlow() {
     }
   }, []);
 
-  const handleSheetSelect = useCallback((poseUrl: string, _sheetId: string, _selectedPose?: number) => {
+  const handleSheetSelect = useCallback((poseUrl: string, sheetId: string, _selectedPose?: number) => {
     trackEvent("onboarding_character_selected");
     setCharacterSheetUrl(poseUrl);
+    setCharacterSheetId(sheetId);
     setStep("voice");
   }, []);
 
@@ -244,6 +265,10 @@ function OnboardingFlow() {
 
       const res = await fetch("/api/onboarding/voice", { method: "POST", body: formData });
       if (res.ok) {
+        const data = await res.json();
+        if (data.voiceId) {
+          setVoiceId(data.voiceId);
+        }
         trackEvent("onboarding_voice_cloned");
       }
     } catch {
