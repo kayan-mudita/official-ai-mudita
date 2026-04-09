@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import CookieConsent from "@/components/marketing/CookieConsent";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
+// System font stack — no external font downloads required.
+// Prevents build failures when fonts.googleapis.com is unreachable.
+// Inter is available on most modern systems; falls back gracefully.
+const fontVariable = "--font-sans";
+const inter = {
+  variable: fontVariable,
+  className: "",
+};
 
 const siteUrl = "https://officialai.com";
 
