@@ -80,16 +80,26 @@ export async function handleStitchPoll(
         );
       }
 
+      // Chain to next step: motion_enhance (if enabled) → post_process (if enabled) → done
+      const hasEnhance = meta.enhance === true;
+      const hasPostProcess = meta.postProcess && (meta.postProcess.upscale || meta.postProcess.captions || meta.postProcess.speedCorrect);
+      const nextStep = hasEnhance ? "motion_enhance" : hasPostProcess ? "post_process" : null;
+      const finalStatus = nextStep ? "generating" : "review";
+
+      meta.pipelineStep = nextStep || "done";
       await prisma.video.update({
         where: { id: videoId },
         data: {
           videoUrl: storedUrl,
           thumbnailUrl: finalThumb,
-          status: "review",
+          status: finalStatus,
           sourceReview: stringifyMeta(meta),
         },
       });
 
+      if (nextStep) {
+        return { status: "stitch_done", nextStep, data: { videoUrl: storedUrl } };
+      }
       return { status: "done", data: { videoUrl: storedUrl } };
     }
 

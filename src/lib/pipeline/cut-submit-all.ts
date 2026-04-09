@@ -140,6 +140,18 @@ export async function handleSubmitAllCuts(
   const indexedCuts = meta.cuts.map((cut, cutIndex) => ({ cut, cutIndex }));
 
   const submissions = await processInBatches(indexedCuts, concurrency, async ({ cut, cutIndex }) => {
+    // Check for user-provided video URL (e.g. product B-roll for discovery format)
+    const userUrl = meta.userProvidedCuts?.[cutIndex];
+    if (userUrl) {
+      console.log(`[pipeline/cut-submit-all] Cut ${cutIndex} (${cut.type}): using USER-PROVIDED video URL`);
+      return {
+        cutIndex,
+        result: { jobId: `user-provided-${cutIndex}`, status: "completed" as const, videoUrl: userUrl },
+        cut,
+        modelUsed: "user_provided",
+      };
+    }
+
     // Per-cut model routing: B-roll → Veo 3.1, transitions → LTX Fast, etc.
     const cutModel = resolveModelForCut(cut.type || "talking_head", selectedModel, enablePerCutRouting);
 
@@ -188,7 +200,7 @@ export async function handleSubmitAllCuts(
       referenceImageUrls: cutRefs || undefined,
     });
 
-    return { cutIndex, result, cut };
+    return { cutIndex, result, cut, modelUsed: cutModel };
   });
 
   // ---- Process results and store all job IDs ----
@@ -261,6 +273,7 @@ export async function handleSubmitAllCuts(
     // Skipping this produces much cleaner cuts.
     const trimStart = cut.generateDuration > cut.duration + 1 ? 0.5 : 0;
 
+    const usedModel = (settlement as any).value?.modelUsed || selectedModel;
     freshMeta.cutJobs[cutIndex] = {
       jobId: result.jobId,
       status: result.status,
@@ -268,6 +281,7 @@ export async function handleSubmitAllCuts(
       thumbnailUrl: persistedThumbnailUrl,
       trimTo: cut.duration,
       trimStart,
+      modelUsed: usedModel,
     };
   }
 

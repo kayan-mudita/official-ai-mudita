@@ -113,12 +113,25 @@ async function buildSceneBibleContext(
  * Falls back to a sensible default if Gemini is unavailable, so the pipeline
  * never breaks.
  */
+// Cache scene bibles per user per day — same user generating multiple videos
+// should reuse the same scene bible for consistency + speed (saves 3-5s + 1 Gemini call)
+const sceneBibleCache = new Map<string, { bible: SceneBible; timestamp: number }>();
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
 export async function generateSceneBible(
   userRequest: string,
   userId: string,
   industry: string,
   format: string
 ): Promise<SceneBible> {
+  // Check cache first
+  const cacheKey = `${userId}:${industry}`;
+  const cached = sceneBibleCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    console.log(`[scene-bible] Cache hit for user ${userId} — reusing existing bible`);
+    return cached.bible;
+  }
+
   const apiKey = process.env.GOOGLE_AI_STUDIO_KEY;
 
   const { characterDesc, brandContext, industryBackgrounds } =
@@ -126,7 +139,9 @@ export async function generateSceneBible(
 
   // If no Gemini key, build a reasonable fallback from available data
   if (!apiKey) {
-    return buildFallbackBible(characterDesc, industryBackgrounds, industry);
+    const fallback = buildFallbackBible(characterDesc, industryBackgrounds, industry);
+    sceneBibleCache.set(cacheKey, { bible: fallback, timestamp: Date.now() });
+    return fallback;
   }
 
   const backgroundList = industryBackgrounds
@@ -184,7 +199,7 @@ Generate the scene bible now. Return valid JSON only.`;
 
     const parsed = JSON.parse(text);
 
-    return {
+    const bible: SceneBible = {
       environment: parsed.environment || industryBackgrounds[0] || "lived-in home office",
       wardrobe: parsed.wardrobe || "casual everyday clothes",
       lighting: parsed.lighting || "warm natural light from window, soft shadows",
@@ -193,6 +208,9 @@ Generate the scene bible now. Return valid JSON only.`;
       characterDescription: characterDesc || "",
       backgroundForIndustry: industryBackgrounds[0] || "",
     };
+    // Cache for reuse across multiple videos
+    sceneBibleCache.set(cacheKey, { bible, timestamp: Date.now() });
+    return bible;
   } catch (err) {
     console.error("[scene-bible] Error:", err);
     return buildFallbackBible(characterDesc, industryBackgrounds, industry);

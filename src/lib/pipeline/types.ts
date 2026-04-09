@@ -93,6 +93,13 @@ export interface PipelineMeta {
   // Generation mode
   mode?: "hook" | "full";
 
+  // User-provided video URLs for specific cuts (e.g. product B-roll for discovery format)
+  // Maps cut index → video URL. These cuts skip AI generation and use the provided URL directly.
+  userProvidedCuts?: Record<number, string>;
+
+  // Enhancement
+  enhance?: boolean;
+
   // Post-processing
   postProcess?: {
     upscale: boolean;

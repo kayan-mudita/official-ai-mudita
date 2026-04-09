@@ -117,6 +117,55 @@ async function generateCaptions(videoUrl: string): Promise<CaptionSegment[] | nu
   }
 }
 
+// ─── Caption Burn-In via Shotstack ────────────────────────────
+
+/**
+ * Burn captions into video using FAL's video captioning/overlay model.
+ * Generates an SRT from segments and passes to a captioning service.
+ */
+async function burnCaptions(
+  videoUrl: string,
+  segments: CaptionSegment[]
+): Promise<string | null> {
+  const apiKey = getFalKey();
+  if (!apiKey) return null;
+
+  // Build SRT content from segments
+  const srt = segments.map((seg, i) => {
+    const startTime = formatSrtTime(seg.start);
+    const endTime = formatSrtTime(seg.end);
+    return `${i + 1}\n${startTime} --> ${endTime}\n${seg.text}\n`;
+  }).join("\n");
+
+  try {
+    // Use FAL's video overlay model to burn subtitles
+    const data = await falPost("fal-ai/video-utils/subtitle", {
+      video_url: videoUrl,
+      subtitle_content: srt,
+      subtitle_format: "srt",
+      font_size: 42,
+      font_color: "#FFFFFF",
+      outline_color: "#000000",
+      outline_width: 3,
+      position: "bottom",
+      margin_bottom: 80,
+    });
+
+    return data?.video?.url || null;
+  } catch (e: any) {
+    console.error("[burnCaptions] FAL subtitle overlay failed:", e.message);
+    return null;
+  }
+}
+
+function formatSrtTime(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  const ms = Math.floor((seconds % 1) * 1000);
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")},${String(ms).padStart(3, "0")}`;
+}
+
 // ─── Main Post-Process Handler ────────────────────────────────────
 
 export async function handlePostProcess(
@@ -165,13 +214,24 @@ export async function handlePostProcess(
     if (upscaled) currentUrl = upscaled;
   }
 
-  // Step 3: Generate captions via FAL Whisper
+  // Step 3: Generate captions via FAL Whisper + burn into video
   if (options.captions) {
     console.log("[post-process] Generating captions via FAL Whisper");
     const segments = await generateCaptions(currentUrl);
     if (segments && segments.length > 0) {
       meta.captions = segments;
       console.log(`[post-process] Generated ${segments.length} caption segments`);
+
+      // Burn captions into video via FAL caption overlay
+      try {
+        const captionedUrl = await burnCaptions(currentUrl, segments);
+        if (captionedUrl) {
+          currentUrl = captionedUrl;
+          console.log("[post-process] Captions burned into video");
+        }
+      } catch (e: any) {
+        console.warn("[post-process] Caption burn-in failed, keeping uncaptioned:", e.message);
+      }
     }
   }
 

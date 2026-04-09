@@ -366,3 +366,42 @@ Generate the full production prompt now. Return valid JSON only.`;
     };
   }
 }
+
+/**
+ * Refine a prompt for a specific video model using Claude (via OpenRouter).
+ * Each model has different strengths and prompt format preferences.
+ * Claude rewrites the prompt to maximize quality for the target model.
+ */
+export async function refinePromptForModel(
+  prompt: string,
+  model: string,
+  referenceStyle?: string
+): Promise<string> {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return prompt; // No OpenRouter key, return as-is
+
+  const modelHints: Record<string, string> = {
+    "kling_2.6": "Kling 2.6 works best with detailed character descriptions, specific camera angles, and explicit lighting directions. Keep prompts under 500 chars. Avoid abstract concepts.",
+    "kling_v3": "Kling 3.0 supports @Element1 tagging for character consistency. Describe the scene cinematically. Mention camera movement explicitly.",
+    "kling_v3_audio": "Kling 3.0+Audio generates voice natively. Include exact dialogue in quotes. Describe speaking style, pace, and emotion.",
+    "veo_3": "Veo 3 excels at cinematic quality. Use filmmaking terminology (rack focus, dolly, crane shot). Describe color grading explicitly. Audio is generated natively.",
+    "seedance_2.0": "Seedance 2.0 accepts @image1 references. Use director-style camera instructions (dolly zoom, tracking shot). Can handle complex multi-shot scenes in a single generation.",
+    "heygen_avatar_v": "HeyGen Avatar V uses video reference for identity. Focus on what the person SAYS and their emotional delivery, not visual appearance.",
+  };
+
+  const hint = modelHints[model] || "Standard video generation model. Be specific about camera, lighting, and action.";
+
+  try {
+    const { runAgent } = await import("@/lib/openrouter-client");
+
+    const refined = await runAgent(
+      `You are a video prompt engineer. Rewrite the given prompt to maximize quality for the target video model. Keep the same intent but optimize the formatting and emphasis for the model's strengths. Return ONLY the refined prompt, no explanation.`,
+      `Target model: ${model}\nModel tips: ${hint}\n${referenceStyle ? `Reference style: ${referenceStyle}\n` : ""}Original prompt:\n${prompt}`,
+      [], {}, 1
+    );
+
+    return refined.trim() || prompt;
+  } catch {
+    return prompt; // Fallback to original on any error
+  }
+}
