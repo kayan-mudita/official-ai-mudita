@@ -72,7 +72,8 @@ export async function handleStitchSubmit(
     .map(([idx, j]) => {
       const cutMeta = meta.cuts[Number(idx)];
       const trimTo = j.trimTo ?? cutMeta?.duration ?? 3;
-      return { videoUrl: j.videoUrl!, trimTo };
+      const startFrom = j.trimStart ?? 0; // Skip warm-up artifact (improvement #18)
+      return { videoUrl: j.videoUrl!, trimTo, startFrom };
     });
 
   if (completedCuts.length === 0) {

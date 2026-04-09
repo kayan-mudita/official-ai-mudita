@@ -62,11 +62,17 @@ export async function POST(req: NextRequest) {
             title: day.topic || `Day ${day.day} Content`,
             description: day.whyThisWorks || "",
             script,
-            model: "kling_2.6",
-            contentType: day.contentType || "talking_head_15",
+            model: day.model || "kling_2.6",
+            contentType: day.format || day.contentType || "talking_head_15",
             status: "queued",
             photoId: photo?.id || null,
             voiceId: voice?.id || null,
+            // Store per-day settings in sourceReview for pipeline to read
+            sourceReview: JSON.stringify({
+              ...(day.templateId ? { templateId: day.templateId } : {}),
+              ...(day.postProcess ? { postProcess: day.postProcess } : {}),
+              ...(day.format?.includes("hook") ? { mode: "hook" } : {}),
+            }) || undefined,
           },
         });
 

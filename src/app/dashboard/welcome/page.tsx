@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import SessionProvider from "@/components/SessionProvider";
 import SocialConnect from "@/components/onboarding/SocialConnect";
+import TemplateSelector from "@/components/TemplateSelector";
 
 // ─── Types ────────────────────────────────────────────────────────
 
@@ -197,6 +198,7 @@ function InputPhase({
   const [tone, setTone] = useState(50); // 0=formal, 100=casual
   const [igHandle, setIgHandle] = useState("");
   const [liHandle, setLiHandle] = useState("");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
 
   const canNextA = industry && companyName.trim().length > 0;
   const canLaunch = canNextA;
@@ -383,6 +385,13 @@ function InputPhase({
             </div>
 
             <div className="space-y-2">
+              {/* Reference video template */}
+              <TemplateSelector
+                onSelect={(id) => setSelectedTemplateId(id)}
+                selectedId={selectedTemplateId}
+                compact
+              />
+
               <label className="text-[13px] font-semibold text-white/50">Social handles <span className="text-white/20 font-normal">(optional — helps analyze your existing content)</span></label>
               <div className="grid grid-cols-2 gap-2">
                 <input type="text" value={igHandle} onChange={(e) => setIgHandle(e.target.value)} placeholder="@instagram" className={inputClass} />
