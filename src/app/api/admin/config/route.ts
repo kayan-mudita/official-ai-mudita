@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAdmin } from "@/lib/api-helpers";
 import { getAllConfigs, setConfig, seedDefaultConfigs, clearConfigCache } from "@/lib/system-config";
 
 function isAdminEmail(email: string): boolean {
@@ -11,7 +11,7 @@ function isAdminEmail(email: string): boolean {
 
 export async function GET(req: NextRequest) {
   try {
-    const { error } = await requireAuth();
+    const { error } = await requireAdmin();
     if (error) return error;
 
     // Seed defaults if this is the first time
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { error, user } = await requireAuth();
+    const { error, user } = await requireAdmin();
     if (error) return error;
 
     if (!isAdminEmail(user.email)) {

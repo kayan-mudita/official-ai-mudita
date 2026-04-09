@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAdmin } from "@/lib/api-helpers";
 
 /**
  * POST /api/admin/reset-stuck
@@ -10,7 +10,7 @@ import { requireAuth } from "@/lib/api-helpers";
  */
 export async function POST() {
   try {
-    const { error } = await requireAuth();
+    const { error } = await requireAdmin();
     if (error) return error;
 
     const cutoff = new Date(Date.now() - 15 * 60 * 1000); // 15 minutes ago
@@ -40,7 +40,7 @@ export async function POST() {
  */
 export async function GET() {
   try {
-    const { error } = await requireAuth();
+    const { error } = await requireAdmin();
     if (error) return error;
 
     const cutoff = new Date(Date.now() - 15 * 60 * 1000);

@@ -20,12 +20,23 @@ import { downloadAndStore, videoKey, thumbnailKey, isStorageConfigured } from "@
  * Query params:
  *   - videoId: The video being generated
  *   - cutIndex: Which cut this webhook is for
+ *   - secret: Webhook secret for verification
  *
- * No authentication required (FAL cannot authenticate), but we validate
- * that the videoId exists and is in a generating state.
+ * Security: Validated via FAL_WEBHOOK_SECRET query param. If the env var
+ * is set, the request must include a matching secret.
  */
 
 export async function POST(req: NextRequest) {
+  // Verify webhook secret if configured
+  const webhookSecret = process.env.FAL_WEBHOOK_SECRET;
+  if (webhookSecret) {
+    const reqSecret = req.nextUrl.searchParams.get("secret");
+    if (reqSecret !== webhookSecret) {
+      console.error("[webhook] Invalid webhook secret");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
+
   const videoId = req.nextUrl.searchParams.get("videoId");
   const cutIndexStr = req.nextUrl.searchParams.get("cutIndex");
   const cutIndex = cutIndexStr ? parseInt(cutIndexStr, 10) : undefined;

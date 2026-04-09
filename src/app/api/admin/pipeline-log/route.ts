@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAdmin } from "@/lib/api-helpers";
 import { getPipelineTimeline } from "@/lib/pipeline/event-log";
 
 /**
@@ -10,7 +10,7 @@ import { getPipelineTimeline } from "@/lib/pipeline/event-log";
  */
 export async function GET(req: NextRequest) {
   try {
-    const { error } = await requireAuth();
+    const { error } = await requireAdmin();
     if (error) return error;
 
     const videoId = req.nextUrl.searchParams.get("videoId");

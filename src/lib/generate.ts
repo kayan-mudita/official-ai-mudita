@@ -466,6 +466,7 @@ export async function generateVideo(params: GenerateVideoParams): Promise<Genera
       const qs = new URLSearchParams({
         videoId: params.videoId,
         ...(params.cutIndex !== undefined ? { cutIndex: String(params.cutIndex) } : {}),
+        ...(process.env.FAL_WEBHOOK_SECRET ? { secret: process.env.FAL_WEBHOOK_SECRET } : {}),
       });
       webhookUrl = `${base}/api/generate/webhook?${qs.toString()}`;
     }

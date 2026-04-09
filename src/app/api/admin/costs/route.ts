@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/api-helpers";
+import { requireAdmin } from "@/lib/api-helpers";
 
 function isAdminEmail(email: string): boolean {
   const adminEmails = process.env.ADMIN_EMAILS ?? "";
@@ -14,7 +14,7 @@ const MRR_PER_USER = 79; // placeholder MRR per paying user
 
 export async function GET() {
   try {
-    const { error, user } = await requireAuth();
+    const { error, user } = await requireAdmin();
     if (error) return error;
 
     if (!isAdminEmail(user.email)) {
