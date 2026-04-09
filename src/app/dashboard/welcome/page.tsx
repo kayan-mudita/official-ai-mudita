@@ -183,6 +183,7 @@ function InputPhase({
 
   // Screen A: Business
   const [industry, setIndustry] = useState<string | null>(null);
+  const [fullName, setFullName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [geography, setGeography] = useState("");
@@ -209,9 +210,21 @@ function InputPhase({
     );
   };
 
-  const handleLaunch = () => {
+  const handleLaunch = async () => {
     if (!canLaunch || launching) return;
     setLaunching(true);
+
+    // Save user's name to profile
+    if (fullName.trim()) {
+      const nameParts = fullName.trim().split(/\s+/);
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+      fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName }),
+      }).catch(() => {});
+    }
 
     const socialHandles: { platform: string; handle: string }[] = [];
     if (igHandle.trim()) socialHandles.push({ platform: "instagram", handle: igHandle.trim() });
@@ -288,6 +301,11 @@ function InputPhase({
                   </motion.button>
                 ))}
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[13px] font-semibold text-white/50">Your name</label>
+              <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="e.g. Sarah Chen" className={inputClass} />
             </div>
 
             <div className="space-y-2">
