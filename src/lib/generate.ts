@@ -66,6 +66,12 @@ export interface GenerateVideoParams {
   audioContext?: string;
   /** Additional reference image URLs for multi-image models (e.g. Kling v3 elements) */
   referenceImageUrls?: string[];
+  /** Reference video URL for motion control or Seedance 2.0 video references */
+  referenceVideoUrl?: string;
+  /** Pre-generated audio URL for models that accept audio input (Seedance 2.0, LTX) */
+  audioUrl?: string;
+  /** Template ID — loads reference style JSON from VideoTemplate for prompt enrichment */
+  templateId?: string;
 }
 
 export interface GenerateResult {
@@ -256,18 +262,47 @@ const FAL_MODELS: Record<string, FalModelConfig> = {
   "seedance_2.0": {
     falId: "fal-ai/seedance-2.0",
     name: "Seedance 2.0 (ByteDance)",
-    description: "Cinematic output with native audio. Director-level camera control. Accepts text + image + audio inputs.",
-    maxDuration: 10,
+    description: "Cinematic + native audio. Up to 9 images, 3 videos, 3 audio refs. Director camera control. Best for hooks.",
+    maxDuration: 15,
     supportsImage: true,
     supportsAudio: true,
     supportsNativeAudio: true,
     costPerSecond: 0.30,
-    buildPayload: (p) => ({
-      prompt: p.script,
-      ...(p.photoUrl ? { image_url: p.photoUrl } : {}),
-      aspect_ratio: "9:16",
-      generate_audio: true,
-    }),
+    buildPayload: (p) => {
+      let prompt = p.script;
+      const payload: Record<string, unknown> = {
+        prompt,
+        duration: Math.min(p.duration || 15, 15),
+        aspect_ratio: "9:16",
+        generate_audio: true,
+      };
+
+      // Reference images (up to 9): character photos, 360 angles, product images
+      const refImages: { url: string }[] = [];
+      if (p.photoUrl) refImages.push({ url: p.photoUrl });
+      if (p.referenceImageUrls) {
+        p.referenceImageUrls.forEach((url) => refImages.push({ url }));
+      }
+      if (refImages.length > 0) {
+        payload.reference_images = refImages.slice(0, 9);
+        // Tag first image in prompt if not already tagged
+        if (!prompt.includes("@image1") && refImages.length > 0) {
+          payload.prompt = `@image1 ${prompt}`;
+        }
+      }
+
+      // Reference video (up to 3): style/motion reference from templates
+      if (p.referenceVideoUrl) {
+        payload.reference_videos = [{ url: p.referenceVideoUrl }];
+      }
+
+      // Reference audio (up to 3): pre-generated TTS for lip sync
+      if (p.audioUrl) {
+        payload.reference_audios = [{ url: p.audioUrl }];
+      }
+
+      return payload;
+    },
   },
 
   // ── MiniMax / Hailuo ──────────────────────────────────────────

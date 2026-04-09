@@ -85,6 +85,23 @@ export interface PipelineMeta {
 
   // Error
   error: string | null;
+
+  // Generation mode
+  mode?: "hook" | "full";
+
+  // Post-processing
+  postProcess?: {
+    upscale: boolean;
+    captions: boolean;
+    speedCorrect: boolean;
+    speedMultiplier?: number;
+  };
+  postProcessComplete?: boolean;
+  captions?: { start: number; end: number; text: string }[];
+
+  // Reference template
+  templateId?: string;
+  referenceVideoUrl?: string;
 }
 
 // ---- Helpers ----

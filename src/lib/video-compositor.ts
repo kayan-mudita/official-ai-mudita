@@ -465,6 +465,130 @@ const FORMATS: Record<string, (script: string) => VideoFormat> = {
       },
     ],
   }),
+
+  // ── Discovery Hook (AI hook + product B-roll + CTA) ────────────
+  "discovery_hook": (script: string) => ({
+    id: "discovery_hook",
+    name: "Discovery Hook",
+    description: "15s AI-generated UGC hook followed by product footage and CTA. The hook is the only AI-generated part.",
+    totalDuration: 15,
+    startingFrameRequired: true,
+    cuts: [
+      {
+        index: 0,
+        type: "hook" as const,
+        duration: 15,
+        generateDuration: 15,
+        prompt: `SINGLE CONTINUOUS SHOT: UGC-style selfie video. Person holds phone naturally, direct eye contact, genuine energy. Natural room lighting, slight handheld wobble. The person speaks directly to camera with authentic enthusiasm. iPhone front-camera aesthetic. ${script}`,
+        camera: "iPhone front-facing, handheld, eye-level",
+        audio: "Direct-to-camera speech, room ambient",
+        notes: "15s. This is the AI-generated hook. Must feel completely organic and unscripted.",
+      },
+    ],
+  }),
+
+  // ── Podcast Clip (Two speakers) ───────────────────────────────
+  "podcast_clip": (script: string) => ({
+    id: "podcast_clip",
+    name: "Podcast Clip",
+    description: "Two speakers discussing a topic in a podcast-style format. Split or alternating shots.",
+    totalDuration: 15,
+    startingFrameRequired: true,
+    cuts: [
+      {
+        index: 0,
+        type: "talking_head" as const,
+        duration: 8,
+        generateDuration: 10,
+        prompt: `PODCAST HOST SHOT: Professional studio or office setting. Well-lit face, quality microphone visible. Speaker A introduces the topic with enthusiasm and authority. Clean background. ${script}`,
+        camera: "Medium close-up, slightly off-center, studio lighting",
+        audio: "Clear podcast-quality speech",
+        notes: "8s. Speaker A introduces the hook/topic.",
+      },
+      {
+        index: 1,
+        type: "reaction" as const,
+        duration: 7,
+        generateDuration: 10,
+        prompt: `PODCAST GUEST REACTION: Different person reacts to what was just said. Nodding, surprised expression, then adds their perspective. Similar studio setup but slightly different angle. ${script}`,
+        camera: "Medium close-up, reverse angle from speaker A",
+        audio: "Conversational reaction and response",
+        notes: "7s. Speaker B reacts and adds to the conversation.",
+      },
+    ],
+  }),
+
+  // ── Founders Method (Brand spokesperson message) ──────────────
+  "founders_method": (script: string) => ({
+    id: "founders_method",
+    name: "Founders Method",
+    description: "Brand founder/spokesperson delivers a personal message about the product with B-roll and CTA.",
+    totalDuration: 30,
+    startingFrameRequired: true,
+    cuts: [
+      {
+        index: 0,
+        type: "hook" as const,
+        duration: 5,
+        generateDuration: 8,
+        prompt: `ATTENTION HOOK: Founder looks directly at camera with a compelling opening statement. Slightly dramatic pause. Confident, authentic energy. Professional but approachable. ${script}`,
+        camera: "Close-up, direct eye contact, shallow depth of field",
+        audio: "Direct address, confident tone",
+        notes: "5s. The hook that stops the scroll.",
+      },
+      {
+        index: 1,
+        type: "talking_head" as const,
+        duration: 15,
+        generateDuration: 15,
+        prompt: `FOUNDER MESSAGE: Person speaks passionately about the product/brand story. Natural gestures, genuine emotion. Well-lit office or workspace. Feels like a personal conversation. ${script}`,
+        camera: "Medium shot, stable, professional lighting",
+        audio: "Conversational but purposeful speech",
+        notes: "15s. Core message delivery.",
+      },
+      {
+        index: 2,
+        type: "broll" as const,
+        duration: 5,
+        generateDuration: 8,
+        prompt: `PRODUCT SHOWCASE: Beautiful close-up of the product in use or on display. Cinematic lighting, slow reveal, premium feel. ${script}`,
+        camera: "Close-up, tracking shot, product hero angle",
+        audio: "Voiceover continues from founder (added in post)",
+        notes: "5s. Product beauty shot.",
+      },
+      {
+        index: 3,
+        type: "cta" as const,
+        duration: 5,
+        generateDuration: 8,
+        prompt: `CALL TO ACTION: Founder returns to camera with closing message. Warm smile, direct eye contact. Clear call to action. Confident ending. ${script}`,
+        camera: "Medium close-up, matching hook framing",
+        audio: "Direct CTA speech",
+        notes: "5s. Close with clear next step.",
+      },
+    ],
+  }),
+
+  // ── Censored/Curiosity Hook ───────────────────────────────────
+  "censored_hook": (script: string) => ({
+    id: "censored_hook",
+    name: "Censored Curiosity Hook",
+    description: "Video with strategically censored/bleeped content to create curiosity and increase watch time.",
+    totalDuration: 15,
+    startingFrameRequired: true,
+    cuts: [
+      {
+        index: 0,
+        type: "hook" as const,
+        duration: 15,
+        generateDuration: 15,
+        prompt: `CURIOSITY HOOK: Person is clearly passionate about revealing something. Speaking directly to camera. The energy suggests they're sharing something controversial or secret. Raw iPhone UGC aesthetic. Slight lean forward, expressive hand gestures. ${script}`,
+        camera: "iPhone selfie, handheld, intimate close-up",
+        audio: "Excited speech with strategic pauses where bleeps would go",
+        notes: "15s. Designed for post-production censoring overlays.",
+      },
+    ],
+  }),
 };
 
 // ─── Public API ─────────────────────────────────────────────────

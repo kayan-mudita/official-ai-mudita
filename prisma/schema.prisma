@@ -41,6 +41,25 @@ model User {
   passwordResetTokens     PasswordResetToken[]
   emailVerificationTokens EmailVerificationToken[]
   characterSheets         CharacterSheet[]
+  videoTemplates          VideoTemplate[]
+}
+
+// ─── Video Templates (reference videos for style replication) ───
+
+model VideoTemplate {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  name          String
+  sourceUrl     String
+  thumbnailUrl  String?
+  analysisJson  String   // JSON: camera, lighting, style, colors, pacing, subject, etc.
+  transcript    String?
+  duration      Float?
+  category      String?  // ugc_hook, podcast, discovery, founders, broll
+  createdAt     DateTime @default(now())
+
+  @@index([userId, createdAt])
 }
 
 model PasswordResetToken {
