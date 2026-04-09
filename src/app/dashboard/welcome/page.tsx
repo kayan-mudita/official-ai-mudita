@@ -68,6 +68,14 @@ interface CalendarDay {
   category: string;
   whyThisWorks: string;
   bestPostingTime?: string;
+  /** Video format recipe (default: talking_head_15) */
+  format?: string;
+  /** Video model (default: kling_2.6) */
+  model?: string;
+  /** Reference template ID */
+  templateId?: string;
+  /** Post-processing options */
+  postProcess?: { upscale: boolean; captions: boolean; speedCorrect: boolean };
 }
 
 interface AgentStatus<T> {
@@ -737,6 +745,39 @@ function CalendarPhase({
     setEditingDay(null);
   };
 
+  const updateDaySetting = (dayIndex: number, field: string, value: unknown) => {
+    setCalendar((prev) => {
+      const next = [...prev];
+      next[dayIndex] = { ...next[dayIndex], [field]: value };
+      return next;
+    });
+  };
+
+  // Format and model options for selectors
+  const FORMAT_OPTIONS = [
+    { id: "hook_only_15", label: "Hook Only (15s)", cuts: 1, cost: 3 },
+    { id: "discovery_hook", label: "Discovery Hook (15s)", cuts: 1, cost: 3 },
+    { id: "censored_hook", label: "Censored Hook (15s)", cuts: 1, cost: 3 },
+    { id: "quick_tip_8", label: "Quick Tip (8s)", cuts: 3, cost: 6 },
+    { id: "talking_head_15", label: "Talking Head (15s)", cuts: 4, cost: 8 },
+    { id: "testimonial_15", label: "Testimonial (15s)", cuts: 5, cost: 10 },
+    { id: "podcast_clip", label: "Podcast (15s)", cuts: 2, cost: 6 },
+    { id: "testimonial_20", label: "Testimonial Long (20s)", cuts: 4, cost: 10 },
+    { id: "behind_scenes_20", label: "Behind Scenes (20s)", cuts: 5, cost: 12 },
+    { id: "founders_method", label: "Founders (30s)", cuts: 4, cost: 12 },
+    { id: "educational_30", label: "Educational (30s)", cuts: 8, cost: 16 },
+    { id: "property_tour_30", label: "Property Tour (30s)", cuts: 4, cost: 10 },
+  ];
+
+  const MODEL_OPTIONS = [
+    { id: "kling_2.6", label: "Kling 2.6", audio: false },
+    { id: "kling_v3", label: "Kling 3.0", audio: false },
+    { id: "kling_v3_audio", label: "Kling 3.0 + Audio", audio: true },
+    { id: "veo_3", label: "Veo 3 + Audio", audio: true },
+    { id: "seedance_2.0", label: "Seedance 2.0 + Audio", audio: true },
+    { id: "heygen_avatar_v", label: "HeyGen Avatar V", audio: true },
+  ];
+
   const handleLaunch = async () => {
     setLaunching(true);
     trackEvent("onboarding_strategy_approved", {
@@ -1026,6 +1067,107 @@ function CalendarPhase({
                                 <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-purple-500/[0.06] border border-purple-500/10">
                                   <Sparkles className="w-3.5 h-3.5 text-purple-400 mt-0.5 flex-shrink-0" />
                                   <p className="text-[12px] text-purple-300/80">{day.whyThisWorks}</p>
+                                </div>
+
+                                {/* Format + Model + Post-Process selectors */}
+                                <div className="grid grid-cols-2 gap-3">
+                                  {/* Format selector */}
+                                  <div>
+                                    <div className="text-[10px] text-white/20 uppercase tracking-wider mb-1">Format</div>
+                                    <select
+                                      value={day.format || "talking_head_15"}
+                                      onChange={(e) => updateDaySetting(globalIndex, "format", e.target.value)}
+                                      className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-[11px] text-white/60 focus:outline-none focus:border-indigo-500/30 appearance-none cursor-pointer"
+                                    >
+                                      {FORMAT_OPTIONS.map((f) => (
+                                        <option key={f.id} value={f.id}>
+                                          {f.label} ({f.cuts} cuts, ~${f.cost})
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+
+                                  {/* Model selector */}
+                                  <div>
+                                    <div className="text-[10px] text-white/20 uppercase tracking-wider mb-1">Model</div>
+                                    <select
+                                      value={day.model || "kling_2.6"}
+                                      onChange={(e) => updateDaySetting(globalIndex, "model", e.target.value)}
+                                      className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-[11px] text-white/60 focus:outline-none focus:border-indigo-500/30 appearance-none cursor-pointer"
+                                    >
+                                      {MODEL_OPTIONS.map((m) => (
+                                        <option key={m.id} value={m.id}>
+                                          {m.label}{m.audio ? " *" : ""}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                </div>
+
+                                {/* Format preview — visual cut timeline */}
+                                {(() => {
+                                  const fmt = FORMAT_OPTIONS.find((f) => f.id === (day.format || "talking_head_15"));
+                                  if (!fmt) return null;
+                                  return (
+                                    <div className="flex items-center gap-0.5">
+                                      {Array.from({ length: fmt.cuts }).map((_, i) => (
+                                        <div
+                                          key={i}
+                                          className="h-1.5 rounded-full bg-indigo-500/30"
+                                          style={{ flex: 1 }}
+                                        />
+                                      ))}
+                                      <span className="text-[9px] text-white/15 ml-2">
+                                        {fmt.cuts} cut{fmt.cuts > 1 ? "s" : ""} ~${fmt.cost}
+                                      </span>
+                                    </div>
+                                  );
+                                })()}
+
+                                {/* Post-processing toggles */}
+                                <div className="flex items-center gap-4">
+                                  <label className="flex items-center gap-1.5 text-[10px] text-white/30 cursor-pointer">
+                                    <input
+                                      type="checkbox"
+                                      checked={day.postProcess?.upscale ?? false}
+                                      onChange={(e) => updateDaySetting(globalIndex, "postProcess", {
+                                        ...day.postProcess,
+                                        upscale: e.target.checked,
+                                        captions: day.postProcess?.captions ?? false,
+                                        speedCorrect: day.postProcess?.speedCorrect ?? false,
+                                      })}
+                                      className="rounded border-white/[0.15] bg-white/[0.04] text-indigo-500 focus:ring-0 w-3 h-3"
+                                    />
+                                    Upscale 2x
+                                  </label>
+                                  <label className="flex items-center gap-1.5 text-[10px] text-white/30 cursor-pointer">
+                                    <input
+                                      type="checkbox"
+                                      checked={day.postProcess?.captions ?? false}
+                                      onChange={(e) => updateDaySetting(globalIndex, "postProcess", {
+                                        ...day.postProcess,
+                                        upscale: day.postProcess?.upscale ?? false,
+                                        captions: e.target.checked,
+                                        speedCorrect: day.postProcess?.speedCorrect ?? false,
+                                      })}
+                                      className="rounded border-white/[0.15] bg-white/[0.04] text-indigo-500 focus:ring-0 w-3 h-3"
+                                    />
+                                    Auto captions
+                                  </label>
+                                  <label className="flex items-center gap-1.5 text-[10px] text-white/30 cursor-pointer">
+                                    <input
+                                      type="checkbox"
+                                      checked={day.postProcess?.speedCorrect ?? false}
+                                      onChange={(e) => updateDaySetting(globalIndex, "postProcess", {
+                                        ...day.postProcess,
+                                        upscale: day.postProcess?.upscale ?? false,
+                                        captions: day.postProcess?.captions ?? false,
+                                        speedCorrect: e.target.checked,
+                                      })}
+                                      className="rounded border-white/[0.15] bg-white/[0.04] text-indigo-500 focus:ring-0 w-3 h-3"
+                                    />
+                                    Speed correct
+                                  </label>
                                 </div>
 
                                 {/* Actions */}
