@@ -4,6 +4,13 @@ export interface CompetitorRow {
   official: string;
 }
 
+export interface CompetitorStat {
+  value: string;
+  label: string;
+  caption?: string;
+  accent?: "utility" | "special" | "mix";
+}
+
 export interface Competitor {
   slug: string;
   name: string;
@@ -17,6 +24,8 @@ export interface Competitor {
   whereItFalls: string;
   // Differentiator pitch
   whyOfficial: string[];
+  // Featured stats — Official AI's advantages, shown under hero
+  featuredStats: CompetitorStat[];
   // Comparison rows
   rows: CompetitorRow[];
   // FAQs
@@ -43,6 +52,26 @@ export const competitors: Competitor[] = [
       "Auto-posts to LinkedIn, TikTok, Instagram, YouTube Shorts, and X",
       "Flat $79/mo replaces a $300+/mo HeyGen Creator plan plus your scheduling stack",
       "Built for personal brands, not enterprise marketing departments",
+    ],
+    featuredStats: [
+      {
+        value: "30",
+        label: "Videos / month",
+        caption: "vs 10 on HeyGen Creator",
+        accent: "utility",
+      },
+      {
+        value: "5 min",
+        label: "Setup",
+        caption: "vs 30+ min per video on HeyGen",
+        accent: "mix",
+      },
+      {
+        value: "$79",
+        label: "Flat / month",
+        caption: "Replaces $300+/mo HeyGen + scheduler",
+        accent: "special",
+      },
     ],
     rows: [
       { label: "Starting price", competitor: "$29/mo (limited)", official: "$79/mo" },
@@ -84,6 +113,26 @@ export const competitors: Competitor[] = [
       "$79 flat replaces $90+/mo Synthesia plus a separate scheduler",
       "5-minute setup vs. building a stock-avatar library",
     ],
+    featuredStats: [
+      {
+        value: "30",
+        label: "Videos / month",
+        caption: "vs 10 minutes on Synthesia entry tier",
+        accent: "utility",
+      },
+      {
+        value: "9:16",
+        label: "Vertical format",
+        caption: "Built for short-form, not landscape training",
+        accent: "mix",
+      },
+      {
+        value: "1 photo",
+        label: "Personal twin",
+        caption: "Built from one selfie, no stock library",
+        accent: "special",
+      },
+    ],
     rows: [
       { label: "Starting price", competitor: "$29/mo (10 min)", official: "$79/mo (30 videos)" },
       { label: "Format focus", competitor: "Landscape training", official: "Vertical short-form" },
@@ -123,6 +172,26 @@ export const competitors: Competitor[] = [
       "Auto-posts across five platforms",
       "Predictable flat $79/mo, not per-seat creator pricing",
     ],
+    featuredStats: [
+      {
+        value: "0 min",
+        label: "Filming time",
+        caption: "Your AI twin records — never press play",
+        accent: "utility",
+      },
+      {
+        value: "Full",
+        label: "Talking avatar",
+        caption: "Not lip-sync only like Captions",
+        accent: "mix",
+      },
+      {
+        value: "5",
+        label: "Platforms auto-posted",
+        caption: "Captions stops at the export button",
+        accent: "special",
+      },
+    ],
     rows: [
       { label: "Requires you to film", competitor: "yes", official: "no" },
       { label: "AI avatar of you", competitor: "Limited (lip-sync only)", official: "Full talking avatar" },
@@ -156,6 +225,26 @@ export const competitors: Competitor[] = [
       "Optimized for vertical 30-60s short-form",
       "Auto-posting to LinkedIn, TikTok, IG, YT Shorts, X",
       "No editing skills required",
+    ],
+    featuredStats: [
+      {
+        value: "0 files",
+        label: "Source needed",
+        caption: "Generates net-new — no recordings to edit",
+        accent: "utility",
+      },
+      {
+        value: "9:16",
+        label: "Short-form first",
+        caption: "Built for vertical 30-60s, not long-form",
+        accent: "mix",
+      },
+      {
+        value: "None",
+        label: "Editing skill",
+        caption: "No timeline, no waveforms, no learning curve",
+        accent: "special",
+      },
     ],
     rows: [
       { label: "Generates net-new video", competitor: "no", official: "yes" },
@@ -191,6 +280,26 @@ export const competitors: Competitor[] = [
       "Auto-posting and scheduling included",
       "One flat plan, no enterprise quote needed",
     ],
+    featuredStats: [
+      {
+        value: "Yours",
+        label: "Avatar built from",
+        caption: "Your photos — not a stock library presenter",
+        accent: "utility",
+      },
+      {
+        value: "60s",
+        label: "Voice clone sample",
+        caption: "Cloned and included on every plan",
+        accent: "mix",
+      },
+      {
+        value: "$79",
+        label: "Flat / month",
+        caption: "Transparent — no enterprise quote needed",
+        accent: "special",
+      },
+    ],
     rows: [
       { label: "Personal avatar (your face)", competitor: "Limited", official: "yes" },
       { label: "Voice cloning", competitor: "Premium add-on", official: "Included" },
@@ -223,6 +332,26 @@ export const competitors: Competitor[] = [
       "End-to-end pipeline: script → video → caption → publish",
       "Built-in social scheduling on five platforms",
       "Designed for non-technical solo professionals",
+    ],
+    featuredStats: [
+      {
+        value: "0 lines",
+        label: "Code required",
+        caption: "No API, no prompt engineering, no devs",
+        accent: "utility",
+      },
+      {
+        value: "End-to-end",
+        label: "Pipeline",
+        caption: "Script → video → caption → publish",
+        accent: "mix",
+      },
+      {
+        value: "5",
+        label: "Platforms scheduled",
+        caption: "Built-in posting where D-ID stops at the API",
+        accent: "special",
+      },
     ],
     rows: [
       { label: "Requires technical setup", competitor: "yes", official: "no" },

@@ -16,6 +16,7 @@ import HeroAurora from "@/components/marketing/HeroAurora";
 import GradientText from "@/components/marketing/GradientText";
 import PageBackdrop from "@/components/marketing/PageBackdrop";
 import GlowBlob from "@/components/marketing/GlowBlob";
+import StatCard from "@/components/marketing/StatCard";
 import Eyebrow from "@/components/marketing/Eyebrow";
 import { staggerChildren, fadeUp } from "@/lib/motion-variants";
 import { competitors, type Competitor } from "@/data/competitors";
@@ -57,7 +58,7 @@ export default function CompetitorCompareClient({
         eyebrow={`Official AI vs ${competitor.name}`}
         eyebrowIcon={Scale}
         eyebrowVariant="utility"
-        spacing="pt-32 pb-16"
+        spacing="pt-32 pb-12"
         headline={
           <>
             <span className="text-white">Official AI vs </span>
@@ -66,6 +67,27 @@ export default function CompetitorCompareClient({
         }
         description={competitor.hookSub}
       />
+
+      {/* Featured stats strip */}
+      {competitor.featuredStats && competitor.featuredStats.length > 0 && (
+        <section className="relative px-6 -mt-2 pb-16">
+          <div className="max-w-5xl mx-auto">
+            <FadeIn>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
+                {competitor.featuredStats.map((stat, i) => (
+                  <StatCard
+                    key={i}
+                    value={stat.value}
+                    label={stat.label}
+                    caption={stat.caption}
+                    accent={stat.accent ?? "mix"}
+                  />
+                ))}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+      )}
 
       {/* Positioning — two glass cards */}
       <FadeIn>
