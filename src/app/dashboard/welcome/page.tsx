@@ -26,6 +26,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import SessionProvider from "@/components/SessionProvider";
+import SocialConnect from "@/components/onboarding/SocialConnect";
 
 // ─── Types ────────────────────────────────────────────────────────
 
@@ -58,11 +59,15 @@ interface CalendarDay {
   date: string;
   topic: string;
   hook: string;
-  scriptOutline: string;
+  script?: string;
+  scriptOutline?: string;
+  caption?: string;
+  hashtags?: string[];
   platform: string;
   contentType: string;
   category: string;
   whyThisWorks: string;
+  bestPostingTime?: string;
 }
 
 interface AgentStatus<T> {
@@ -79,7 +84,21 @@ interface ResearchStatus {
   calendar: AgentStatus<CalendarDay[]>;
 }
 
-type Phase = "input" | "researching" | "calendar";
+type Phase = "input" | "researching" | "calendar" | "social_connect";
+
+interface IntakeFormData {
+  industry: string;
+  companyName: string;
+  websiteUrl: string;
+  geography: string;
+  idealClient: string;
+  keyServices: string[];
+  differentiator: string;
+  postingFrequency: string;
+  platforms: string[];
+  tone: string;
+  socialHandles: { platform: string; handle: string }[];
+}
 
 // ─── Constants ────────────────────────────────────────────────────
 
@@ -125,142 +144,256 @@ function trackEvent(event: string, metadata?: Record<string, unknown>) {
   }).catch(() => {});
 }
 
-// ─── Phase 1: Input ───────────────────────────────────────────────
+// ─── Shared input styling ─────────────────────────────────────────
+
+const inputClass = "w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition-all";
+
+const PLATFORM_OPTIONS = [
+  { id: "instagram", label: "Instagram", emoji: "\uD83D\uDCF7" },
+  { id: "tiktok", label: "TikTok", emoji: "\uD83C\uDFB5" },
+  { id: "linkedin", label: "LinkedIn", emoji: "\uD83D\uDCBC" },
+  { id: "youtube", label: "YouTube", emoji: "\u25B6\uFE0F" },
+  { id: "facebook", label: "Facebook", emoji: "\uD83D\uDC4D" },
+];
+
+const FREQUENCY_OPTIONS = [
+  { value: "3x_week", label: "3x / week" },
+  { value: "5x_week", label: "5x / week" },
+  { value: "daily", label: "Daily" },
+];
+
+// ─── Phase 1: Multi-Screen Intake ─────────────────────────────────
 
 function InputPhase({
   onLaunch,
 }: {
-  onLaunch: (data: { industry: string; companyName: string; websiteUrl: string }) => void;
+  onLaunch: (data: IntakeFormData) => void;
 }) {
+  const [screen, setScreen] = useState<1 | 2 | 3>(1);
+  const [launching, setLaunching] = useState(false);
+
+  // Screen A: Business
   const [industry, setIndustry] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
-  const [launching, setLaunching] = useState(false);
+  const [geography, setGeography] = useState("");
 
-  const canLaunch = industry && companyName.trim().length > 0;
+  // Screen B: Audience
+  const [idealClient, setIdealClient] = useState("");
+  const [keyServices, setKeyServices] = useState("");
+  const [differentiator, setDifferentiator] = useState("");
+
+  // Screen C: Goals
+  const [postingFrequency, setPostingFrequency] = useState("daily");
+  const [platforms, setPlatforms] = useState<string[]>(["instagram", "linkedin"]);
+  const [tone, setTone] = useState(50); // 0=formal, 100=casual
+  const [igHandle, setIgHandle] = useState("");
+  const [liHandle, setLiHandle] = useState("");
+
+  const canNextA = industry && companyName.trim().length > 0;
+  const canLaunch = canNextA;
+
+  const togglePlatform = (id: string) => {
+    setPlatforms((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
+  };
 
   const handleLaunch = () => {
     if (!canLaunch || launching) return;
     setLaunching(true);
-    onLaunch({ industry: industry!, companyName: companyName.trim(), websiteUrl: websiteUrl.trim() });
+
+    const socialHandles: { platform: string; handle: string }[] = [];
+    if (igHandle.trim()) socialHandles.push({ platform: "instagram", handle: igHandle.trim() });
+    if (liHandle.trim()) socialHandles.push({ platform: "linkedin", handle: liHandle.trim() });
+
+    onLaunch({
+      industry: industry!,
+      companyName: companyName.trim(),
+      websiteUrl: websiteUrl.trim(),
+      geography: geography.trim(),
+      idealClient: idealClient.trim(),
+      keyServices: keyServices.trim() ? keyServices.split(",").map((s) => s.trim()).filter(Boolean) : [],
+      differentiator: differentiator.trim(),
+      postingFrequency,
+      platforms,
+      tone: tone < 33 ? "formal" : tone < 66 ? "professional" : "casual",
+      socialHandles,
+    });
   };
+
+  const screenTitles = {
+    1: { emoji: "\uD83C\uDFE2", title: "Your Business", sub: "Tell us who you are so our AI can research you." },
+    2: { emoji: "\uD83C\uDFAF", title: "Your Audience", sub: "Help us understand who you serve." },
+    3: { emoji: "\uD83D\uDE80", title: "Your Content Goals", sub: "How do you want to show up on social?" },
+  };
+
+  const { emoji, title, sub } = screenTitles[screen];
 
   return (
     <div className="min-h-screen bg-[#060610] flex items-center justify-center px-4">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-lg space-y-8"
+        key={screen}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-lg space-y-7"
       >
-        <div className="text-center space-y-3">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
-            className="text-5xl"
-          >
-            🎉
-          </motion.div>
-          <h1 className="text-[28px] font-extrabold text-white tracking-tight">
-            Welcome to Official AI
-          </h1>
-          <p className="text-[14px] text-white/40 font-medium">
-            Tell us who you are. Our AI will build your entire content strategy.
-          </p>
+        {/* Progress dots */}
+        <div className="flex items-center justify-center gap-2">
+          {[1, 2, 3].map((s) => (
+            <div
+              key={s}
+              className={`h-1.5 rounded-full transition-all ${
+                s === screen ? "w-8 bg-indigo-500" : s < screen ? "w-4 bg-indigo-500/40" : "w-4 bg-white/[0.08]"
+              }`}
+            />
+          ))}
         </div>
 
-        {/* Industry grid */}
-        <div className="space-y-3">
-          <label className="flex items-center gap-2 text-[13px] font-semibold text-white/50">
-            <Briefcase className="w-3.5 h-3.5" />
-            What industry are you in?
-          </label>
-          <div className="grid grid-cols-3 gap-2">
-            {INDUSTRIES.map((ind) => (
-              <motion.button
-                key={ind.value}
-                onClick={() => setIndustry(ind.value)}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border transition-all text-center ${
-                  industry === ind.value
-                    ? "border-indigo-500/50 bg-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]"
-                    : "border-white/[0.07] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04]"
-                }`}
-              >
-                <span className="text-[18px]">{ind.emoji}</span>
-                <span className={`text-[11px] font-semibold leading-tight ${
-                  industry === ind.value ? "text-indigo-300" : "text-white/40"
-                }`}>
-                  {ind.label}
-                </span>
-              </motion.button>
-            ))}
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <span className="text-3xl">{emoji}</span>
+          <h1 className="text-[24px] font-extrabold text-white tracking-tight">{title}</h1>
+          <p className="text-[14px] text-white/40 font-medium">{sub}</p>
+        </div>
+
+        {/* ── Screen A: Business ── */}
+        {screen === 1 && (
+          <div className="space-y-5">
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 text-[13px] font-semibold text-white/50">
+                <Briefcase className="w-3.5 h-3.5" /> Industry
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {INDUSTRIES.map((ind) => (
+                  <motion.button key={ind.value} onClick={() => setIndustry(ind.value)} whileTap={{ scale: 0.97 }}
+                    className={`flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl border text-center transition-all ${
+                      industry === ind.value
+                        ? "border-indigo-500/50 bg-indigo-500/10"
+                        : "border-white/[0.07] bg-white/[0.02] hover:border-white/[0.15]"
+                    }`}>
+                    <span className="text-[16px]">{ind.emoji}</span>
+                    <span className={`text-[10px] font-semibold ${industry === ind.value ? "text-indigo-300" : "text-white/40"}`}>{ind.label}</span>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-[13px] font-semibold text-white/50"><Building2 className="w-3.5 h-3.5" /> Business name</label>
+              <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="e.g. Smith & Associates" className={inputClass} />
+            </div>
+
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-[13px] font-semibold text-white/50"><Globe className="w-3.5 h-3.5" /> Website <span className="text-white/20 font-normal">(helps AI research you)</span></label>
+              <input type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://yoursite.com" className={inputClass} />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[13px] font-semibold text-white/50">Geographic market</label>
+              <input type="text" value={geography} onChange={(e) => setGeography(e.target.value)} placeholder="e.g. Beverly Hills, CA" className={inputClass} />
+            </div>
+
+            <motion.button onClick={() => setScreen(2)} disabled={!canNextA} whileHover={canNextA ? { scale: 1.02 } : {}} whileTap={canNextA ? { scale: 0.97 } : {}}
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-[14px] font-bold text-white disabled:opacity-30 transition-all"
+              style={canNextA ? { background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 60%, #06b6d4 100%)", boxShadow: "0 0 20px rgba(99,102,241,0.3)" } : { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              Next <ArrowRight className="w-4 h-4" />
+            </motion.button>
           </div>
-        </div>
+        )}
 
-        {/* Company name */}
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-[13px] font-semibold text-white/50">
-            <Building2 className="w-3.5 h-3.5" />
-            Your business name
-          </label>
-          <input
-            type="text"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            placeholder="e.g. Smith & Associates"
-            className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition-all"
-            onKeyDown={(e) => e.key === "Enter" && handleLaunch()}
-          />
-        </div>
+        {/* ── Screen B: Audience ── */}
+        {screen === 2 && (
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-[13px] font-semibold text-white/50">Who is your ideal client?</label>
+              <input type="text" value={idealClient} onChange={(e) => setIdealClient(e.target.value)} placeholder="e.g. First-time homebuyers in their 30s" className={inputClass} />
+            </div>
 
-        {/* Website URL */}
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-[13px] font-semibold text-white/50">
-            <Globe className="w-3.5 h-3.5" />
-            Website <span className="text-white/20 font-normal">(optional — helps AI research you)</span>
-          </label>
-          <input
-            type="url"
-            value={websiteUrl}
-            onChange={(e) => setWebsiteUrl(e.target.value)}
-            placeholder="e.g. https://smithrealty.com"
-            className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition-all"
-            onKeyDown={(e) => e.key === "Enter" && handleLaunch()}
-          />
-        </div>
+            <div className="space-y-2">
+              <label className="text-[13px] font-semibold text-white/50">Key services <span className="text-white/20 font-normal">(comma-separated)</span></label>
+              <input type="text" value={keyServices} onChange={(e) => setKeyServices(e.target.value)} placeholder="e.g. Luxury residential, investment properties, relocation" className={inputClass} />
+            </div>
 
-        {/* Launch CTA */}
-        <motion.button
-          onClick={handleLaunch}
-          disabled={!canLaunch || launching}
-          whileHover={canLaunch && !launching ? { scale: 1.02 } : {}}
-          whileTap={canLaunch && !launching ? { scale: 0.97 } : {}}
-          className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl text-[15px] font-bold text-white disabled:opacity-35 disabled:cursor-not-allowed transition-all"
-          style={
-            canLaunch
-              ? {
-                  background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 60%, #06b6d4 100%)",
-                  boxShadow: "0 0 25px rgba(99,102,241,0.35)",
-                }
-              : {
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }
-          }
-        >
-          {launching ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <>
-              <Sparkles className="w-4 h-4" />
-              Build my content strategy
-              <ArrowRight className="w-4 h-4" />
-            </>
-          )}
-        </motion.button>
+            <div className="space-y-2">
+              <label className="text-[13px] font-semibold text-white/50">What makes you different?</label>
+              <textarea value={differentiator} onChange={(e) => setDifferentiator(e.target.value)} placeholder="e.g. 15 years in Beverly Hills, known for off-market deals and white-glove service" rows={3}
+                className={`${inputClass} resize-none`} />
+            </div>
+
+            <div className="flex gap-3">
+              <button onClick={() => setScreen(1)} className="flex items-center gap-1.5 px-4 py-3 rounded-xl text-[13px] text-white/40 hover:text-white/60 border border-white/[0.06] transition-all">
+                <ArrowLeft className="w-3.5 h-3.5" /> Back
+              </button>
+              <motion.button onClick={() => setScreen(3)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-[14px] font-bold text-white transition-all"
+                style={{ background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 60%, #06b6d4 100%)", boxShadow: "0 0 20px rgba(99,102,241,0.3)" }}>
+                Next <ArrowRight className="w-4 h-4" />
+              </motion.button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Screen C: Goals ── */}
+        {screen === 3 && (
+          <div className="space-y-5">
+            <div className="space-y-3">
+              <label className="text-[13px] font-semibold text-white/50">Posting frequency</label>
+              <div className="flex gap-2">
+                {FREQUENCY_OPTIONS.map((f) => (
+                  <button key={f.value} onClick={() => setPostingFrequency(f.value)}
+                    className={`flex-1 py-2.5 rounded-xl text-[12px] font-semibold border transition-all ${
+                      postingFrequency === f.value ? "border-indigo-500/40 bg-indigo-500/10 text-indigo-300" : "border-white/[0.06] text-white/30 hover:border-white/[0.12]"
+                    }`}>{f.label}</button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-[13px] font-semibold text-white/50">Platforms to post on</label>
+              <div className="flex flex-wrap gap-2">
+                {PLATFORM_OPTIONS.map((p) => (
+                  <button key={p.id} onClick={() => togglePlatform(p.id)}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold border transition-all ${
+                      platforms.includes(p.id) ? "border-indigo-500/40 bg-indigo-500/10 text-indigo-300" : "border-white/[0.06] text-white/30 hover:border-white/[0.12]"
+                    }`}>
+                    <span>{p.emoji}</span> {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[13px] font-semibold text-white/50">Tone</label>
+              <div className="flex items-center gap-3">
+                <span className="text-[11px] text-white/25">Formal</span>
+                <input type="range" min={0} max={100} value={tone} onChange={(e) => setTone(Number(e.target.value))}
+                  className="flex-1 h-1.5 rounded-full appearance-none bg-white/[0.08] accent-indigo-500" />
+                <span className="text-[11px] text-white/25">Casual</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[13px] font-semibold text-white/50">Social handles <span className="text-white/20 font-normal">(optional — helps analyze your existing content)</span></label>
+              <div className="grid grid-cols-2 gap-2">
+                <input type="text" value={igHandle} onChange={(e) => setIgHandle(e.target.value)} placeholder="@instagram" className={inputClass} />
+                <input type="text" value={liHandle} onChange={(e) => setLiHandle(e.target.value)} placeholder="linkedin.com/in/..." className={inputClass} />
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button onClick={() => setScreen(2)} className="flex items-center gap-1.5 px-4 py-3 rounded-xl text-[13px] text-white/40 hover:text-white/60 border border-white/[0.06] transition-all">
+                <ArrowLeft className="w-3.5 h-3.5" /> Back
+              </button>
+              <motion.button onClick={handleLaunch} disabled={launching} whileHover={!launching ? { scale: 1.02 } : {}} whileTap={!launching ? { scale: 0.97 } : {}}
+                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl text-[14px] font-bold text-white disabled:opacity-50 transition-all"
+                style={{ background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 60%, #06b6d4 100%)", boxShadow: "0 0 25px rgba(99,102,241,0.35)" }}>
+                {launching ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Sparkles className="w-4 h-4" /> Build my content strategy</>}
+              </motion.button>
+            </div>
+          </div>
+        )}
       </motion.div>
     </div>
   );
@@ -497,10 +630,12 @@ function CalendarPhase({
   calendar: initialCalendar,
   business,
   sessionId,
+  onLaunch,
 }: {
   calendar: CalendarDay[];
   business: BusinessResult | null;
   sessionId: string | null;
+  onLaunch: () => void;
 }) {
   const router = useRouter();
   const [calendar, setCalendar] = useState<CalendarDay[]>(initialCalendar);
@@ -511,7 +646,7 @@ function CalendarPhase({
   const [launching, setLaunching] = useState(false);
   const [regeneratingDay, setRegeneratingDay] = useState<number | null>(null);
   const [editingDay, setEditingDay] = useState<number | null>(null);
-  const [editDraft, setEditDraft] = useState<{ hook: string; scriptOutline: string }>({ hook: "", scriptOutline: "" });
+  const [editDraft, setEditDraft] = useState<{ hook: string; script: string }>({ hook: "", script: "" });
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounced save of approved days to API (saves 1s after last toggle)
@@ -574,7 +709,7 @@ function CalendarPhase({
 
   const startEdit = (dayIndex: number) => {
     const day = calendar[dayIndex];
-    setEditDraft({ hook: day.hook, scriptOutline: day.scriptOutline });
+    setEditDraft({ hook: day.hook, script: day.script || day.scriptOutline || "" });
     setEditingDay(dayIndex);
   };
 
@@ -582,13 +717,13 @@ function CalendarPhase({
     if (editingDay === null) return;
     setCalendar((prev) => {
       const next = [...prev];
-      next[editingDay] = { ...next[editingDay], hook: editDraft.hook, scriptOutline: editDraft.scriptOutline };
+      next[editingDay] = { ...next[editingDay], hook: editDraft.hook, script: editDraft.script, scriptOutline: editDraft.script };
       return next;
     });
     // Persist to DB if session exists
     if (sessionId) {
       const updated = [...calendar];
-      updated[editingDay] = { ...updated[editingDay], hook: editDraft.hook, scriptOutline: editDraft.scriptOutline };
+      updated[editingDay] = { ...updated[editingDay], hook: editDraft.hook, script: editDraft.script, scriptOutline: editDraft.script };
       fetch("/api/research/approve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -618,13 +753,17 @@ function CalendarPhase({
       }).catch(() => {});
     }
 
-    // Mark onboarding complete
-    try {
-      await fetch("/api/onboarding/complete", { method: "POST" });
-      router.push("/dashboard");
-    } catch {
-      setLaunching(false);
+    // Fire batch video generation in background
+    if (sessionId) {
+      fetch("/api/generate/batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, approvedDays: Array.from(approvedDays) }),
+      }).catch(() => {}); // Non-blocking — videos generate while user connects socials
     }
+
+    // Go to social connect phase
+    onLaunch();
   };
 
   // Group by week
@@ -842,8 +981,8 @@ function CalendarPhase({
                                 <div>
                                   <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Script Outline</div>
                                   <textarea
-                                    value={editDraft.scriptOutline}
-                                    onChange={(e) => setEditDraft((d) => ({ ...d, scriptOutline: e.target.value }))}
+                                    value={editDraft.script}
+                                    onChange={(e) => setEditDraft((d) => ({ ...d, script: e.target.value }))}
                                     rows={4}
                                     className="w-full px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-[13px] text-white/60 leading-relaxed resize-none focus:outline-none focus:border-indigo-500/30 transition-all"
                                   />
@@ -879,8 +1018,8 @@ function CalendarPhase({
 
                                 {/* Script outline (read-only) */}
                                 <div>
-                                  <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Script Outline</div>
-                                  <p className="text-[13px] text-white/60 leading-relaxed">{day.scriptOutline}</p>
+                                  <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Script</div>
+                                  <p className="text-[13px] text-white/60 leading-relaxed">{day.script || day.scriptOutline}</p>
                                 </div>
 
                                 {/* Why this works */}
@@ -1080,6 +1219,7 @@ function CalendarGrid({
 // ─── Main Orchestrator ────────────────────────────────────────────
 
 function WelcomeFlow() {
+  const router = useRouter();
   const [phase, setPhase] = useState<Phase>("input");
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [research, setResearch] = useState<ResearchStatus | null>(null);
@@ -1134,7 +1274,7 @@ function WelcomeFlow() {
     pollRef.current = setInterval(poll, 2000);
   }, [stopPolling]);
 
-  const handleLaunch = async (data: { industry: string; companyName: string; websiteUrl: string }) => {
+  const handleLaunch = async (data: IntakeFormData) => {
     trackEvent("onboarding_research_launched", { industry: data.industry });
     setPhase("researching");
 
@@ -1151,13 +1291,22 @@ function WelcomeFlow() {
       pollStatus(sid);
     } catch (e) {
       console.error("Failed to launch research:", e);
-      setPhase("input"); // Revert to input on failure
+      setPhase("input");
     }
   };
 
   const handleResearchComplete = () => {
     trackEvent("onboarding_strategy_reviewed");
     setPhase("calendar");
+  };
+
+  const handleCalendarLaunch = () => {
+    setPhase("social_connect");
+  };
+
+  const handleSocialComplete = async () => {
+    await fetch("/api/onboarding/complete", { method: "POST" }).catch(() => {});
+    router.push("/dashboard");
   };
 
   const handleBack = () => {
@@ -1190,7 +1339,16 @@ function WelcomeFlow() {
         calendar={research.calendar.result}
         business={research.business.result}
         sessionId={sessionId}
+        onLaunch={handleCalendarLaunch}
       />
+    );
+  }
+
+  if (phase === "social_connect") {
+    return (
+      <div className="min-h-screen bg-[#060610] flex items-center justify-center px-4">
+        <SocialConnect onComplete={handleSocialComplete} />
+      </div>
     );
   }
 
