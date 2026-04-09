@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Target, Lightbulb, Eye, Users } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, Target, Lightbulb, Eye, Users, Sparkles } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
-import CTASection from "@/components/marketing/CTASection";
 import HeroAurora from "@/components/marketing/HeroAurora";
 import GradientText from "@/components/marketing/GradientText";
 import PageBackdrop from "@/components/marketing/PageBackdrop";
+import GlowBlob from "@/components/marketing/GlowBlob";
+import StatCard from "@/components/marketing/StatCard";
 import FadeIn from "@/components/motion/FadeIn";
+import { staggerChildren, fadeUp } from "@/lib/motion-variants";
 
 const team = [
   {
@@ -75,6 +78,36 @@ export default function AboutClient() {
           </>
         }
         description="Official AI exists because the best experts in every field are invisible online. We are changing that."
+        belowActions={
+          <div className="w-full max-w-3xl mx-auto">
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { value: "73%", label: "should post more", accent: "utility" as const },
+                { value: "91%", label: "cite no time", accent: "special" as const },
+                { value: "4×", label: "more leads weekly", accent: "mix" as const },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className="relative p-4 rounded-2xl card-hairline overflow-hidden text-center"
+                >
+                  <div
+                    className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${
+                      s.accent === "utility"
+                        ? "from-utility-400/40 via-utility-400/15 to-transparent"
+                        : s.accent === "special"
+                          ? "from-special-500/40 via-special-500/15 to-transparent"
+                          : "from-utility-400/30 via-special-500/20 to-transparent"
+                    }`}
+                  />
+                  <div className="text-h3 sm:text-h2 font-bold tracking-tight text-white leading-none mb-1">
+                    <GradientText tone="white">{s.value}</GradientText>
+                  </div>
+                  <div className="text-p3 text-white/45">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        }
       />
 
 
@@ -205,7 +238,7 @@ export default function AboutClient() {
                       key={i}
                       className="flex items-center gap-2.5 text-p3 text-white/20"
                     >
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-400/40" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-negative-400/50" />
                       {item}
                     </li>
                   ))}
@@ -226,7 +259,7 @@ export default function AboutClient() {
                       key={i}
                       className="flex items-center gap-2.5 text-p3 text-white/40"
                     >
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-positive-400" />
                       {item}
                     </li>
                   ))}
@@ -276,10 +309,10 @@ export default function AboutClient() {
           <div className="mt-10">
             <Link
               href="/how-it-works"
-              className="inline-flex items-center gap-2 text-p2 text-blue-400/70 hover:text-blue-400 transition-colors font-medium"
+              className="group inline-flex items-center gap-2 text-p2 text-utility-300 hover:text-utility-200 transition-colors font-semibold"
             >
               See the full technical breakdown
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
         </div>
@@ -297,40 +330,50 @@ export default function AboutClient() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <motion.div
+            variants={staggerChildren}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-5"
+          >
             {values.map((value, i) => (
-              <FadeIn key={i} delay={i * 0.06}>
-                <div className="group relative overflow-hidden p-6 rounded-2xl card-hairline transition-all duration-300 h-full">
-                  <div
-                    className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${
-                      i % 2 === 0
-                        ? "from-utility-400/40 via-utility-400/15 to-transparent"
-                        : "from-special-500/40 via-special-500/15 to-transparent"
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                whileHover={{ y: -3 }}
+                transition={{ duration: 0.25, ease: [0.25, 0.4, 0.25, 1] }}
+                className="group relative overflow-hidden p-6 rounded-2xl card-hairline h-full"
+              >
+                <div
+                  className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${
+                    i % 2 === 0
+                      ? "from-utility-400/40 via-utility-400/15 to-transparent"
+                      : "from-special-500/40 via-special-500/15 to-transparent"
+                  }`}
+                />
+                <div
+                  className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 border ${
+                    i % 2 === 0
+                      ? "bg-utility-400/[0.08] border-utility-400/25"
+                      : "bg-special-500/[0.08] border-special-500/25"
+                  }`}
+                >
+                  <value.icon
+                    className={`w-5 h-5 ${
+                      i % 2 === 0 ? "text-utility-300" : "text-special-300"
                     }`}
                   />
-                  <div
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 border ${
-                      i % 2 === 0
-                        ? "bg-utility-400/[0.08] border-utility-400/25"
-                        : "bg-special-500/[0.08] border-special-500/25"
-                    }`}
-                  >
-                    <value.icon
-                      className={`w-4 h-4 ${
-                        i % 2 === 0 ? "text-utility-300" : "text-special-300"
-                      }`}
-                    />
-                  </div>
-                  <h3 className="text-p1 font-semibold text-white/90 mb-2">
-                    {value.title}
-                  </h3>
-                  <p className="text-p2 text-white/45 leading-relaxed">
-                    {value.description}
-                  </p>
                 </div>
-              </FadeIn>
+                <h3 className="text-p1 font-semibold text-white/90 mb-2">
+                  {value.title}
+                </h3>
+                <p className="text-p2 text-white/45 leading-relaxed">
+                  {value.description}
+                </p>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -348,40 +391,89 @@ export default function AboutClient() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <motion.div
+            variants={staggerChildren}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+          >
             {team.map((member, i) => (
-              <FadeIn key={i} delay={i * 0.06}>
-                <div className="group relative overflow-hidden p-6 rounded-2xl card-hairline transition-all duration-300 h-full">
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-utility-400/30 via-special-500/15 to-transparent" />
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-utility-400/15 to-special-500/15 border border-white/[0.10] flex items-center justify-center mb-4">
-                    <span className="text-p2 font-bold text-white/70">
-                      {member.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </span>
-                  </div>
-                  <h3 className="text-p1 font-semibold text-white/90">
-                    {member.name}
-                  </h3>
-                  <p className="text-p3 text-utility-300/80 mb-3 font-semibold">
-                    {member.role}
-                  </p>
-                  <p className="text-p3 text-white/35 leading-relaxed">
-                    {member.bio}
-                  </p>
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                whileHover={{ y: -3 }}
+                transition={{ duration: 0.25, ease: [0.25, 0.4, 0.25, 1] }}
+                className="group relative overflow-hidden p-6 rounded-2xl card-hairline h-full"
+              >
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-utility-400/30 via-special-500/15 to-transparent" />
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-utility-400/20 to-special-500/20 border border-white/[0.12] flex items-center justify-center mb-4 group-hover:from-utility-400/30 group-hover:to-special-500/30 transition-colors">
+                  <span className="text-p1 font-bold text-white/85">
+                    {member.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </span>
                 </div>
-              </FadeIn>
+                <h3 className="text-p1 font-semibold text-white/90">
+                  {member.name}
+                </h3>
+                <p className="text-p3 text-utility-300/80 mb-3 font-semibold">
+                  {member.role}
+                </p>
+                <p className="text-p3 text-white/35 leading-relaxed">
+                  {member.bio}
+                </p>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      <CTASection
-        heading="Join us."
-        description="Start creating AI content that actually looks like you. No filming, no editing, no excuses."
-        badge="We are just getting started"
-      />
+      {/* CTA outro */}
+      <section className="relative py-28 px-6 border-t border-white/[0.04] overflow-hidden">
+        <GlowBlob color="special" size="xl" position="top" intensity={0.08} />
+        <GlowBlob color="utility" size="lg" position="bottom" intensity={0.06} />
+
+        <div className="relative max-w-3xl mx-auto text-center">
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-6">
+              <Sparkles className="w-3 h-3 text-utility-300" />
+              <span className="text-p3 text-white/60 font-medium">
+                We are just getting started
+              </span>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.05}>
+            <h2 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] text-white leading-[1.08] mb-5">
+              Join us.{" "}
+              <GradientText tone="brand">Make your expertise visible.</GradientText>
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+              Start creating AI content that actually looks like you. No filming, no editing, no excuses.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/auth/signup"
+                className="btn-cta-glow inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-p2 font-semibold hover:bg-white/90 transition-colors"
+              >
+                Start free
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/how-it-works"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.10] text-white/80 text-p2 font-semibold hover:bg-white/[0.04] hover:text-white transition-colors"
+              >
+                How it works
+              </Link>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
     </MarketingLayout>
   );
 }

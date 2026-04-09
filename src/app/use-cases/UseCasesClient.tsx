@@ -12,13 +12,14 @@ import {
   Clock,
   BarChart3,
   Layers,
+  Sparkles,
 } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
-import CTASection from "@/components/marketing/CTASection";
 import HeroAurora from "@/components/marketing/HeroAurora";
 import GradientText from "@/components/marketing/GradientText";
 import PageBackdrop from "@/components/marketing/PageBackdrop";
 import StatCard from "@/components/marketing/StatCard";
+import GlowBlob from "@/components/marketing/GlowBlob";
 import FadeIn from "@/components/motion/FadeIn";
 
 const useCases = [
@@ -397,11 +398,51 @@ export default function UseCasesClient() {
         </div>
       </section>
 
-      <CTASection
-        heading="Your industry. Your content. Automated."
-        description="Upload your photos and get your first AI video in under five minutes."
-        badge="Works for every professional industry"
-      />
+      {/* CTA outro */}
+      <section className="relative py-28 px-6 border-t border-white/[0.04] overflow-hidden">
+        <GlowBlob color="special" size="xl" position="top" intensity={0.08} />
+        <GlowBlob color="utility" size="lg" position="bottom" intensity={0.06} />
+
+        <div className="relative max-w-3xl mx-auto text-center">
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] mb-6">
+              <Sparkles className="w-3 h-3 text-utility-300" />
+              <span className="text-p3 text-white/60 font-medium">
+                Works for every professional industry
+              </span>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.05}>
+            <h2 className="text-h2 sm:text-h1 font-bold tracking-[-0.03em] text-white leading-[1.08] mb-5">
+              Your industry. Your content.{" "}
+              <GradientText tone="brand">Automated.</GradientText>
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+              Upload your photos and get your first AI video in under five
+              minutes.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/auth/signup"
+                className="btn-cta-glow inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black text-p2 font-semibold hover:bg-white/90 transition-colors"
+              >
+                Start free
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.10] text-white/80 text-p2 font-semibold hover:bg-white/[0.04] hover:text-white transition-colors"
+              >
+                See pricing
+              </Link>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
     </MarketingLayout>
   );
 }
