@@ -19,6 +19,8 @@ import { handleSubmitAllCuts } from "./cut-submit-all";
 import { handlePollAllCuts } from "./cut-poll-all";
 import { handleStitchSubmit } from "./stitch-submit";
 import { handleStitchPoll } from "./stitch-poll";
+import { handleHookGenerate } from "./hook-generate";
+import { handlePostProcess } from "./post-process";
 import type { StepResult } from "./types";
 
 /**
@@ -66,6 +68,12 @@ export async function runStep(
 
     case "poll_stitch":
       return handleStitchPoll(videoId, userId);
+
+    case "hook_generate":
+      return handleHookGenerate(videoId, userId);
+
+    case "post_process":
+      return handlePostProcess(videoId, userId);
 
     default:
       return { status: "error", error: `Unknown step: ${step}` };

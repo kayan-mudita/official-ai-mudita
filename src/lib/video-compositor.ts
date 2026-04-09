@@ -466,6 +466,27 @@ const FORMATS: Record<string, (script: string) => VideoFormat> = {
     ],
   }),
 
+  // ── Hook Only (single continuous 15s shot) ─────────────────────
+  "hook_only_15": (script: string) => ({
+    id: "hook_only_15",
+    name: "Hook Only (15s)",
+    description: "Single continuous 15-second hook — no cuts, no stitch. Cheapest and fastest format.",
+    totalDuration: 15,
+    startingFrameRequired: true,
+    cuts: [
+      {
+        index: 0,
+        type: "hook" as const,
+        duration: 15,
+        generateDuration: 15,
+        prompt: `SINGLE CONTINUOUS 15-SECOND SHOT. UGC-style selfie video. Person holds phone naturally at arm's length, direct eye contact with the lens, genuine energy, conversational tone. Natural room lighting with slight warmth. Slight handheld wobble — NOT stabilized. The person speaks directly to camera as if FaceTiming a friend. iPhone front-camera aesthetic, slight lens distortion. Background should feel lived-in and real (bedroom, bathroom, kitchen, car). NO studio lighting. NO professional framing. Raw, organic, authentic. ${script}`,
+        camera: "iPhone front-facing selfie, handheld, eye-level, slight wobble",
+        audio: `Person says: ${script}`,
+        notes: "15s single take. Must feel like real UGC, not produced content.",
+      },
+    ],
+  }),
+
   // ── Discovery Hook (AI hook + product B-roll + CTA) ────────────
   "discovery_hook": (script: string) => ({
     id: "discovery_hook",

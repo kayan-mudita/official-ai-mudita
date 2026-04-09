@@ -16,6 +16,10 @@ import prisma from "@/lib/prisma";
 import { planContent } from "./content-planner";
 import { parseMeta, stringifyMeta } from "./types";
 import type { StepResult } from "./types";
+import { buildStyleDirective } from "@/lib/reference-analyzer";
+
+// Formats that use the simplified hook-only pipeline path
+const HOOK_FORMATS = ["discovery_hook", "censored_hook", "hook_only_15"];
 
 export async function handleExpand(videoId: string, userId: string): Promise<StepResult> {
   const video = await prisma.video.findUnique({
@@ -44,8 +48,31 @@ export async function handleExpand(videoId: string, userId: string): Promise<Ste
     select: { industry: true },
   });
 
+  // Load reference template style if templateId is set
+  let referenceStyle: string | undefined;
+  if (meta.templateId) {
+    try {
+      const template = await prisma.videoTemplate.findFirst({
+        where: { id: meta.templateId, userId },
+        select: { analysisJson: true, sourceUrl: true },
+      });
+      if (template?.analysisJson) {
+        const analysis = JSON.parse(template.analysisJson);
+        referenceStyle = buildStyleDirective(analysis);
+        console.log(`[expand] Loaded reference style from template ${meta.templateId}`);
+      }
+    } catch (e) {
+      console.warn("[expand] Failed to load template reference:", e);
+    }
+  }
+
+  // Inject reference style into the script for the content planner
+  const scriptWithReference = referenceStyle
+    ? `${rawScript}\n\n${referenceStyle}`
+    : rawScript;
+
   // Use the unified content planner (single Gemini call)
-  const contentPlan = await planContent(rawScript, selectedFormat, userId, user?.industry);
+  const contentPlan = await planContent(scriptWithReference, selectedFormat, userId, user?.industry);
 
   // Store expanded prompts in the video's script field
   const allPrompts = contentPlan.cuts
@@ -73,9 +100,13 @@ export async function handleExpand(videoId: string, userId: string): Promise<Ste
     },
   });
 
+  // Route to hook_generate for single-shot formats (skip multi-cut pipeline)
+  const isHookFormat = HOOK_FORMATS.includes(selectedFormat) || meta.mode === "hook";
+  const nextStep = isHookFormat ? "hook_generate" : "tts";
+
   return {
     status: "expanded",
-    nextStep: "tts",
-    data: { totalCuts: contentPlan.totalCuts },
+    nextStep,
+    data: { totalCuts: contentPlan.totalCuts, isHookFormat },
   };
 }

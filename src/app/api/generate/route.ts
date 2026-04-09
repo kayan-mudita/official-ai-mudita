@@ -63,6 +63,9 @@ export async function POST(req: NextRequest) {
     }
 
     const { videoId, model, script, format, photoId, voiceId, workflow, workflowData } = validation.data;
+    const templateId = (body as any)?.templateId || null;
+    const mode = (body as any)?.mode || "full"; // "hook" | "full"
+    const postProcess = (body as any)?.postProcess || null;
     const selectedModel = model || "kling_2.6";
 
     // Resolve format from workflow if not explicitly provided
@@ -109,6 +112,27 @@ export async function POST(req: NextRequest) {
     const plan = planComposition(selectedFormat, rawScript);
 
     // Create/update video record
+    // Build initial pipeline metadata with templateId + mode + postProcess
+    const initialMeta: Record<string, unknown> = {};
+    if (templateId) initialMeta.templateId = templateId;
+    if (mode === "hook") initialMeta.mode = "hook";
+    if (postProcess) initialMeta.postProcess = postProcess;
+
+    // Load reference video URL from template if available
+    if (templateId) {
+      try {
+        const template = await prisma.videoTemplate.findFirst({
+          where: { id: templateId, userId: user.id },
+          select: { sourceUrl: true },
+        });
+        if (template) initialMeta.referenceVideoUrl = template.sourceUrl;
+      } catch {}
+    }
+
+    const sourceReview = Object.keys(initialMeta).length > 0
+      ? JSON.stringify(initialMeta)
+      : undefined;
+
     if (!video) {
       video = await prisma.video.create({
         data: {
@@ -122,6 +146,7 @@ export async function POST(req: NextRequest) {
           voiceId: voice?.id,
           status: "generating",
           duration: plan.format.totalDuration,
+          sourceReview: sourceReview || undefined,
         },
       });
     } else {
