@@ -42,17 +42,40 @@ interface ChatMessage {
 
 const modelLabels: Record<string, string> = {
   "kling_2.6": "Kling 2.6",
-  "seedance_2.0": "Seedance 2.0",
+  "kling_v3": "Kling 3.0",
+  "kling_v3_audio": "Kling 3.0 + Audio",
+  "veo_3": "Veo 3 + Audio",
+  "veo_3.1": "Veo 3.1",
+  "seedance_2.0": "Seedance 2.0 + Audio",
+  "minimax_video": "MiniMax Video",
+  "minimax_hailuo": "Hailuo 2.3 Fast",
+  "wan_2.1": "Wan 2.1",
+  "ltx": "LTX 2.3",
+  "ltx_fast": "LTX Fast",
+  "heygen_avatar_v": "HeyGen Avatar V",
+  "heygen_avatar_iv": "HeyGen Avatar IV",
 };
 
+const modelGroups = [
+  { label: "Recommended", models: ["kling_v3_audio", "seedance_2.0", "veo_3"] },
+  { label: "Standard", models: ["kling_2.6", "kling_v3", "veo_3.1"] },
+  { label: "Fast/Cheap", models: ["minimax_hailuo", "ltx", "ltx_fast", "wan_2.1"] },
+  { label: "Premium", models: ["heygen_avatar_v", "heygen_avatar_iv"] },
+];
+
 const formatLabels: Record<string, string> = {
-  talking_head_15: "Talking Head (15s, 4 cuts)",
-  testimonial_15: "Testimonial (15s, 5 cuts)",
-  testimonial_20: "Testimonial (20s, 4 cuts)",
-  educational_30: "Educational (30s, 8 cuts)",
-  quick_tip_8: "Quick Tip (8s, 3 cuts)",
-  property_tour_30: "Property Tour (30s, 4 cuts)",
-  behind_scenes_20: "Montage (20s, 5 cuts)",
+  hook_only_15: "Hook Only (15s, 1 cut, ~$3)",
+  discovery_hook: "Discovery Hook (15s, 1 cut, ~$3)",
+  censored_hook: "Censored Hook (15s, 1 cut, ~$3)",
+  quick_tip_8: "Quick Tip (8s, 3 cuts, ~$6)",
+  talking_head_15: "Talking Head (15s, 4 cuts, ~$8)",
+  testimonial_15: "Testimonial (15s, 5 cuts, ~$10)",
+  podcast_clip: "Podcast (15s, 2 cuts, ~$6)",
+  testimonial_20: "Testimonial (20s, 4 cuts, ~$10)",
+  behind_scenes_20: "Montage (20s, 5 cuts, ~$12)",
+  founders_method: "Founders (30s, 4 cuts, ~$12)",
+  educational_30: "Educational (30s, 8 cuts, ~$16)",
+  property_tour_30: "Property Tour (30s, 4 cuts, ~$10)",
 };
 
 // ─── Main Component ──────────────────────────────────────────────
@@ -62,9 +85,11 @@ function GeneratePageInner() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<"kling_2.6" | "seedance_2.0">("kling_2.6");
+  const [selectedModel, setSelectedModel] = useState("kling_v3_audio");
   const [selectedFormat, setSelectedFormat] = useState("talking_head_15");
   const [showModelPicker, setShowModelPicker] = useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const [postProcess, setPostProcess] = useState({ upscale: false, captions: false, speedCorrect: false });
   const [industry] = useState("other");
   const [showWorkflows, setShowWorkflows] = useState(true);
   const [showManualMode, setShowManualMode] = useState(false);
@@ -209,6 +234,10 @@ function GeneratePageInner() {
           format,
           workflow,
           workflowData,
+          templateId: selectedTemplateId || undefined,
+          postProcess: (postProcess.upscale || postProcess.captions || postProcess.speedCorrect)
+            ? postProcess : undefined,
+          mode: format.includes("hook") ? "hook" : "full",
         }),
       });
       const genData = genRes.ok ? await genRes.json() : null;
@@ -368,71 +397,90 @@ function GeneratePageInner() {
               : "Describe what you want and we will generate it"}
           </p>
         </div>
-        {/* Show format/model pickers only in manual mode */}
+        {/* Show format/model/template/postProcess pickers in manual mode */}
         {showManualMode && (
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <select
-              value={selectedFormat}
-              onChange={(e) => setSelectedFormat(e.target.value)}
-              className="px-3 py-2.5 min-h-[44px] rounded-xl border border-white/[0.06] bg-transparent text-[13px] text-white/60 hover:border-white/10 transition-all appearance-none cursor-pointer flex-1 sm:flex-none"
-            >
-              <option value="quick_tip_8" className="bg-[#0c1018]">Quick Tip (8s)</option>
-              <option value="talking_head_15" className="bg-[#0c1018]">Talking Head (15s)</option>
-              <option value="testimonial_15" className="bg-[#0c1018]">Testimonial (15s)</option>
-              <option value="testimonial_20" className="bg-[#0c1018]">Testimonial (20s)</option>
-              <option value="educational_30" className="bg-[#0c1018]">Educational (30s)</option>
-              <option value="property_tour_30" className="bg-[#0c1018]">Property Tour (30s)</option>
-              <option value="behind_scenes_20" className="bg-[#0c1018]">Montage (20s)</option>
-            </select>
-            <div className="relative">
-              <button
-                onClick={() => setShowModelPicker(!showModelPicker)}
-                className="flex items-center gap-2 px-3 py-2.5 min-h-[44px] rounded-xl border border-white/[0.06] text-[13px] text-white/60 hover:border-white/10 active:bg-white/[0.03] transition-all"
+          <div className="space-y-2 flex-shrink-0">
+            <div className="flex items-center gap-2">
+              {/* Format selector */}
+              <select
+                value={selectedFormat}
+                onChange={(e) => setSelectedFormat(e.target.value)}
+                className="px-3 py-2.5 min-h-[44px] rounded-xl border border-white/[0.06] bg-transparent text-[12px] text-white/60 hover:border-white/10 transition-all appearance-none cursor-pointer flex-1"
               >
-                {selectedModel === "kling_2.6" ? (
-                  <>
-                    <Cpu className="w-3.5 h-3.5 text-blue-400" />
-                    <span className="hidden sm:inline">Kling 2.6</span>
-                    <span className="sm:hidden">Kling</span>
-                  </>
-                ) : (
-                  <>
-                    <Zap className="w-3.5 h-3.5 text-purple-400" />
-                    <span className="hidden sm:inline">Seedance 2.0</span>
-                    <span className="sm:hidden">Seedance</span>
-                  </>
-                )}
-                <ChevronDown className="w-3 h-3 text-white/20" />
-              </button>
-              {showModelPicker && (
-                <div className="absolute right-0 top-full mt-1 w-56 rounded-xl border border-white/[0.06] bg-[#0c1018] p-1.5 z-50 shadow-2xl">
-                  {(["kling_2.6", "seedance_2.0"] as const).map((m) => (
-                    <button
-                      key={m}
-                      onClick={() => {
-                        setSelectedModel(m);
-                        setShowModelPicker(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left text-sm transition-all min-h-[48px] ${
-                        selectedModel === m ? "bg-white/[0.06]" : "hover:bg-white/[0.03] active:bg-white/[0.06]"
-                      }`}
-                    >
-                      {m === "kling_2.6" ? (
-                        <Cpu className="w-4 h-4 text-blue-400" />
-                      ) : (
-                        <Zap className="w-4 h-4 text-purple-400" />
-                      )}
-                      <div>
-                        <div className="text-[13px] font-medium text-white/80">{modelLabels[m]}</div>
-                        <div className="text-[11px] text-white/25">
-                          {m === "kling_2.6" ? "Hyper-realistic" : "Creative & dynamic"}
-                        </div>
+                <optgroup label="Hook (single shot, fast)">
+                  <option value="hook_only_15" className="bg-[#0c1018]">Hook Only (15s, ~$3)</option>
+                  <option value="discovery_hook" className="bg-[#0c1018]">Discovery Hook (15s, ~$3)</option>
+                  <option value="censored_hook" className="bg-[#0c1018]">Censored Hook (15s, ~$3)</option>
+                </optgroup>
+                <optgroup label="Short Form">
+                  <option value="quick_tip_8" className="bg-[#0c1018]">Quick Tip (8s, ~$6)</option>
+                  <option value="talking_head_15" className="bg-[#0c1018]">Talking Head (15s, ~$8)</option>
+                  <option value="testimonial_15" className="bg-[#0c1018]">Testimonial (15s, ~$10)</option>
+                  <option value="podcast_clip" className="bg-[#0c1018]">Podcast (15s, ~$6)</option>
+                </optgroup>
+                <optgroup label="Long Form">
+                  <option value="testimonial_20" className="bg-[#0c1018]">Testimonial (20s, ~$10)</option>
+                  <option value="behind_scenes_20" className="bg-[#0c1018]">Montage (20s, ~$12)</option>
+                  <option value="founders_method" className="bg-[#0c1018]">Founders (30s, ~$12)</option>
+                  <option value="educational_30" className="bg-[#0c1018]">Educational (30s, ~$16)</option>
+                  <option value="property_tour_30" className="bg-[#0c1018]">Property Tour (30s, ~$10)</option>
+                </optgroup>
+              </select>
+
+              {/* Model selector */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowModelPicker(!showModelPicker)}
+                  className="flex items-center gap-2 px-3 py-2.5 min-h-[44px] rounded-xl border border-white/[0.06] text-[12px] text-white/60 hover:border-white/10 active:bg-white/[0.03] transition-all whitespace-nowrap"
+                >
+                  <Cpu className="w-3.5 h-3.5 text-indigo-400" />
+                  <span className="hidden sm:inline">{modelLabels[selectedModel] || selectedModel}</span>
+                  <span className="sm:hidden">{(modelLabels[selectedModel] || selectedModel).split(" ")[0]}</span>
+                  <ChevronDown className="w-3 h-3 text-white/20" />
+                </button>
+                {showModelPicker && (
+                  <div className="absolute right-0 top-full mt-1 w-64 rounded-xl border border-white/[0.06] bg-[#0c1018] p-1.5 z-50 shadow-2xl max-h-80 overflow-y-auto">
+                    {modelGroups.map((group) => (
+                      <div key={group.label}>
+                        <div className="px-3 py-1.5 text-[10px] text-white/20 uppercase tracking-wider">{group.label}</div>
+                        {group.models.map((m) => (
+                          <button
+                            key={m}
+                            onClick={() => { setSelectedModel(m); setShowModelPicker(false); }}
+                            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-sm transition-all ${
+                              selectedModel === m ? "bg-white/[0.06]" : "hover:bg-white/[0.03]"
+                            }`}
+                          >
+                            <div className="flex-1">
+                              <div className="text-[12px] font-medium text-white/80">{modelLabels[m]}</div>
+                            </div>
+                            {selectedModel === m && <Check className="w-3 h-3 text-indigo-400" />}
+                          </button>
+                        ))}
                       </div>
-                      {selectedModel === m && <Check className="w-3.5 h-3.5 text-white/40 ml-auto" />}
-                    </button>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Post-processing toggles */}
+            <div className="flex items-center gap-4 px-1">
+              <label className="flex items-center gap-1.5 text-[10px] text-white/25 cursor-pointer hover:text-white/40">
+                <input type="checkbox" checked={postProcess.upscale} onChange={(e) => setPostProcess((p) => ({ ...p, upscale: e.target.checked }))}
+                  className="rounded border-white/[0.15] bg-white/[0.04] text-indigo-500 focus:ring-0 w-3 h-3" />
+                Upscale 2x
+              </label>
+              <label className="flex items-center gap-1.5 text-[10px] text-white/25 cursor-pointer hover:text-white/40">
+                <input type="checkbox" checked={postProcess.captions} onChange={(e) => setPostProcess((p) => ({ ...p, captions: e.target.checked }))}
+                  className="rounded border-white/[0.15] bg-white/[0.04] text-indigo-500 focus:ring-0 w-3 h-3" />
+                Auto captions
+              </label>
+              <label className="flex items-center gap-1.5 text-[10px] text-white/25 cursor-pointer hover:text-white/40">
+                <input type="checkbox" checked={postProcess.speedCorrect} onChange={(e) => setPostProcess((p) => ({ ...p, speedCorrect: e.target.checked }))}
+                  className="rounded border-white/[0.15] bg-white/[0.04] text-indigo-500 focus:ring-0 w-3 h-3" />
+                Speed correct
+              </label>
             </div>
           </div>
         )}
