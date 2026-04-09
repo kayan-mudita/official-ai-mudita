@@ -5,89 +5,136 @@ import { requireAuth } from "@/lib/api-helpers";
 /**
  * POST /api/generate/batch
  *
- * Accepts { count: 3 | 5 | 7 } and creates multiple video records
- * using template gallery suggestions based on the user's industry.
- * Each video is assigned a different template.
+ * Accepts either:
+ * A) { sessionId, approvedDays } — generates videos from calendar research session
+ * B) { count: 3|5|7 } — generates from industry templates (legacy)
  *
- * Returns the batch with video IDs so the frontend can poll progress.
+ * Creates video records with full scripts from the calendar, then
+ * kicks off the pipeline for each in the background.
+ *
+ * Returns batch info so the frontend can poll progress.
  */
-
-const industryTemplates: Record<string, { label: string; prompt: string; model: string; contentType: string }[]> = {
-  real_estate: [
-    { label: "Listing Video Tour", prompt: "Create a property walkthrough video highlighting key features", model: "kling_2.6", contentType: "talking_head_15" },
-    { label: "Weekly Market Update", prompt: "Create a market update video covering inventory and pricing trends", model: "seedance_2.0", contentType: "educational_30" },
-    { label: "Just Sold Celebration", prompt: "Create a Just Sold announcement video congratulating the buyers", model: "seedance_2.0", contentType: "quick_tip_8" },
-    { label: "Open House Invite", prompt: "Create an open house invitation video that is warm and inviting", model: "seedance_2.0", contentType: "testimonial_15" },
-    { label: "Neighborhood Spotlight", prompt: "Create a neighborhood spotlight covering restaurants, schools, and parks", model: "kling_2.6", contentType: "educational_30" },
-    { label: "Buyer Tips", prompt: "Create an educational video with tips for first-time buyers in today's market", model: "kling_2.6", contentType: "talking_head_15" },
-    { label: "Seller Tips", prompt: "Create an educational video with tips for sellers to maximize their home value", model: "seedance_2.0", contentType: "talking_head_15" },
-  ],
-  legal: [
-    { label: "Know Your Rights", prompt: "Create a Know Your Rights video about common legal topics", model: "kling_2.6", contentType: "talking_head_15" },
-    { label: "Legal Tip of the Week", prompt: "Create a weekly legal tip video for a general audience", model: "seedance_2.0", contentType: "quick_tip_8" },
-    { label: "Case Result Highlight", prompt: "Create a video highlighting a recent case result", model: "seedance_2.0", contentType: "testimonial_15" },
-    { label: "Legal Process Explainer", prompt: "Create an explainer video about a common legal process", model: "kling_2.6", contentType: "educational_30" },
-    { label: "FAQ Video", prompt: "Answer the most common legal questions your clients ask", model: "kling_2.6", contentType: "talking_head_15" },
-    { label: "Client Testimonial", prompt: "Transform a client review into a video testimonial", model: "seedance_2.0", contentType: "testimonial_15" },
-    { label: "Legal Myth Busting", prompt: "Bust a common legal myth that confuses people", model: "kling_2.6", contentType: "quick_tip_8" },
-  ],
-  medical: [
-    { label: "Health Tip", prompt: "Create a patient-friendly health tip video", model: "seedance_2.0", contentType: "quick_tip_8" },
-    { label: "Procedure Explainer", prompt: "Create a reassuring explainer video about what patients can expect", model: "kling_2.6", contentType: "educational_30" },
-    { label: "Wellness Series", prompt: "Create a wellness video encouraging healthy habits", model: "seedance_2.0", contentType: "talking_head_15" },
-    { label: "Medical Myth Busting", prompt: "Create a myth-busting video about a common misconception", model: "kling_2.6", contentType: "quick_tip_8" },
-    { label: "Patient FAQ", prompt: "Answer the most common questions patients ask your practice", model: "kling_2.6", contentType: "talking_head_15" },
-    { label: "Prevention Tips", prompt: "Share preventive care tips that keep your patients healthy", model: "seedance_2.0", contentType: "educational_30" },
-    { label: "Team Introduction", prompt: "Introduce your medical team and what makes your practice special", model: "kling_2.6", contentType: "testimonial_15" },
-  ],
-  default: [
-    { label: "Brand Introduction", prompt: "Create a personal brand introduction video", model: "kling_2.6", contentType: "talking_head_15" },
-    { label: "Quick Tip", prompt: "Create a quick tip video sharing your expertise", model: "seedance_2.0", contentType: "quick_tip_8" },
-    { label: "Thought Leadership", prompt: "Share your perspective on a trending topic in your industry", model: "kling_2.6", contentType: "educational_30" },
-    { label: "Client Testimonial", prompt: "Transform a client review into a video testimonial", model: "seedance_2.0", contentType: "testimonial_15" },
-    { label: "Behind the Scenes", prompt: "Show your audience what goes on behind the scenes", model: "kling_2.6", contentType: "talking_head_15" },
-    { label: "Industry Update", prompt: "Create a video about the latest trends in your industry", model: "seedance_2.0", contentType: "educational_30" },
-    { label: "How-To Guide", prompt: "Create a step-by-step how-to video for your audience", model: "kling_2.6", contentType: "talking_head_15" },
-  ],
-};
 
 export async function POST(req: NextRequest) {
   try {
     const { error, user } = await requireAuth();
     if (error) return error;
 
-    let body: { count?: number };
-    try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    const body = await req.json();
+
+    // ── Mode A: Generate from research calendar ──────────────
+    if (body.sessionId) {
+      const { sessionId, approvedDays } = body;
+
+      const session = await prisma.researchSession.findFirst({
+        where: { id: sessionId, userId: user.id },
+      });
+
+      if (!session || !session.calendarResult) {
+        return NextResponse.json({ error: "No calendar found" }, { status: 404 });
+      }
+
+      const calendar = JSON.parse(session.calendarResult);
+      const approved: number[] = Array.isArray(approvedDays)
+        ? approvedDays
+        : session.approvedDays
+        ? JSON.parse(session.approvedDays)
+        : calendar.map((_: unknown, i: number) => i);
+
+      // Get user's default photo and voice for pipeline
+      const [photo, voice] = await Promise.all([
+        prisma.photo.findFirst({ where: { userId: user.id, isPrimary: true } }),
+        prisma.voiceSample.findFirst({ where: { userId: user.id, isDefault: true } }),
+      ]);
+
+      // Create video records for each approved day
+      const videos = [];
+      for (const dayIndex of approved) {
+        const day = calendar[dayIndex];
+        if (!day) continue;
+
+        // Use full script if available, fall back to scriptOutline
+        const script = day.script || day.scriptOutline || day.hook || "";
+
+        const video = await prisma.video.create({
+          data: {
+            userId: user.id,
+            title: day.topic || `Day ${day.day} Content`,
+            description: day.whyThisWorks || "",
+            script,
+            model: "kling_2.6",
+            contentType: day.contentType || "talking_head_15",
+            status: "queued",
+            photoId: photo?.id || null,
+            voiceId: voice?.id || null,
+          },
+        });
+
+        // Create schedule record if platform specified
+        if (day.platform && day.date) {
+          const scheduledAt = day.bestPostingTime
+            ? new Date(`${day.date}T${parseTime(day.bestPostingTime)}`)
+            : new Date(`${day.date}T09:00:00`);
+
+          await prisma.schedule.create({
+            data: {
+              videoId: video.id,
+              userId: user.id,
+              platform: day.platform,
+              scheduledAt,
+              status: "pending_generation",
+            },
+          }).catch(() => {
+            // Schedule has unique videoId constraint — skip if duplicate
+          });
+        }
+
+        videos.push({
+          id: video.id,
+          title: video.title,
+          day: day.day,
+          platform: day.platform,
+          contentType: video.contentType,
+          status: video.status,
+        });
+      }
+
+      // Kick off pipeline for each video in the background
+      // Process 2 at a time to respect API rate limits
+      queuePipelineJobs(videos.map((v) => v.id), user.id).catch((e) => {
+        console.error("[generate/batch] Pipeline queue failed:", e);
+      });
+
+      return NextResponse.json({
+        batchId: `batch_${sessionId}_${Date.now()}`,
+        count: videos.length,
+        videos,
+        message: `${videos.length} videos queued for generation. Check /dashboard/content for progress.`,
+      });
     }
 
+    // ── Mode B: Legacy template-based generation ─────────────
     const count = body.count;
-    if (!count || ![3, 5, 7].includes(count)) {
+    if (!count || ![3, 5, 7, 14].includes(count)) {
       return NextResponse.json(
-        { error: "count must be 3, 5, or 7" },
+        { error: "Provide sessionId for calendar generation, or count (3, 5, 7, 14) for templates" },
         { status: 400 }
       );
     }
 
-    // Get user's industry for template selection
     const userRecord = await prisma.user.findUnique({
       where: { id: user.id },
       select: { industry: true },
     });
-    const industry = userRecord?.industry || "other";
-    const templates = industryTemplates[industry] || industryTemplates.default;
 
-    // Select unique templates (cycle if count > templates.length)
-    const selectedTemplates = [];
+    const templates = getTemplates(userRecord?.industry || "other");
+    const selected = [];
     for (let i = 0; i < count; i++) {
-      selectedTemplates.push(templates[i % templates.length]);
+      selected.push(templates[i % templates.length]);
     }
 
-    // Create video records in sequence
     const videos = [];
-    for (const template of selectedTemplates) {
+    for (const template of selected) {
       const video = await prisma.video.create({
         data: {
           userId: user.id,
@@ -117,4 +164,87 @@ export async function POST(req: NextRequest) {
     console.error("[POST /api/generate/batch]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
+}
+
+// ─── Pipeline Queue ───────────────────────────────────────────
+
+async function queuePipelineJobs(videoIds: string[], userId: string) {
+  // Process 2 videos at a time
+  const CONCURRENCY = 2;
+
+  for (let i = 0; i < videoIds.length; i += CONCURRENCY) {
+    const batch = videoIds.slice(i, i + CONCURRENCY);
+
+    await Promise.all(
+      batch.map(async (videoId) => {
+        try {
+          // Update status to generating
+          await prisma.video.update({
+            where: { id: videoId },
+            data: { status: "generating" },
+          });
+
+          // Trigger the pipeline via the internal generate/process endpoint
+          await fetch(
+            `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/generate/process`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ videoId, userId }),
+            }
+          ).catch(() => {
+            // If internal fetch fails, mark as failed
+            prisma.video.update({
+              where: { id: videoId },
+              data: { status: "failed" },
+            }).catch(() => {});
+          });
+        } catch (e) {
+          console.error(`[queuePipelineJobs] Failed for ${videoId}:`, e);
+          await prisma.video.update({
+            where: { id: videoId },
+            data: { status: "failed" },
+          }).catch(() => {});
+        }
+      })
+    );
+  }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────
+
+function parseTime(timeStr: string): string {
+  // Parse "9:00 AM", "Tuesday 9:00 AM", etc. into "HH:MM:00"
+  const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+  if (!match) return "09:00:00";
+
+  let hours = parseInt(match[1]);
+  const minutes = match[2];
+  const ampm = match[3]?.toUpperCase();
+
+  if (ampm === "PM" && hours < 12) hours += 12;
+  if (ampm === "AM" && hours === 12) hours = 0;
+
+  return `${String(hours).padStart(2, "0")}:${minutes}:00`;
+}
+
+function getTemplates(industry: string) {
+  const map: Record<string, { label: string; prompt: string; model: string; contentType: string }[]> = {
+    real_estate: [
+      { label: "Market Update", prompt: "Share this week's local market stats and pricing trends", model: "kling_2.6", contentType: "talking_head_15" },
+      { label: "Quick Tip", prompt: "Share a quick tip for buyers or sellers", model: "seedance_2.0", contentType: "quick_tip_8" },
+      { label: "Neighborhood Guide", prompt: "Highlight a local neighborhood", model: "kling_2.6", contentType: "educational_30" },
+    ],
+    legal: [
+      { label: "Know Your Rights", prompt: "Explain a common legal right", model: "kling_2.6", contentType: "talking_head_15" },
+      { label: "Legal Tip", prompt: "Share a practical legal tip", model: "seedance_2.0", contentType: "quick_tip_8" },
+      { label: "Case Study", prompt: "Share an anonymized case result", model: "kling_2.6", contentType: "educational_30" },
+    ],
+    default: [
+      { label: "Brand Introduction", prompt: "Create a personal brand introduction", model: "kling_2.6", contentType: "talking_head_15" },
+      { label: "Quick Tip", prompt: "Share your expertise", model: "seedance_2.0", contentType: "quick_tip_8" },
+      { label: "Industry Update", prompt: "Share the latest trends", model: "kling_2.6", contentType: "educational_30" },
+    ],
+  };
+  return map[industry] || map.default;
 }

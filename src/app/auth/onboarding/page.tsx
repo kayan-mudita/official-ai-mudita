@@ -7,9 +7,10 @@ import SessionProvider from "@/components/SessionProvider";
 import CameraCapture from "@/components/onboarding/CameraCapture";
 import CharacterSheetReveal from "@/components/onboarding/CharacterSheetReveal";
 import VoiceCapture from "@/components/onboarding/VoiceCapture";
+import VideoLoadingScreen from "@/components/onboarding/VideoLoadingScreen";
 import PaywallStep from "@/components/onboarding/PaywallStep";
 
-type Step = "photo" | "character" | "voice" | "paywall";
+type Step = "photo" | "character" | "voice" | "video_loading" | "paywall";
 
 const STEP_CONFIG: { key: Step; label: string; emoji: string }[] = [
   { key: "photo", label: "Your photo", emoji: "\uD83D\uDCF8" },
@@ -112,6 +113,10 @@ const STEP_CONTENT: Record<Step, { heading: string; sub: string }> = {
   voice: {
     heading: "Now let's hear you.",
     sub: "5 seconds is all we need to clone your voice.",
+  },
+  video_loading: {
+    heading: "Creating your first video...",
+    sub: "Your face. Your voice. Almost ready.",
   },
   paywall: {
     heading: "Your AI twin is alive.",
@@ -275,15 +280,15 @@ function OnboardingFlow() {
       // Non-blocking: voice clone can be retried later
     } finally {
       setVoiceUploading(false);
-      setStep("paywall");
       generatePreviewVideo();
+      setStep("video_loading");
     }
   }, [generatePreviewVideo]);
 
   const handleSkipVoice = useCallback(() => {
     trackEvent("onboarding_voice_skipped");
-    setStep("paywall");
     generatePreviewVideo();
+    setStep("video_loading");
   }, [generatePreviewVideo]);
 
   const { heading, sub } = STEP_CONTENT[step];
@@ -386,6 +391,22 @@ function OnboardingFlow() {
                 >
                   Skip for now — you can add your voice later
                 </button>
+              </motion.div>
+            )}
+
+            {step === "video_loading" && (
+              <motion.div
+                key="video_loading"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <VideoLoadingScreen
+                  photoUrl={photoUrl}
+                  videoReady={!!videoUrl}
+                  onComplete={() => setStep("paywall")}
+                />
               </motion.div>
             )}
 

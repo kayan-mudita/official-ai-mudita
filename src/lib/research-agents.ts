@@ -1,23 +1,22 @@
 /**
  * Research Agents — Post-Payment Strategy Generation
  *
- * Four parallel AI agents that run after a user provides their
- * industry + company name (+ optional website URL).
+ * Four parallel AI agents powered by Claude (via OpenRouter)
+ * with MCP tools (Exa for search, Firecrawl for scraping).
  *
- * Agent 1: Business Intelligence — scrapes/researches the company
- * Agent 2: Industry Trends — finds trending content topics
- * Agent 3: Competitor Scan — identifies gaps in competitor content
- * Agent 4: Calendar Generation — builds 30-day plan from agents 1-3
+ * Agent 1: Business Intelligence — Firecrawl scrapes website + Exa finds context
+ * Agent 2: Industry Trends — Exa semantic search for trending content
+ * Agent 3: Competitor Scan — Exa finds competitors, Firecrawl analyzes them
+ * Agent 4: Calendar Generation — Claude synthesizes agents 1-3 into 14-day plan
  *
- * All agents use Gemini 2.5 Flash via the Google AI Studio REST API,
- * matching the pattern used throughout the codebase.
+ * Each agent is an agentic loop: Claude gets tools, decides what to call,
+ * we execute the calls, Claude synthesizes the results.
  */
 
 import prisma from "@/lib/prisma";
-
-const GOOGLE_AI_STUDIO_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models";
-const MODEL = "gemini-2.5-flash";
+import { runAgent, type ToolDefinition } from "./openrouter-client";
+import { exaTools, exaHandlers } from "./mcp/exa";
+import { firecrawlTools, firecrawlHandlers } from "./mcp/firecrawl";
 
 // ─── Types ────────────────────────────────────────────────────────
 
@@ -30,6 +29,15 @@ export interface BusinessResult {
   toneOfVoice: string;
   differentiators: string[];
   summary: string;
+}
+
+export interface BrandVoice {
+  positioning: string;
+  tone: string;
+  vocabulary: { use: string[]; avoid: string[] };
+  hookStyle: string;
+  ctaStyle: string;
+  differentiation: string;
 }
 
 export interface TrendsResult {
@@ -55,92 +63,45 @@ export interface CalendarDay {
   date: string;
   topic: string;
   hook: string;
-  scriptOutline: string;
+  script: string;
+  caption: string;
+  hashtags: string[];
   platform: string;
   contentType: string;
   category: string;
   whyThisWorks: string;
+  bestPostingTime: string;
 }
 
-// ─── Gemini Helpers ───────────────────────────────────────────────
+// For backwards compat with existing code that uses scriptOutline
+export type { CalendarDay as CalendarDayV2 };
 
-interface GeminiOptions {
-  /** Enable Google Search grounding for real-time web research */
-  useSearchGrounding?: boolean;
+// ─── Extended Intake Types ────────────────────────────────────────
+
+export interface IntakeData {
+  industry: string;
+  companyName: string;
+  websiteUrl?: string;
+  geography?: string;
+  idealClient?: string;
+  keyServices?: string[];
+  differentiator?: string;
+  postingFrequency?: string;
+  platforms?: string[];
+  tone?: string;
+  socialHandles?: { platform: string; handle: string }[];
 }
 
-async function callGemini(
-  systemPrompt: string,
-  userPrompt: string,
-  options: GeminiOptions = {}
-): Promise<string> {
-  const apiKey = process.env.GOOGLE_AI_STUDIO_KEY;
-  if (!apiKey) throw new Error("GOOGLE_AI_STUDIO_KEY not set");
+// ─── All MCP Tools Combined ───────────────────────────────────────
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30_000);
-
-  // When search grounding is enabled, responseMimeType: "application/json"
-  // may conflict with grounding. We drop JSON mode and parse manually.
-  const useGrounding = options.useSearchGrounding === true;
-
-  const body: Record<string, unknown> = {
-    system_instruction: { parts: [{ text: systemPrompt }] },
-    contents: [{ parts: [{ text: userPrompt }] }],
-    generationConfig: {
-      temperature: 0.7,
-      maxOutputTokens: 4096,
-      ...(useGrounding ? {} : { responseMimeType: "application/json" }),
-    },
-  };
-
-  if (useGrounding) {
-    body.tools = [{ google_search: {} }];
-  }
-
-  try {
-    const res = await fetch(
-      `${GOOGLE_AI_STUDIO_URL}/${MODEL}:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: controller.signal,
-        body: JSON.stringify(body),
-      }
-    );
-
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`Gemini ${res.status}: ${err}`);
-    }
-
-    const data = await res.json();
-    let raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-
-    // When grounding is used, response is plain text — extract JSON block
-    if (useGrounding && raw.includes("{")) {
-      const jsonMatch = raw.match(/\{[\s\S]*\}/);
-      if (jsonMatch) raw = jsonMatch[0];
-    }
-
-    // Validate JSON is parseable before returning
-    try {
-      JSON.parse(raw);
-      return raw;
-    } catch {
-      console.error("[callGemini] Gemini returned unparseable JSON, using empty fallback");
-      return "{}";
-    }
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
+const allTools: ToolDefinition[] = [...exaTools, ...firecrawlTools];
+const allHandlers = { ...exaHandlers, ...firecrawlHandlers };
 
 // ─── Agent 1: Business Intelligence ───────────────────────────────
 
 async function runBusinessAgent(
   sessionId: string,
-  input: { companyName: string; industry: string; websiteUrl?: string }
+  input: IntakeData
 ): Promise<BusinessResult> {
   await prisma.researchSession.update({
     where: { id: sessionId },
@@ -148,28 +109,56 @@ async function runBusinessAgent(
   });
 
   try {
-    const systemPrompt = `You are a business research analyst. Given a company name and industry, research and describe the business. Return JSON matching this exact schema:
+    const systemPrompt = `You are a business research analyst with access to web scraping and search tools.
+
+Your job: Research a business and produce a detailed business profile.
+
+You MUST return ONLY a valid JSON object matching this exact schema (no markdown, no explanation):
 {
   "companyName": "string",
   "industry": "string",
-  "services": ["string array of 3-5 core services"],
+  "services": ["array of 3-5 core services"],
   "targetAudience": "who they serve",
-  "geography": "market/city they serve or 'National'",
+  "geography": "market they serve",
   "toneOfVoice": "professional | conversational | authoritative | warm",
-  "differentiators": ["string array of 2-3 key differentiators"],
+  "differentiators": ["2-3 key differentiators"],
   "summary": "2-3 sentence positioning summary"
 }
-Be specific and practical. If you don't have enough info, make educated inferences based on the industry.`;
 
-    const userPrompt = input.websiteUrl
-      ? `Research this business:\n- Company: ${input.companyName}\n- Industry: ${input.industry}\n- Website: ${input.websiteUrl}\n\nUse the website URL to infer services, positioning, audience, and tone.`
-      : `Research this business:\n- Company: ${input.companyName}\n- Industry: ${input.industry}\n\nMake educated inferences about their services, audience, and positioning based on the company name and industry.`;
+Strategy:
+1. If a website URL is provided, use firecrawl_scrape to extract real data from it
+2. If social handles are provided, use exa_search to find their social profiles
+3. Use exa_search to find additional context about the business
+4. Synthesize everything into the JSON profile
 
-    // Use search grounding for real web research when possible
-    const raw = await callGemini(systemPrompt, userPrompt, {
-      useSearchGrounding: true,
+Be specific. Use real data from the tools, not generic guesses.`;
+
+    const userPrompt = `Research this business and return a JSON profile:
+
+Company: ${input.companyName}
+Industry: ${input.industry}
+${input.websiteUrl ? `Website: ${input.websiteUrl}` : "No website provided"}
+${input.geography ? `Geography: ${input.geography}` : ""}
+${input.idealClient ? `Ideal client: ${input.idealClient}` : ""}
+${input.keyServices?.length ? `Key services: ${input.keyServices.join(", ")}` : ""}
+${input.differentiator ? `Differentiator: ${input.differentiator}` : ""}
+${input.socialHandles?.length ? `Social handles: ${input.socialHandles.map((s) => `${s.platform}: ${s.handle}`).join(", ")}` : ""}
+
+Use the tools to research this business. Then return ONLY the JSON object.`;
+
+    const raw = await runAgent(systemPrompt, userPrompt, allTools, allHandlers, 6);
+
+    // Extract JSON from response
+    const result = parseJsonFromResponse<BusinessResult>(raw, {
+      companyName: input.companyName,
+      industry: input.industry,
+      services: input.keyServices || [`${input.industry} services`],
+      targetAudience: input.idealClient || "Local clients",
+      geography: input.geography || "Local market",
+      toneOfVoice: input.tone || "professional",
+      differentiators: input.differentiator ? [input.differentiator] : ["Personalized service"],
+      summary: `${input.companyName} is a ${input.industry} professional.`,
     });
-    const result: BusinessResult = JSON.parse(raw);
 
     await prisma.researchSession.update({
       where: { id: sessionId },
@@ -179,15 +168,14 @@ Be specific and practical. If you don't have enough info, make educated inferenc
     return result;
   } catch (e) {
     console.error("[BusinessAgent] Failed:", e);
-    // Return sensible defaults on failure
     const fallback: BusinessResult = {
       companyName: input.companyName,
       industry: input.industry,
-      services: [`${input.industry} services`],
-      targetAudience: "Local clients and prospects",
-      geography: "Local market",
-      toneOfVoice: "professional",
-      differentiators: ["Personalized service", "Industry expertise"],
+      services: input.keyServices || [`${input.industry} services`],
+      targetAudience: input.idealClient || "Local clients and prospects",
+      geography: input.geography || "Local market",
+      toneOfVoice: input.tone || "professional",
+      differentiators: input.differentiator ? [input.differentiator] : ["Personalized service", "Industry expertise"],
       summary: `${input.companyName} is a ${input.industry} professional serving local clients.`,
     };
     await prisma.researchSession.update({
@@ -202,7 +190,7 @@ Be specific and practical. If you don't have enough info, make educated inferenc
 
 async function runTrendsAgent(
   sessionId: string,
-  input: { industry: string }
+  input: { industry: string; platforms?: string[] }
 ): Promise<TrendsResult> {
   await prisma.researchSession.update({
     where: { id: sessionId },
@@ -210,31 +198,58 @@ async function runTrendsAgent(
   });
 
   try {
-    const systemPrompt = `You are a social media content strategist specializing in professional services. Return JSON matching this exact schema:
+    const now = new Date();
+    const monthName = now.toLocaleString("en-US", { month: "long" });
+    const year = now.getFullYear();
+
+    const systemPrompt = `You are a social media content strategist with access to web search tools.
+
+Your job: Find what's trending RIGHT NOW for a specific industry on social media.
+
+You MUST return ONLY a valid JSON object matching this schema:
 {
   "trending": [{ "topic": "string", "whyNow": "string" }],
   "evergreen": [{ "topic": "string", "angle": "string" }],
   "seasonal": [{ "topic": "string", "timing": "string" }],
   "platformAngles": [{ "platform": "string", "format": "string", "tip": "string" }]
 }
-Provide 5-7 items for trending, 5-7 for evergreen, 3-4 seasonal, and one entry each for instagram, tiktok, linkedin, youtube.`;
 
-    const now = new Date();
-    const monthName = now.toLocaleString("en-US", { month: "long" });
-    const year = now.getFullYear();
+Strategy:
+1. Use exa_search to find current trending topics for this industry on social media
+2. Use exa_search to find viral content examples in this industry
+3. Use exa_search to find seasonal content opportunities for the current month
+4. Provide 5-7 trending, 5-7 evergreen, 3-4 seasonal, and platform angles for each platform
 
-    const userPrompt = `What are the top content topics for ${input.industry} professionals on social media right now (${monthName} ${year})?
+Use REAL search results to inform your answer. Don't guess.`;
 
-Include:
-- Trending topics this month (what's hot right now)
-- Evergreen topics that always perform well
+    const platformList = input.platforms?.length
+      ? input.platforms.join(", ")
+      : "Instagram, TikTok, LinkedIn, YouTube";
+
+    const userPrompt = `Find trending content topics for ${input.industry} professionals on social media (${monthName} ${year}).
+
+Platforms to cover: ${platformList}
+
+Search for:
+- What ${input.industry} content is going viral right now
+- Trending topics this month for ${input.industry} professionals
 - Seasonal angles for ${monthName} ${year}
-- Platform-specific format tips (Reels vs LinkedIn vs TikTok vs YouTube Shorts)`;
 
-    const raw = await callGemini(systemPrompt, userPrompt, {
-      useSearchGrounding: true,
+Use exa_search to find real data. Then return ONLY the JSON object.`;
+
+    const raw = await runAgent(systemPrompt, userPrompt, allTools, allHandlers, 6);
+
+    const result = parseJsonFromResponse<TrendsResult>(raw, {
+      trending: [{ topic: "AI in your industry", whyNow: "AI adoption accelerating" }],
+      evergreen: [{ topic: "Client success stories", angle: "Build trust" }],
+      seasonal: [{ topic: "Q2 planning", timing: "Spring" }],
+      platformAngles: [
+        { platform: "instagram", format: "Reels 15-30s", tip: "Hook in first 2 seconds" },
+        { platform: "linkedin", format: "Talking head", tip: "Professional tone" },
+        { platform: "tiktok", format: "Quick tips", tip: "Casual, trending audio" },
+        { platform: "youtube", format: "Shorts 30-60s", tip: "Educational, searchable" },
+      ],
     });
-    const result: TrendsResult = JSON.parse(raw);
 
     await prisma.researchSession.update({
       where: { id: sessionId },
@@ -245,12 +260,12 @@ Include:
   } catch (e) {
     console.error("[TrendsAgent] Failed:", e);
     const fallback: TrendsResult = {
-      trending: [{ topic: "AI in your industry", whyNow: "AI adoption is accelerating" }],
+      trending: [{ topic: "AI in your industry", whyNow: "AI adoption accelerating" }],
       evergreen: [{ topic: "Client success stories", angle: "Build trust through results" }],
       seasonal: [{ topic: "Q2 planning", timing: "Spring" }],
       platformAngles: [
         { platform: "instagram", format: "Reels 15-30s", tip: "Hook in first 2 seconds" },
-        { platform: "linkedin", format: "Talking head", tip: "Professional tone, no hashtags" },
+        { platform: "linkedin", format: "Talking head", tip: "Professional tone" },
         { platform: "tiktok", format: "Quick tips 8-15s", tip: "Casual, trending audio" },
         { platform: "youtube", format: "Shorts 30-60s", tip: "Educational, searchable titles" },
       ],
@@ -267,7 +282,7 @@ Include:
 
 async function runCompetitorAgent(
   sessionId: string,
-  input: { industry: string; companyName: string }
+  input: { industry: string; companyName: string; geography?: string; websiteUrl?: string }
 ): Promise<CompetitorResult> {
   await prisma.researchSession.update({
     where: { id: sessionId },
@@ -275,27 +290,40 @@ async function runCompetitorAgent(
   });
 
   try {
-    const systemPrompt = `You are a competitive intelligence analyst for professional services content strategy. Return JSON matching this exact schema:
+    const systemPrompt = `You are a competitive intelligence analyst with access to search and scraping tools.
+
+Your job: Analyze the competitive content landscape for a professional in a specific industry.
+
+You MUST return ONLY a valid JSON object matching this schema:
 {
   "competitors": [{ "name": "string", "platforms": ["string"], "frequency": "string", "topTopics": ["string"] }],
-  "gaps": ["string array of 3-5 content gaps competitors are NOT covering"],
-  "opportunities": ["string array of 3-5 content opportunities for differentiation"]
+  "gaps": ["3-5 content gaps competitors are NOT covering"],
+  "opportunities": ["3-5 content opportunities for differentiation"]
 }
-Provide 3-5 realistic competitor examples. Focus on content strategy gaps and opportunities.`;
 
-    const userPrompt = `Analyze the competitive content landscape for a ${input.industry} professional (${input.companyName}).
+Strategy:
+1. Use exa_search to find similar businesses and their social media presence
+2. If website URL provided, use exa_find_similar to find direct competitors
+3. Use exa_search to analyze what content topics competitors cover
+4. Identify what they're NOT doing — those are the gaps and opportunities
 
-Identify:
-- 3-5 types of ${input.industry} professionals/firms that are active on social media
-- What platforms they use and how often they post
-- What topics they typically cover
-- What content gaps exist that they're NOT covering
-- What opportunities exist to stand out through video content`;
+Provide 3-5 realistic competitors with real data.`;
 
-    const raw = await callGemini(systemPrompt, userPrompt, {
-      useSearchGrounding: true,
+    const userPrompt = `Analyze the competitive content landscape for:
+
+Business: ${input.companyName} (${input.industry})
+${input.geography ? `Geography: ${input.geography}` : ""}
+${input.websiteUrl ? `Website: ${input.websiteUrl}` : ""}
+
+Find competitors in ${input.industry} who are active on social media. Identify content gaps and opportunities. Return ONLY the JSON object.`;
+
+    const raw = await runAgent(systemPrompt, userPrompt, allTools, allHandlers, 6);
+
+    const result = parseJsonFromResponse<CompetitorResult>(raw, {
+      competitors: [],
+      gaps: ["Most competitors don't use AI video", "Few share behind-the-scenes content"],
+      opportunities: ["Be first in market with consistent video", "Authentic voice cloning for scale"],
     });
-    const result: CompetitorResult = JSON.parse(raw);
 
     await prisma.researchSession.update({
       where: { id: sessionId },
@@ -308,7 +336,7 @@ Identify:
     const fallback: CompetitorResult = {
       competitors: [],
       gaps: ["Most competitors don't use AI video", "Few share behind-the-scenes content"],
-      opportunities: ["Be the first in your market with consistent video", "Use authentic voice cloning for scale"],
+      opportunities: ["Be first in market with consistent video", "Use authentic voice cloning for scale"],
     };
     await prisma.researchSession.update({
       where: { id: sessionId },
@@ -318,7 +346,7 @@ Identify:
   }
 }
 
-// ─── Agent 4: Calendar Generation (depends on 1-3) ───────────────
+// ─── Agent 4: Calendar + Full Script Generation ───────────────────
 
 async function runCalendarAgent(
   sessionId: string,
@@ -326,7 +354,7 @@ async function runCalendarAgent(
     business: BusinessResult;
     trends: TrendsResult;
     competitors: CompetitorResult;
-    industry: string;
+    intake: IntakeData;
   }
 ): Promise<CalendarDay[]> {
   await prisma.researchSession.update({
@@ -335,56 +363,87 @@ async function runCalendarAgent(
   });
 
   try {
-    const systemPrompt = `You are a content calendar strategist for professional services. Build a 30-day video content calendar.
-
-Return a JSON array of exactly 30 objects matching this schema:
-[{
-  "day": 1,
-  "date": "YYYY-MM-DD",
-  "topic": "short topic title",
-  "hook": "the opening line / hook for the video",
-  "scriptOutline": "3-4 sentence script outline",
-  "platform": "instagram | linkedin | tiktok | youtube",
-  "contentType": "quick_tip_8 | talking_head_15 | educational_30 | testimonial_15",
-  "category": "Education | Tips | Personal Brand | Social Proof | Trending",
-  "whyThisWorks": "1 sentence explaining the strategic reasoning"
-}]
-
-Rules:
-- Vary platforms across days (not all Instagram)
-- Mix content types (not all talking heads)
-- Alternate categories for variety
-- Front-load high-impact, easy-to-produce content in week 1
-- Build toward more complex content in weeks 3-4
-- Each hook should be specific and attention-grabbing, not generic`;
-
     const today = new Date();
-    const dates = Array.from({ length: 30 }, (_, i) => {
+    const dates = Array.from({ length: 14 }, (_, i) => {
       const d = new Date(today);
       d.setDate(today.getDate() + i);
       return d.toISOString().split("T")[0];
     });
 
-    const userPrompt = `Build a 30-day video content calendar for:
+    const platforms = input.intake.platforms?.length
+      ? input.intake.platforms
+      : ["instagram", "linkedin", "tiktok", "youtube"];
 
-BUSINESS: ${input.business.summary}
+    const systemPrompt = `You are an expert content strategist and scriptwriter. No tools needed for this step — you are synthesizing research that was already gathered.
+
+Your job: Build a 14-day video content calendar with FULL SCRIPTS (not outlines).
+
+You MUST return ONLY a valid JSON array of exactly 14 objects matching this schema:
+[{
+  "day": 1,
+  "date": "YYYY-MM-DD",
+  "topic": "specific topic title",
+  "hook": "the exact opening line that grabs attention",
+  "script": "The COMPLETE video script, 3-8 sentences. Written in the brand voice. Ready to be spoken aloud as a video narration.",
+  "caption": "Social media caption for the post (platform-appropriate)",
+  "hashtags": ["relevant", "hashtags", "3-5"],
+  "platform": "instagram | linkedin | tiktok | youtube",
+  "contentType": "quick_tip_8 | talking_head_15 | educational_30 | testimonial_15",
+  "category": "Education | Tips | Personal Brand | Social Proof | Trending",
+  "whyThisWorks": "1 sentence strategic reasoning",
+  "bestPostingTime": "e.g. Tuesday 9:00 AM"
+}]
+
+Content mix rules:
+- 40% Education, 25% Personal Brand, 20% Tips, 10% Social Proof, 5% Trending
+- Vary platforms across the ${platforms.length} platforms: ${platforms.join(", ")}
+- Front-load week 1 with easy quick_tip_8 and talking_head_15
+- Week 2 can include educational_30 and testimonial_15
+- Every hook must be specific and attention-grabbing, never generic
+- Every script must sound like the person speaking, in their brand voice
+- Hashtags: 3-5 per post, platform-appropriate (LinkedIn: fewer, Instagram: more)`;
+
+    const userPrompt = `Build a 14-day content calendar with full scripts.
+
+BUSINESS PROFILE:
+${input.business.summary}
 Services: ${input.business.services.join(", ")}
 Audience: ${input.business.targetAudience}
 Tone: ${input.business.toneOfVoice}
 Geography: ${input.business.geography}
+Differentiators: ${input.business.differentiators.join("; ")}
 
-TRENDING NOW: ${input.trends.trending.map((t) => t.topic).join(", ")}
-EVERGREEN: ${input.trends.evergreen.map((t) => t.topic).join(", ")}
-SEASONAL: ${input.trends.seasonal.map((t) => `${t.topic} (${t.timing})`).join(", ")}
+TRENDING NOW: ${input.trends.trending.map((t) => `${t.topic} (${t.whyNow})`).join("; ")}
+EVERGREEN: ${input.trends.evergreen.map((t) => `${t.topic}: ${t.angle}`).join("; ")}
+SEASONAL: ${input.trends.seasonal.map((t) => `${t.topic} (${t.timing})`).join("; ")}
 
 COMPETITOR GAPS: ${input.competitors.gaps.join("; ")}
 OPPORTUNITIES: ${input.competitors.opportunities.join("; ")}
 
-Dates to use (day 1 = ${dates[0]}, day 30 = ${dates[29]}):
-${dates.map((d, i) => `Day ${i + 1}: ${d}`).join("\n")}`;
+POSTING PREFERENCES:
+Frequency: ${input.intake.postingFrequency || "daily"}
+Platforms: ${platforms.join(", ")}
+Tone: ${input.intake.tone || input.business.toneOfVoice}
 
-    const raw = await callGemini(systemPrompt, userPrompt);
-    const result: CalendarDay[] = JSON.parse(raw);
+Dates (Day 1 = ${dates[0]}, Day 14 = ${dates[13]}):
+${dates.map((d, i) => `Day ${i + 1}: ${d}`).join(", ")}
+
+Return ONLY the JSON array of 14 calendar day objects.`;
+
+    // No tools needed for calendar — it synthesizes existing research
+    const raw = await runAgent(systemPrompt, userPrompt, [], {}, 1);
+
+    const result = parseJsonFromResponse<CalendarDay[]>(raw, generateFallbackCalendar(input.intake.industry, dates));
+
+    // Ensure each day has correct day/date
+    result.forEach((item, i) => {
+      item.day = i + 1;
+      item.date = dates[i] || item.date;
+      // Backwards compat: ensure scriptOutline alias
+      if (!item.script && (item as any).scriptOutline) {
+        item.script = (item as any).scriptOutline;
+      }
+    });
 
     await prisma.researchSession.update({
       where: { id: sessionId },
@@ -399,26 +458,13 @@ ${dates.map((d, i) => `Day ${i + 1}: ${d}`).join("\n")}`;
     return result;
   } catch (e) {
     console.error("[CalendarAgent] Failed:", e);
-    // Generate basic fallback calendar
     const today = new Date();
-    const fallback: CalendarDay[] = Array.from({ length: 30 }, (_, i) => {
+    const dates = Array.from({ length: 14 }, (_, i) => {
       const d = new Date(today);
       d.setDate(today.getDate() + i);
-      const platforms = ["instagram", "linkedin", "tiktok", "youtube"];
-      const types = ["quick_tip_8", "talking_head_15", "educational_30", "testimonial_15"];
-      const categories = ["Education", "Tips", "Personal Brand", "Social Proof", "Trending"];
-      return {
-        day: i + 1,
-        date: d.toISOString().split("T")[0],
-        topic: `${input.industry} content idea ${i + 1}`,
-        hook: "Did you know...",
-        scriptOutline: `Share a valuable insight about ${input.industry} that your audience needs to hear.`,
-        platform: platforms[i % platforms.length],
-        contentType: types[i % types.length],
-        category: categories[i % categories.length],
-        whyThisWorks: "Consistent posting builds authority.",
-      };
+      return d.toISOString().split("T")[0];
     });
+    const fallback = generateFallbackCalendar(input.intake.industry, dates);
 
     await prisma.researchSession.update({
       where: { id: sessionId },
@@ -434,21 +480,27 @@ ${dates.map((d, i) => `Day ${i + 1}: ${d}`).join("\n")}`;
   }
 }
 
-// ─── Orchestrator: Fire All Agents ────────────────────────────────
+// ─── Orchestrator ─────────────────────────────────────────────────
 
 export async function launchResearch(
   sessionId: string,
-  input: { industry: string; companyName: string; websiteUrl?: string }
+  input: IntakeData
 ) {
   let business: BusinessResult;
   let trends: TrendsResult;
   let competitors: CompetitorResult;
 
   try {
+    // Fire agents 1-3 in parallel
     [business, trends, competitors] = await Promise.all([
       runBusinessAgent(sessionId, input),
-      runTrendsAgent(sessionId, { industry: input.industry }),
-      runCompetitorAgent(sessionId, { industry: input.industry, companyName: input.companyName }),
+      runTrendsAgent(sessionId, { industry: input.industry, platforms: input.platforms }),
+      runCompetitorAgent(sessionId, {
+        industry: input.industry,
+        companyName: input.companyName,
+        geography: input.geography,
+        websiteUrl: input.websiteUrl,
+      }),
     ]);
   } catch (e) {
     console.error("[launchResearch] Agents 1-3 failed:", e);
@@ -464,6 +516,65 @@ export async function launchResearch(
     business,
     trends,
     competitors,
-    industry: input.industry,
+    intake: input,
   });
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────
+
+/**
+ * Extract JSON from Claude's response text. Claude may wrap JSON in
+ * markdown code blocks or add surrounding text.
+ */
+function parseJsonFromResponse<T>(text: string, fallback: T): T {
+  // Try direct parse first
+  try {
+    return JSON.parse(text);
+  } catch {
+    // noop
+  }
+
+  // Try extracting from markdown code block
+  const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (codeBlockMatch) {
+    try {
+      return JSON.parse(codeBlockMatch[1].trim());
+    } catch {
+      // noop
+    }
+  }
+
+  // Try finding JSON array or object in the text
+  const jsonMatch = text.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
+  if (jsonMatch) {
+    try {
+      return JSON.parse(jsonMatch[1]);
+    } catch {
+      // noop
+    }
+  }
+
+  console.error("[parseJsonFromResponse] Could not extract JSON, using fallback");
+  return fallback;
+}
+
+function generateFallbackCalendar(industry: string, dates: string[]): CalendarDay[] {
+  const platforms = ["instagram", "linkedin", "tiktok", "youtube"];
+  const types = ["quick_tip_8", "talking_head_15", "educational_30", "testimonial_15"];
+  const categories = ["Education", "Tips", "Personal Brand", "Social Proof", "Trending"];
+
+  return dates.map((date, i) => ({
+    day: i + 1,
+    date,
+    topic: `${industry} content idea ${i + 1}`,
+    hook: "Did you know...",
+    script: `Share a valuable insight about ${industry} that your audience needs to hear. Keep it specific, actionable, and authentic to your experience.`,
+    caption: `New video! #${industry} #tips`,
+    hashtags: [`#${industry}`, "#tips", "#video"],
+    platform: platforms[i % platforms.length],
+    contentType: types[i % types.length],
+    category: categories[i % categories.length],
+    whyThisWorks: "Consistent posting builds authority.",
+    bestPostingTime: "9:00 AM",
+  }));
 }
