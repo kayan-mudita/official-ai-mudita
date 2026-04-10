@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import CookieConsent from "@/components/marketing/CookieConsent";
+import { siteUrl, siteEmail, siteName } from "@/lib/site-config";
 import "./globals.css";
 
 // System font stack — no external font downloads required.
@@ -10,8 +11,6 @@ const inter = {
   variable: fontVariable,
   className: "",
 };
-
-const siteUrl = "https://officialai.com";
 
 export const metadata: Metadata = {
   title: {
@@ -30,14 +29,14 @@ export const metadata: Metadata = {
     "content automation",
     "Official AI",
   ],
-  authors: [{ name: "Official AI" }],
-  creator: "Official AI",
+  authors: [{ name: siteName }],
+  creator: siteName,
   metadataBase: new URL(siteUrl),
   openGraph: {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    siteName: "Official AI",
+    siteName,
     title: "Official AI — Your AI Twin, Posting for You",
     description:
       "Upload a few photos. Get studio-quality social media videos featuring your face and voice. No filming. No editing. No crew.",
@@ -56,7 +55,7 @@ export const metadata: Metadata = {
     description:
       "Upload a few photos. Get studio-quality social media videos featuring your face and voice. No filming. No editing. No crew.",
     images: [`${siteUrl}/og-image.png`],
-    creator: "@officialai",
+    creator: "@theofficialai",
   },
   robots: {
     index: true,
@@ -74,45 +73,25 @@ export const metadata: Metadata = {
   },
 };
 
-const softwareApplicationSchema = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "Official AI",
-  applicationCategory: "MultimediaApplication",
-  operatingSystem: "Web",
-  description:
-    "AI-powered video content creation platform. Upload photos, get studio-quality social media videos with your face and voice.",
-  url: siteUrl,
-  offers: {
-    "@type": "Offer",
-    price: "79.00",
-    priceCurrency: "USD",
-    priceValidUntil: "2027-12-31",
-    availability: "https://schema.org/InStock",
-  },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.9",
-    ratingCount: "200",
-    bestRating: "5",
-  },
-};
-
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Official AI",
+  "@id": `${siteUrl}/#organization`,
+  name: siteName,
   url: siteUrl,
-  logo: `${siteUrl}/og-image.png`,
+  logo: {
+    "@type": "ImageObject",
+    url: `${siteUrl}/logo.png`,
+  },
   foundingDate: "2025",
-  email: "hello@officialai.com",
+  email: siteEmail,
   sameAs: [
-    "https://twitter.com/officialai",
-    "https://linkedin.com/company/officialai",
+    "https://twitter.com/theofficialai",
+    "https://linkedin.com/company/theofficialai",
   ],
   contactPoint: {
     "@type": "ContactPoint",
-    email: "hello@officialai.com",
+    email: siteEmail,
     contactType: "customer service",
   },
 };
@@ -120,8 +99,10 @@ const organizationSchema = {
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Official AI",
+  "@id": `${siteUrl}/#website`,
+  name: siteName,
   url: siteUrl,
+  publisher: { "@id": `${siteUrl}/#organization` },
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -138,12 +119,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="theme-color" content="#050508" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(softwareApplicationSchema),
-          }}
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ForRealtorsClient from "./ForRealtorsClient";
+import { siteUrl } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "AI Video Content for Realtors",
@@ -13,9 +14,10 @@ const serviceSchema = {
   "@type": "Service",
   name: "Official AI for Real Estate",
   description: "AI-powered video content creation for real estate professionals. Generate listing tours, market updates, and neighborhood guides.",
-  provider: { "@type": "Organization", name: "Official AI", url: "https://officialai.com" },
+  provider: { "@id": `${siteUrl}/#organization` },
   serviceType: "AI Video Generation",
   areaServed: "US",
+  audience: { "@type": "Audience", audienceType: "Real estate professionals" },
   offers: { "@type": "Offer", price: "79.00", priceCurrency: "USD" },
 };
 

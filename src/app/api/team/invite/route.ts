@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, errorResponse } from "@/lib/api-helpers";
+import { siteUrl } from "@/lib/site-config";
 
 /**
  * POST /api/team/invite
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
 
     // Generate a placeholder invite token
     const inviteToken = crypto.randomUUID().replace(/-/g, "").substring(0, 16);
-    const inviteLink = `https://officialai.com/invite/${inviteToken}`;
+    const inviteLink = `${siteUrl}/invite/${inviteToken}`;
 
     return NextResponse.json({
       success: true,

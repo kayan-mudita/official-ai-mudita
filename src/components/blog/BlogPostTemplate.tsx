@@ -15,6 +15,7 @@ import Eyebrow from "@/components/marketing/Eyebrow";
 import MeshMockup from "@/components/marketing/MeshMockup";
 import { getRelatedPosts, type BlogCategory } from "@/data/blog-posts";
 import { getFeaturesForCategory } from "@/data/blog-feature-map";
+import { siteUrl } from "@/lib/site-config";
 
 interface BlogPostProps {
   title: string;
@@ -60,7 +61,6 @@ export default function BlogPostTemplate({
   children,
   featuredImage,
 }: BlogPostProps) {
-  const siteUrl = "https://officialai.com";
   const postUrl = `${siteUrl}/blog/${slug}`;
   const brand = categoryBrand[category] ?? categoryBrand["AI Video"];
   const { lead, tail } = splitHeadline(title, 3);
@@ -74,12 +74,14 @@ export default function BlogPostTemplate({
     publisher: {
       "@type": "Organization",
       name: "Official AI",
-      logo: { "@type": "ImageObject", url: `${siteUrl}/og-image.png` },
+      logo: { "@type": "ImageObject", url: `${siteUrl}/logo.png` },
     },
     datePublished: date,
     dateModified: date,
     mainEntityOfPage: { "@type": "WebPage", "@id": postUrl },
-    image: `${siteUrl}/og-image.png`,
+    image: featuredImage?.src
+      ? `${siteUrl}${featuredImage.src}`
+      : `${siteUrl}/og-image.png`,
   };
 
   return (

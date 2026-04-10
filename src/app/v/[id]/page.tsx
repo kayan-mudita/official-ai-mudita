@@ -41,7 +41,7 @@ async function getVideo(id: string) {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const video = await getVideo(params.id);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://officialai.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.theofficial.ai";
 
   if (!video) {
     return {

@@ -18,6 +18,7 @@ import MobileSidebarNav from "@/components/pillar/MobileSidebarNav";
 import ReferencesSection from "@/components/pillar/ReferencesSection";
 import { getSubTopic } from "@/data/topic-libraries";
 import { getFeaturesForPillar } from "@/data/pillar-feature-map";
+import { siteUrl } from "@/lib/site-config";
 
 interface SubTopicPageTemplateProps {
   pillarSlug: string;
@@ -55,7 +56,6 @@ export default function SubTopicPageTemplate({
   if (!result) return null;
 
   const { pillar, subTopic, prevSubTopic, nextSubTopic } = result;
-  const siteUrl = "https://officialai.com";
   const pageUrl = `${siteUrl}/${pillarSlug}/${subTopicSlug}`;
   const brand = accentToBrand[pillar.accentColor] ?? accentToBrand.blue;
   const { lead, tail } = splitHeadline(subTopic.title, 2);
@@ -69,7 +69,7 @@ export default function SubTopicPageTemplate({
     publisher: {
       "@type": "Organization",
       name: "Official AI",
-      logo: { "@type": "ImageObject", url: `${siteUrl}/og-image.png` },
+      logo: { "@type": "ImageObject", url: `${siteUrl}/logo.png` },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     isPartOf: {

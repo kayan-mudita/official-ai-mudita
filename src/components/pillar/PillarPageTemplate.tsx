@@ -21,6 +21,7 @@ import MobileSidebarNav from "@/components/pillar/MobileSidebarNav";
 import ReferencesSection from "@/components/pillar/ReferencesSection";
 import { getPillarBySlug } from "@/data/topic-libraries";
 import { getFeaturesForPillar } from "@/data/pillar-feature-map";
+import { siteUrl } from "@/lib/site-config";
 
 interface TocItem {
   id: string;
@@ -64,7 +65,6 @@ export default function PillarPageTemplate({
   const pillar = getPillarBySlug(slug);
   if (!pillar) return null;
 
-  const siteUrl = "https://officialai.com";
   const pageUrl = `${siteUrl}/${slug}`;
   const brand = accentToBrand[pillar.accentColor] ?? accentToBrand.blue;
 
@@ -89,7 +89,7 @@ export default function PillarPageTemplate({
     publisher: {
       "@type": "Organization",
       name: "Official AI",
-      logo: { "@type": "ImageObject", url: `${siteUrl}/og-image.png` },
+      logo: { "@type": "ImageObject", url: `${siteUrl}/logo.png` },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     hasPart: pillar.subTopics.map((st) => ({

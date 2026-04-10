@@ -1066,7 +1066,7 @@ export default function HomeClient() {
                 </div>
 
                 <Link
-                  href="mailto:hello@officialai.com?subject=Enterprise%20Inquiry"
+                  href="mailto:hello@theofficial.ai?subject=Enterprise%20Inquiry"
                   className="group block text-center text-p2 font-semibold py-4 min-h-[52px] flex items-center justify-center rounded-xl border border-white/[0.1] text-white/80 hover:text-white hover:border-white/[0.2] hover:bg-white/[0.02] transition-all"
                 >
                   Talk to sales

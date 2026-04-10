@@ -738,7 +738,7 @@ function SettingsContent() {
                           </button>
                         ) : isEnterprise ? (
                           <a
-                            href="mailto:hello@officialai.com?subject=Enterprise%20Inquiry"
+                            href="mailto:hello@theofficial.ai?subject=Enterprise%20Inquiry"
                             className="mt-5 w-full btn-secondary gap-2 text-sm !py-2.5 inline-flex items-center justify-center"
                           >
                             Contact sales

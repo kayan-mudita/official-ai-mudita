@@ -11,9 +11,43 @@ Disallow: /auth/reset-password
 Disallow: /_next/
 Disallow: /v/
 
+# AI search & training bots — explicitly allow
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
 # Sitemap
-Sitemap: https://officialai.com/sitemap.xml
+Sitemap: https://www.theofficial.ai/sitemap.xml
 
 # LLMs
-LLMs-Txt: https://officialai.com/llms.txt
-LLMs-Full-Txt: https://officialai.com/llms-full.txt
+LLMs-Txt: https://www.theofficial.ai/llms.txt
+LLMs-Full-Txt: https://www.theofficial.ai/llms-full.txt

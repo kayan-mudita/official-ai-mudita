@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Quote, Sparkles } from "lucide-react";
+import { ArrowRight, Quote, ShieldCheck, Sparkles } from "lucide-react";
 import MarketingLayout from "@/components/marketing/MarketingLayout";
 import HeroAurora from "@/components/marketing/HeroAurora";
 import GradientText from "@/components/marketing/GradientText";
@@ -397,6 +397,40 @@ export default function IndustryPageTemplate({
                 );
               })}
             </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* Compliance & disclaimers — YMYL regulated professions only */}
+      {industry.compliance && (
+        <section className="relative py-20 px-6 border-t border-white/[0.04]">
+          <div className="max-w-3xl mx-auto">
+            <FadeIn>
+              <div className="flex items-start gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-7 sm:p-9">
+                <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5 text-white/70" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-p3 uppercase tracking-[0.18em] text-white/40 font-medium mb-3">
+                    {industry.compliance.eyebrow}
+                  </p>
+                  <h2 className="text-h3 font-semibold text-white leading-tight mb-4">
+                    {industry.compliance.heading}
+                  </h2>
+                  <p className="text-p2 text-white/65 leading-relaxed mb-5">
+                    {industry.compliance.body}
+                  </p>
+                  <ul className="space-y-3 text-p2 text-white/55 leading-relaxed">
+                    {industry.compliance.bullets.map((b, i) => (
+                      <li key={i} className="flex gap-3">
+                        <span aria-hidden className="mt-[9px] w-1 h-1 rounded-full bg-white/30 flex-shrink-0" />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </FadeIn>
           </div>
         </section>
       )}

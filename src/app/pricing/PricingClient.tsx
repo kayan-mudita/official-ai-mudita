@@ -501,7 +501,7 @@ export default function PricingClient() {
                   </p>
                 </div>
                 <Link
-                  href="mailto:hello@officialai.com?subject=Enterprise%20Inquiry"
+                  href="mailto:hello@theofficial.ai?subject=Enterprise%20Inquiry"
                   className="text-p3 font-medium px-5 py-2.5 min-h-[40px] flex items-center justify-center rounded-xl transition-all border border-white/[0.10] text-white/65 hover:text-white hover:border-white/[0.20]"
                 >
                   {enterprisePlan.cta}

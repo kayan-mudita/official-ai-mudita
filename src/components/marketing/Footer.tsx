@@ -198,16 +198,16 @@ export default function Footer() {
             </div>
 
             <a
-              href="mailto:hello@officialai.com"
+              href="mailto:hello@theofficial.ai"
               className="block text-p3 text-white/25 hover:text-white/50 transition-colors mt-5"
             >
-              hello@officialai.com
+              hello@theofficial.ai
             </a>
 
             {/* Social links */}
             <div className="flex flex-wrap items-center gap-2 mt-4">
               <a
-                href="https://twitter.com/officialai"
+                href="https://twitter.com/theofficialai"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/70 hover:border-white/[0.1] transition-all"
