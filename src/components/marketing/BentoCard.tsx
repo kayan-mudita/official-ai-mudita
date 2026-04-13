@@ -77,7 +77,7 @@ export default function BentoCard({
             </div>
           )}
           {eyebrow && (
-            <div className="text-p3 font-semibold uppercase tracking-wider text-white/40 mb-2">
+            <div className="text-p3 font-semibold uppercase tracking-wider text-white/70 mb-2">
               {eyebrow}
             </div>
           )}
@@ -92,7 +92,7 @@ export default function BentoCard({
           )}
           {description && (
             <p
-              className={`text-white/45 leading-relaxed ${
+              className={`text-white/70 leading-relaxed ${
                 hero ? "text-p1 max-w-xl" : "text-p2"
               }`}
             >

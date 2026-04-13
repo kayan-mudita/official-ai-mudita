@@ -21,6 +21,7 @@ import MobileSidebarNav from "@/components/pillar/MobileSidebarNav";
 import ReferencesSection from "@/components/pillar/ReferencesSection";
 import { getPillarBySlug } from "@/data/topic-libraries";
 import { getFeaturesForPillar } from "@/data/pillar-feature-map";
+import { siteUrl } from "@/lib/site-config";
 
 interface TocItem {
   id: string;
@@ -64,7 +65,6 @@ export default function PillarPageTemplate({
   const pillar = getPillarBySlug(slug);
   if (!pillar) return null;
 
-  const siteUrl = "https://officialai.com";
   const pageUrl = `${siteUrl}/${slug}`;
   const brand = accentToBrand[pillar.accentColor] ?? accentToBrand.blue;
 
@@ -89,7 +89,7 @@ export default function PillarPageTemplate({
     publisher: {
       "@type": "Organization",
       name: "Official AI",
-      logo: { "@type": "ImageObject", url: `${siteUrl}/og-image.png` },
+      logo: { "@type": "ImageObject", url: `${siteUrl}/logo.png` },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     hasPart: pillar.subTopics.map((st) => ({
@@ -224,8 +224,8 @@ export default function PillarPageTemplate({
                   }`}
                 />
                 <div className="flex items-center gap-2 mb-4">
-                  <BookOpen className="w-3.5 h-3.5 text-white/50" />
-                  <h2 className="text-p3 font-semibold text-white/50 uppercase tracking-wider">
+                  <BookOpen className="w-3.5 h-3.5 text-white/70" />
+                  <h2 className="text-p3 font-semibold text-white/70 uppercase tracking-wider">
                     In this guide
                   </h2>
                 </div>
@@ -234,9 +234,9 @@ export default function PillarPageTemplate({
                     <li key={item.id}>
                       <a
                         href={`#${item.id}`}
-                        className="group flex items-start gap-3 text-p2 text-white/45 hover:text-white/85 transition-colors"
+                        className="group flex items-start gap-3 text-p2 text-white/70 hover:text-white/85 transition-colors"
                       >
-                        <span className="text-white/20 group-hover:text-white/50 font-mono text-p3 mt-0.5 w-5 flex-shrink-0 transition-colors">
+                        <span className="text-white/70 group-hover:text-white/70 font-mono text-p3 mt-0.5 w-5 flex-shrink-0 transition-colors">
                           {String(i + 1).padStart(2, "0")}
                         </span>
                         {item.label}
@@ -249,7 +249,7 @@ export default function PillarPageTemplate({
 
             {/* Prose content */}
             <FadeIn delay={0.1} duration={0.6}>
-              <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:tracking-[-0.02em] prose-p:text-white/55 prose-p:leading-relaxed prose-a:text-utility-300 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/85 prose-li:text-white/55 prose-blockquote:border-special-500/40 prose-blockquote:bg-white/[0.02] prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-white/65 prose-h2:text-h3 prose-h2:mt-14 prose-h2:mb-4 prose-h3:text-title prose-h3:mt-8 prose-h3:mb-3 prose-figcaption:text-p3 prose-figcaption:text-white/35 prose-figcaption:text-center prose-figcaption:mt-2">
+              <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:tracking-[-0.02em] prose-p:text-white/70 prose-p:leading-relaxed prose-a:text-utility-300 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/85 prose-li:text-white/70 prose-blockquote:border-special-500/40 prose-blockquote:bg-white/[0.02] prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-white/70 prose-h2:text-h3 prose-h2:mt-14 prose-h2:mb-4 prose-h3:text-title prose-h3:mt-8 prose-h3:mb-3 prose-figcaption:text-p3 prose-figcaption:text-white/70 prose-figcaption:text-center prose-figcaption:mt-2">
                 {children}
               </div>
             </FadeIn>
@@ -287,7 +287,7 @@ export default function PillarPageTemplate({
                         title={st.title}
                         description={st.description}
                       >
-                        <span className="inline-flex items-center gap-1.5 text-p3 text-white/50 group-hover:text-white/85 transition-colors">
+                        <span className="inline-flex items-center gap-1.5 text-p3 text-white/70 group-hover:text-white/85 transition-colors">
                           Read chapter
                           <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                         </span>
@@ -364,11 +364,11 @@ export default function PillarPageTemplate({
                             <h3 className="text-p1 font-semibold text-white/90 mb-1">
                               {feature.shortLabel}
                             </h3>
-                            <p className="text-p2 text-white/45 leading-relaxed">
+                            <p className="text-p2 text-white/70 leading-relaxed">
                               {feature.subtitle}
                             </p>
                           </div>
-                          <ArrowRight className="flex-shrink-0 w-4 h-4 text-white/30 group-hover:text-white/70 group-hover:translate-x-0.5 transition-all mt-1" />
+                          <ArrowRight className="flex-shrink-0 w-4 h-4 text-white/70 group-hover:text-white/70 group-hover:translate-x-0.5 transition-all mt-1" />
                         </div>
                       </Link>
                     );
@@ -400,7 +400,7 @@ export default function PillarPageTemplate({
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               {pillar.leadMagnet.description}
             </p>
           </FadeIn>

@@ -176,7 +176,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-6 h-6 text-white/30 animate-spin" />
+        <Loader2 className="w-6 h-6 text-white/70 animate-spin" />
       </div>
     );
   }
@@ -184,7 +184,7 @@ export default function DashboardPage() {
   if (!data) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-white/40 text-sm">Failed to load dashboard</p>
+        <p className="text-white/70 text-sm">Failed to load dashboard</p>
       </div>
     );
   }
@@ -195,7 +195,7 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-          <p className="text-sm text-white/40 mt-0.5">Your AI content studio at a glance</p>
+          <p className="text-sm text-white/70 mt-0.5">Your AI content studio at a glance</p>
         </div>
         <Link
           href="/dashboard/generate"
@@ -249,7 +249,7 @@ export default function DashboardPage() {
                     <StatusIcon className={`w-4 h-4 ${cfg.color}`} />
                   </div>
                   <p className="text-sm font-semibold text-white">{block.title}</p>
-                  <p className="text-xs text-white/35 mt-0.5">{block.description}</p>
+                  <p className="text-xs text-white/70 mt-0.5">{block.description}</p>
                   {status !== "complete" && (
                     <span className="inline-flex items-center gap-1 mt-2.5 text-xs font-medium text-indigo-400 group-hover:text-indigo-300 transition-colors">
                       {block.cta}
@@ -277,7 +277,7 @@ export default function DashboardPage() {
           {data.pendingApprovals.length > 0 && (
             <Link
               href="/dashboard/approvals"
-              className="text-xs font-medium text-white/30 hover:text-white/60 transition-colors"
+              className="text-xs font-medium text-white/70 hover:text-white/60 transition-colors"
             >
               View all
             </Link>
@@ -286,8 +286,8 @@ export default function DashboardPage() {
 
         {data.pendingApprovals.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-white/[0.06] bg-white/[0.02]">
-            <CheckCircle2 className="w-8 h-8 text-white/15 mb-3" />
-            <p className="text-sm text-white/30 font-medium">You&apos;re all caught up</p>
+            <CheckCircle2 className="w-8 h-8 text-white/70 mb-3" />
+            <p className="text-sm text-white/70 font-medium">You&apos;re all caught up</p>
             <Link
               href="/dashboard/generate"
               className="mt-3 text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
@@ -307,7 +307,7 @@ export default function DashboardPage() {
                 className="group relative rounded-xl border border-white/[0.08] bg-white/[0.02] overflow-hidden hover:border-white/[0.12] transition-all"
               >
                 {/* Video preview / thumbnail */}
-                <div className="relative aspect-video bg-dark-900 flex items-center justify-center">
+                <div className="relative aspect-video bg-gray-900 flex items-center justify-center">
                   {video.videoUrl ? (
                     <video
                       src={video.videoUrl}
@@ -338,7 +338,7 @@ export default function DashboardPage() {
                   <p className="text-sm font-medium text-white truncate">
                     {video.title || "Untitled video"}
                   </p>
-                  <p className="text-xs text-white/30 mt-0.5">
+                  <p className="text-xs text-white/70 mt-0.5">
                     {video.model} &middot; {new Date(video.createdAt).toLocaleDateString()}
                   </p>
 
@@ -374,7 +374,7 @@ export default function DashboardPage() {
           <h2 className="text-lg font-semibold text-white">Your Impact</h2>
           <Link
             href="/dashboard/analytics"
-            className="text-xs font-medium text-white/30 hover:text-white/60 transition-colors"
+            className="text-xs font-medium text-white/70 hover:text-white/60 transition-colors"
           >
             Full analytics
           </Link>
@@ -441,8 +441,8 @@ function StatCard({
         <Icon className={`w-4 h-4 ${color}`} />
       </div>
       <p className="text-2xl font-bold text-white">{value}</p>
-      <p className="text-xs text-white/40 mt-0.5">{label}</p>
-      {sub && <p className="text-[11px] text-white/25 mt-0.5">{sub}</p>}
+      <p className="text-xs text-white/70 mt-0.5">{label}</p>
+      {sub && <p className="text-[11px] text-white/60 mt-0.5">{sub}</p>}
     </div>
   );
 }

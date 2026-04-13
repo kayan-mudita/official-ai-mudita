@@ -78,7 +78,7 @@ export default function TwinMockup() {
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-[9px] text-white/40">Likeness</span>
+                <span className="text-[9px] text-white/70">Likeness</span>
                 <span className="text-[9px] text-utility-300 font-mono">98%</span>
               </div>
               <div className="h-1 rounded-full bg-white/[0.06] overflow-hidden">
@@ -91,7 +91,7 @@ export default function TwinMockup() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[9px] text-white/40">Expression</span>
+                <span className="text-[9px] text-white/70">Expression</span>
                 <span className="text-[9px] text-utility-300 font-mono">94%</span>
               </div>
               <div className="h-1 rounded-full bg-white/[0.06] overflow-hidden">

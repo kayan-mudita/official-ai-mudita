@@ -223,7 +223,7 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
 
               <div className="ml-auto z-10">
                 <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                  <span className="text-[10px] text-white/40">→</span>
+                  <span className="text-[10px] text-white/70">→</span>
                 </div>
               </div>
             </motion.button>
@@ -236,11 +236,11 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
               className="group w-full flex items-center gap-4 px-5 py-4 rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:bg-white/[0.04] hover:border-white/[0.12] transition-all"
             >
               <div className="w-10 h-10 rounded-xl bg-white/[0.06] flex items-center justify-center flex-shrink-0">
-                <Upload className="w-4 h-4 text-white/35" />
+                <Upload className="w-4 h-4 text-white/70" />
               </div>
               <div className="text-left">
-                <p className="text-[14px] font-semibold text-white/55">Upload a photo</p>
-                <p className="text-[12px] text-white/25 mt-0.5">From your device</p>
+                <p className="text-[14px] font-semibold text-white/70">Upload a photo</p>
+                <p className="text-[12px] text-white/60 mt-0.5">From your device</p>
               </div>
             </motion.button>
 
@@ -255,7 +255,7 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
             )}
 
             {/* Trust signal */}
-            <p className="text-[11px] text-white/20 text-center pt-1">
+            <p className="text-[11px] text-white/70 text-center pt-1">
               🔒 Your photo is only used to build your AI twin. Never shared.
             </p>
           </motion.div>
@@ -301,7 +301,7 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
                 />
               </div>
 
-              <p className="absolute bottom-4 inset-x-0 text-center text-[12px] font-medium text-white/50">
+              <p className="absolute bottom-4 inset-x-0 text-center text-[12px] font-medium text-white/70">
                 Center your face ✦
               </p>
             </div>
@@ -309,7 +309,7 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
             <div className="flex items-center gap-3">
               <button
                 onClick={() => { stream?.getTracks().forEach((t) => t.stop()); setStream(null); setMode("choose"); }}
-                className="flex-1 py-3.5 rounded-xl border border-white/[0.08] text-[13px] font-medium text-white/35 hover:text-white/55 transition-colors"
+                className="flex-1 py-3.5 rounded-xl border border-white/[0.08] text-[13px] font-medium text-white/70 hover:text-white/70 transition-colors"
               >
                 Cancel
               </button>
@@ -367,7 +367,7 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
             <div className="flex items-center gap-3">
               <button
                 onClick={mode === "preview" ? retake : () => { setMode("choose"); setCapturedFile(null); setPreviewUrl(null); setQuality(null); }}
-                className="flex items-center justify-center gap-1.5 flex-1 py-3.5 rounded-xl border border-white/[0.08] text-[13px] font-medium text-white/35 hover:text-white/55 transition-colors"
+                className="flex items-center justify-center gap-1.5 flex-1 py-3.5 rounded-xl border border-white/[0.08] text-[13px] font-medium text-white/70 hover:text-white/70 transition-colors"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 {mode === "preview" ? "Retake" : "Different photo"}
@@ -399,7 +399,7 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-[12px] text-white/30 text-center"
+                className="text-[12px] text-white/70 text-center"
               >
                 Need a clearer photo for best results
               </motion.p>

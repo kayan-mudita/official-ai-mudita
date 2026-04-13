@@ -252,7 +252,7 @@ export default function IntelligencePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
+        <Loader2 className="w-5 h-5 text-white/70 animate-spin" />
       </div>
     );
   }
@@ -272,7 +272,7 @@ export default function IntelligencePage() {
           <Brain className="w-5 h-5 text-purple-400" />
           <h1 className="text-2xl font-bold">Content Intelligence</h1>
         </div>
-        <p className="text-sm text-white/40">
+        <p className="text-sm text-white/70">
           Industry benchmarks and insights for {benchmarks.industry}
         </p>
       </div>
@@ -285,12 +285,12 @@ export default function IntelligencePage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
           <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.04]">
-            <p className="text-xs text-white/30 mb-1">Your Pace</p>
-            <p className="text-2xl font-bold text-white">{userPostsPerWeek}x<span className="text-sm font-normal text-white/30">/week</span></p>
+            <p className="text-xs text-white/70 mb-1">Your Pace</p>
+            <p className="text-2xl font-bold text-white">{userPostsPerWeek}x<span className="text-sm font-normal text-white/70">/week</span></p>
           </div>
           <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.04]">
-            <p className="text-xs text-white/30 mb-1">Industry Average</p>
-            <p className="text-2xl font-bold text-white">{benchmarks.avgPostsPerWeek}x<span className="text-sm font-normal text-white/30">/week</span></p>
+            <p className="text-xs text-white/70 mb-1">Industry Average</p>
+            <p className="text-2xl font-bold text-white">{benchmarks.avgPostsPerWeek}x<span className="text-sm font-normal text-white/70">/week</span></p>
           </div>
           <div className="p-4 rounded-xl bg-blue-500/[0.06] border border-blue-500/[0.12]">
             <p className="text-xs text-blue-400/60 mb-1">Top Performers</p>
@@ -325,7 +325,7 @@ export default function IntelligencePage() {
           <BarChart3 className="w-4 h-4 text-green-400" />
           <h2 className="text-[15px] font-semibold text-white/90">Best Performing Formats</h2>
         </div>
-        <p className="text-sm text-white/35 mb-5">
+        <p className="text-sm text-white/70 mb-5">
           Based on engagement data from thousands of {benchmarks.industry.toLowerCase()} creators
         </p>
         <div className="space-y-3">
@@ -335,14 +335,14 @@ export default function IntelligencePage() {
             return (
               <div key={format.format} className="flex items-center gap-4">
                 <div className="w-8 text-center">
-                  <span className={`text-sm font-bold ${i === 0 ? "text-green-400" : "text-white/40"}`}>
+                  <span className={`text-sm font-bold ${i === 0 ? "text-green-400" : "text-white/70"}`}>
                     #{i + 1}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium text-white/80">{format.format}</span>
-                    <span className="text-xs text-white/30">
+                    <span className="text-xs text-white/70">
                       {format.engagementMultiplier}x engagement
                     </span>
                   </div>
@@ -364,9 +364,9 @@ export default function IntelligencePage() {
           })}
         </div>
         <div className="mt-4 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-          <p className="text-xs text-white/30">
-            <span className="text-white/50 font-medium">{benchmarks.bestFormats[0].format}</span> get{" "}
-            <span className="text-white/50 font-medium">
+          <p className="text-xs text-white/70">
+            <span className="text-white/70 font-medium">{benchmarks.bestFormats[0].format}</span> get{" "}
+            <span className="text-white/70 font-medium">
               {benchmarks.bestFormats[0].engagementMultiplier}x more engagement
             </span>{" "}
             than {benchmarks.bestFormats[benchmarks.bestFormats.length - 1].format.toLowerCase()} in{" "}
@@ -381,7 +381,7 @@ export default function IntelligencePage() {
           <Clock className="w-4 h-4 text-purple-400" />
           <h2 className="text-[15px] font-semibold text-white/90">Best Posting Times</h2>
         </div>
-        <p className="text-sm text-white/35 mb-5">
+        <p className="text-sm text-white/70 mb-5">
           Peak engagement windows for {benchmarks.industry.toLowerCase()} content
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -397,13 +397,13 @@ export default function IntelligencePage() {
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
                 i === 0 ? "bg-purple-500/20" : "bg-white/[0.04]"
               }`}>
-                <Calendar className={`w-4 h-4 ${i === 0 ? "text-purple-400" : "text-white/25"}`} />
+                <Calendar className={`w-4 h-4 ${i === 0 ? "text-purple-400" : "text-white/60"}`} />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-white/80">
                   {slot.day} at {slot.time}
                 </p>
-                <p className="text-xs text-white/30 mt-0.5">
+                <p className="text-xs text-white/70 mt-0.5">
                   Engagement index: {slot.engagementIndex}/100
                 </p>
               </div>
@@ -423,18 +423,18 @@ export default function IntelligencePage() {
           <TrendingUp className="w-4 h-4 text-cyan-400" />
           <h2 className="text-[15px] font-semibold text-white/90">Industry Trend</h2>
         </div>
-        <p className="text-sm text-white/50 leading-relaxed">{benchmarks.growthTrend}</p>
+        <p className="text-sm text-white/70 leading-relaxed">{benchmarks.growthTrend}</p>
         <div className="flex items-center gap-4 mt-4 pt-4 border-t border-white/[0.04]">
           <div className="flex items-center gap-2">
-            <Video className="w-4 h-4 text-white/25" />
-            <span className="text-xs text-white/30">
-              Avg views per video: <span className="text-white/50 font-medium">{benchmarks.avgViewsPerVideo.toLocaleString()}</span>
+            <Video className="w-4 h-4 text-white/60" />
+            <span className="text-xs text-white/70">
+              Avg views per video: <span className="text-white/70 font-medium">{benchmarks.avgViewsPerVideo.toLocaleString()}</span>
             </span>
           </div>
           <div className="flex items-center gap-2">
             <ArrowUpRight className="w-4 h-4 text-green-400/50" />
-            <span className="text-xs text-white/30">
-              Top engagement rate: <span className="text-white/50 font-medium">{benchmarks.topPerformerEngagementRate}%</span>
+            <span className="text-xs text-white/70">
+              Top engagement rate: <span className="text-white/70 font-medium">{benchmarks.topPerformerEngagementRate}%</span>
             </span>
           </div>
         </div>
@@ -445,8 +445,8 @@ export default function IntelligencePage() {
 
       {/* Disclaimer */}
       <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
-        <AlertCircle className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
-        <p className="text-[11px] text-white/25">
+        <AlertCircle className="w-3.5 h-3.5 text-white/70 flex-shrink-0" />
+        <p className="text-[11px] text-white/60">
           Algorithm insights are based on aggregated industry data and platform announcements. Individual results may vary based on niche, audience, and content quality.
         </p>
       </div>
@@ -471,12 +471,12 @@ function AlgorithmUpdates() {
           </div>
           <div>
             <h2 className="text-[15px] font-semibold text-white/90">Algorithm Updates</h2>
-            <p className="text-[12px] text-white/30">Week of March 24-30, 2026</p>
+            <p className="text-[12px] text-white/70">Week of March 24-30, 2026</p>
           </div>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.04]">
-          <Clock className="w-3.5 h-3.5 text-white/25" />
-          <span className="text-[11px] text-white/35">Updated March 26, 2026</span>
+          <Clock className="w-3.5 h-3.5 text-white/60" />
+          <span className="text-[11px] text-white/70">Updated March 26, 2026</span>
         </div>
       </div>
 
@@ -489,7 +489,7 @@ function AlgorithmUpdates() {
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize ${
               platformFilter === p
                 ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                : "text-white/40 hover:text-white/60 border border-transparent"
+                : "text-white/70 hover:text-white/60 border border-transparent"
             }`}
           >
             {p === "all" ? "All Platforms" : p}
@@ -528,16 +528,16 @@ function AlgorithmUpdates() {
                         {conf.label}
                       </span>
                     </div>
-                    <p className={`text-[12px] text-white/40 leading-relaxed ${isExpanded ? "" : "line-clamp-2"}`}>
+                    <p className={`text-[12px] text-white/70 leading-relaxed ${isExpanded ? "" : "line-clamp-2"}`}>
                       {insight.insight}
                     </p>
                   </div>
 
                   {/* Expand indicator */}
                   {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-white/20 flex-shrink-0" />
+                    <ChevronUp className="w-4 h-4 text-white/70 flex-shrink-0" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-white/20 flex-shrink-0" />
+                    <ChevronDown className="w-4 h-4 text-white/70 flex-shrink-0" />
                   )}
                 </div>
 
@@ -548,7 +548,7 @@ function AlgorithmUpdates() {
                       <Zap className="w-3.5 h-3.5" />
                       {insight.actionText}
                     </button>
-                    <span className="text-[10px] text-white/20 capitalize">
+                    <span className="text-[10px] text-white/70 capitalize">
                       {insight.category}
                     </span>
                   </div>
@@ -561,14 +561,14 @@ function AlgorithmUpdates() {
 
       {/* Weekly Summary */}
       <div className="mt-5 pt-5 border-t border-white/[0.04]">
-        <h3 className="text-[13px] font-medium text-white/50 mb-3">This Week&apos;s Key Takeaways</h3>
+        <h3 className="text-[13px] font-medium text-white/70 mb-3">This Week&apos;s Key Takeaways</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="px-3 py-3 rounded-xl bg-pink-500/[0.04] border border-pink-500/[0.08]">
             <div className="flex items-center gap-2 mb-1.5">
               <Instagram className="w-3.5 h-3.5 text-pink-400/70" />
               <span className="text-[11px] font-medium text-pink-400/70">Instagram</span>
             </div>
-            <p className="text-[11px] text-white/40 leading-relaxed">
+            <p className="text-[11px] text-white/70 leading-relaxed">
               Focus on carousels and short Reels. Collab posts getting extra reach boost.
             </p>
           </div>
@@ -577,7 +577,7 @@ function AlgorithmUpdates() {
               <TikTokIcon className="w-3.5 h-3.5 text-cyan-400/70" />
               <span className="text-[11px] font-medium text-cyan-400/70">TikTok</span>
             </div>
-            <p className="text-[11px] text-white/40 leading-relaxed">
+            <p className="text-[11px] text-white/70 leading-relaxed">
               15-second videos are king. Reply-to-comment videos getting 3x distribution.
             </p>
           </div>
@@ -586,7 +586,7 @@ function AlgorithmUpdates() {
               <LinkedInIcon className="w-3.5 h-3.5 text-blue-400/70" />
               <span className="text-[11px] font-medium text-blue-400/70">LinkedIn</span>
             </div>
-            <p className="text-[11px] text-white/40 leading-relaxed">
+            <p className="text-[11px] text-white/70 leading-relaxed">
               Tuesday 8am is the sweet spot. Document posts outperforming text by 60%.
             </p>
           </div>

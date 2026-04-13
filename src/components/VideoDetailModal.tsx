@@ -72,7 +72,7 @@ const statusStyles: Record<string, string> = {
   review: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
   scheduled: "bg-blue-500/10 text-blue-400 border-blue-500/20",
   approved: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  draft: "bg-white/[0.06] text-white/40 border-white/[0.06]",
+  draft: "bg-white/[0.06] text-white/70 border-white/[0.06]",
   generating: "bg-purple-500/10 text-purple-400 border-purple-500/20",
   failed: "bg-red-500/10 text-red-400 border-red-500/20",
 };
@@ -136,7 +136,7 @@ function CopyButton({ text }: { text: string }) {
       {copied ? (
         <Check className="w-3.5 h-3.5 text-green-400" />
       ) : (
-        <Copy className="w-3.5 h-3.5 text-white/30" />
+        <Copy className="w-3.5 h-3.5 text-white/70" />
       )}
     </button>
   );
@@ -316,10 +316,10 @@ export default function VideoDetailModal({
               {video.status === "generating" ? (
                 <>
                   <Loader2 className="w-10 h-10 text-purple-400/60 animate-spin mb-4" />
-                  <p className="text-sm text-white/30 font-medium">
+                  <p className="text-sm text-white/70 font-medium">
                     Generating video...
                   </p>
-                  <p className="text-xs text-white/15 mt-1">
+                  <p className="text-xs text-white/70 mt-1">
                     This may take a few minutes
                   </p>
                 </>
@@ -329,27 +329,27 @@ export default function VideoDetailModal({
                   <p className="text-sm text-red-400/70 font-medium">
                     Generation failed
                   </p>
-                  <p className="text-xs text-white/15 mt-1">
+                  <p className="text-xs text-white/70 mt-1">
                     {errorMessage || "Something went wrong. Try again."}
                   </p>
                 </>
               ) : isDemoOrInvalidUrl(video.videoUrl) && video.videoUrl ? (
                 <>
                   <Film className="w-10 h-10 text-white/[0.08] mb-4" />
-                  <p className="text-sm text-white/25 font-medium">
+                  <p className="text-sm text-white/60 font-medium">
                     Demo mode — no real video
                   </p>
-                  <p className="text-xs text-white/15 mt-1">
+                  <p className="text-xs text-white/70 mt-1">
                     This video was generated in demo mode without API keys configured.
                   </p>
                 </>
               ) : (
                 <>
                   <Film className="w-10 h-10 text-white/[0.08] mb-4" />
-                  <p className="text-sm text-white/25 font-medium">
+                  <p className="text-sm text-white/60 font-medium">
                     No video yet
                   </p>
-                  <p className="text-xs text-white/15 mt-1">
+                  <p className="text-xs text-white/70 mt-1">
                     Video will appear here once generated
                   </p>
                 </>
@@ -365,7 +365,7 @@ export default function VideoDetailModal({
             className={`flex-1 py-3 text-[13px] font-medium transition-colors border-b-2 ${
               activeTab === "details"
                 ? "text-white/90 border-blue-500"
-                : "text-white/30 border-transparent hover:text-white/50"
+                : "text-white/70 border-transparent hover:text-white/70"
             }`}
           >
             Details
@@ -375,7 +375,7 @@ export default function VideoDetailModal({
             className={`flex-1 py-3 text-[13px] font-medium transition-colors border-b-2 flex items-center justify-center gap-2 ${
               activeTab === "posting"
                 ? "text-white/90 border-blue-500"
-                : "text-white/30 border-transparent hover:text-white/50"
+                : "text-white/70 border-transparent hover:text-white/70"
             }`}
           >
             <Package className="w-3.5 h-3.5" />
@@ -402,7 +402,7 @@ export default function VideoDetailModal({
 
             {/* Description */}
             {video.description && (
-              <p className="text-sm text-white/40 leading-relaxed">
+              <p className="text-sm text-white/70 leading-relaxed">
                 {video.description}
               </p>
             )}
@@ -410,26 +410,26 @@ export default function VideoDetailModal({
             {/* Metadata grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04]">
-                <Cpu className="w-3.5 h-3.5 text-white/25" />
-                <span className="text-xs text-white/50">
+                <Cpu className="w-3.5 h-3.5 text-white/60" />
+                <span className="text-xs text-white/70">
                   {modelLabels[video.model] || video.model}
                 </span>
               </div>
               <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04]">
-                <Clock className="w-3.5 h-3.5 text-white/25" />
-                <span className="text-xs text-white/50">
+                <Clock className="w-3.5 h-3.5 text-white/60" />
+                <span className="text-xs text-white/70">
                   {formatDuration(video.duration)}
                 </span>
               </div>
               <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04]">
-                <Tag className="w-3.5 h-3.5 text-white/25" />
-                <span className="text-xs text-white/50">
+                <Tag className="w-3.5 h-3.5 text-white/60" />
+                <span className="text-xs text-white/70">
                   {formatContentType(video.contentType)}
                 </span>
               </div>
               <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04]">
-                <Calendar className="w-3.5 h-3.5 text-white/25" />
-                <span className="text-xs text-white/50">
+                <Calendar className="w-3.5 h-3.5 text-white/60" />
+                <span className="text-xs text-white/70">
                   {new Date(video.createdAt).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -439,7 +439,7 @@ export default function VideoDetailModal({
             </div>
 
             {/* Created date full */}
-            <p className="text-xs text-white/20">
+            <p className="text-xs text-white/70">
               Created {formatDate(video.createdAt)}
             </p>
 
@@ -447,13 +447,13 @@ export default function VideoDetailModal({
             {scriptText && (
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <FileText className="w-3.5 h-3.5 text-white/25" />
-                  <span className="text-xs font-medium text-white/40 uppercase tracking-wider">
+                  <FileText className="w-3.5 h-3.5 text-white/60" />
+                  <span className="text-xs font-medium text-white/70 uppercase tracking-wider">
                     Script / Prompt
                   </span>
                 </div>
                 <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] max-h-64 overflow-y-auto">
-                  <pre className="text-xs text-white/35 leading-relaxed whitespace-pre-wrap font-sans">
+                  <pre className="text-xs text-white/70 leading-relaxed whitespace-pre-wrap font-sans">
                     {displayScript}
                     {scriptIsLong && !scriptExpanded && "..."}
                   </pre>
@@ -474,14 +474,14 @@ export default function VideoDetailModal({
               <div className="flex items-center gap-3 pt-2">
                 <button
                   onClick={() => onPaywall ? onPaywall("download") : undefined}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] text-white/50 text-sm font-medium border border-white/[0.06] hover:bg-white/[0.07] hover:text-white/70 transition-all"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] text-white/70 text-sm font-medium border border-white/[0.06] hover:bg-white/[0.07] hover:text-white/70 transition-all"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
                   Download
                 </button>
                 <button
                   onClick={() => onPaywall ? onPaywall("share") : undefined}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] text-white/50 text-sm font-medium border border-white/[0.06] hover:bg-white/[0.07] hover:text-white/70 transition-all"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] text-white/70 text-sm font-medium border border-white/[0.06] hover:bg-white/[0.07] hover:text-white/70 transition-all"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" /></svg>
                   Share
@@ -560,14 +560,14 @@ export default function VideoDetailModal({
           <div className="p-6 space-y-5">
             {packageLoading && (
               <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
+                <Loader2 className="w-5 h-5 text-white/70 animate-spin" />
               </div>
             )}
 
             {!packageLoading && !postingPackage && (
               <div className="text-center py-16">
-                <Package className="w-8 h-8 text-white/15 mx-auto mb-3" />
-                <p className="text-sm text-white/30 mb-4">Generate captions and posting recommendations</p>
+                <Package className="w-8 h-8 text-white/70 mx-auto mb-3" />
+                <p className="text-sm text-white/70 mb-4">Generate captions and posting recommendations</p>
                 <button
                   onClick={generatePostingPackage}
                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20 hover:bg-blue-500/20 transition-all"
@@ -592,7 +592,7 @@ export default function VideoDetailModal({
                         className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all border ${
                           activePlatform === platform
                             ? config.bgColor + " " + config.color
-                            : "text-white/30 border-white/[0.04] hover:border-white/[0.08] hover:text-white/50"
+                            : "text-white/70 border-white/[0.04] hover:border-white/[0.08] hover:text-white/70"
                         }`}
                       >
                         <PIcon className="w-3.5 h-3.5" />
@@ -605,13 +605,13 @@ export default function VideoDetailModal({
                 {/* Caption */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-medium text-white/40 uppercase tracking-wider">
+                    <span className="text-xs font-medium text-white/70 uppercase tracking-wider">
                       {platformConfig[activePlatform].label} Caption
                     </span>
                     <CopyButton text={postingPackage.captions[activePlatform]} />
                   </div>
                   <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] max-h-48 overflow-y-auto">
-                    <p className="text-[13px] text-white/50 leading-relaxed whitespace-pre-wrap">
+                    <p className="text-[13px] text-white/70 leading-relaxed whitespace-pre-wrap">
                       {postingPackage.captions[activePlatform]}
                     </p>
                   </div>
@@ -619,12 +619,12 @@ export default function VideoDetailModal({
 
                 {/* Recommended posting time */}
                 <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.04]">
-                  <Clock className="w-4 h-4 text-white/30 flex-shrink-0" />
+                  <Clock className="w-4 h-4 text-white/70 flex-shrink-0" />
                   <div className="flex-1">
                     <div className="text-[13px] text-white/70 font-medium">
                       Best time: {postingPackage.recommendedTimes[activePlatform].day} at {postingPackage.recommendedTimes[activePlatform].time}
                     </div>
-                    <div className="text-[11px] text-white/30 mt-0.5">
+                    <div className="text-[11px] text-white/70 mt-0.5">
                       {postingPackage.recommendedTimes[activePlatform].reason}
                     </div>
                   </div>
@@ -634,8 +634,8 @@ export default function VideoDetailModal({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Hash className="w-3.5 h-3.5 text-white/25" />
-                      <span className="text-xs font-medium text-white/40 uppercase tracking-wider">
+                      <Hash className="w-3.5 h-3.5 text-white/60" />
+                      <span className="text-xs font-medium text-white/70 uppercase tracking-wider">
                         Hashtags ({postingPackage.hashtags.length})
                       </span>
                     </div>
@@ -645,7 +645,7 @@ export default function VideoDetailModal({
                     {postingPackage.hashtags.map((tag) => (
                       <span
                         key={tag}
-                        className="text-[11px] px-2 py-1 rounded-lg bg-white/[0.04] text-white/40 border border-white/[0.04]"
+                        className="text-[11px] px-2 py-1 rounded-lg bg-white/[0.04] text-white/70 border border-white/[0.04]"
                       >
                         {tag}
                       </span>
@@ -657,7 +657,7 @@ export default function VideoDetailModal({
                 <button
                   onClick={generatePostingPackage}
                   disabled={packageLoading}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] text-white/40 text-sm font-medium border border-white/[0.04] hover:bg-white/[0.06] hover:text-white/60 transition-all"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] text-white/70 text-sm font-medium border border-white/[0.04] hover:bg-white/[0.06] hover:text-white/60 transition-all"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   Regenerate Package

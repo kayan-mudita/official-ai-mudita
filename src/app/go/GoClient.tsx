@@ -14,7 +14,7 @@ const features = [
 
 export default function GoClient() {
   return (
-    <div className="min-h-screen bg-[#060911] text-white">
+    <div className="min-h-screen bg-[#0c0f11] text-white">
       {/* Full-bleed landing page -- no navbar, no footer */}
       <div className="relative">
         {/* Background effects */}
@@ -48,7 +48,7 @@ export default function GoClient() {
             </h1>
 
             {/* Subtext */}
-            <p className="text-title sm:text-h4 text-white/40 max-w-lg mx-auto mb-12 leading-relaxed">
+            <p className="text-title sm:text-h4 text-white/70 max-w-lg mx-auto mb-12 leading-relaxed">
               Your face. Your voice. AI does the rest. Stop paying thousands for
               video production. Start posting daily in 5 minutes.
             </p>
@@ -61,7 +61,7 @@ export default function GoClient() {
                   className="flex items-center gap-2.5"
                 >
                   <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  <span className="text-p2 text-white/50">{feature}</span>
+                  <span className="text-p2 text-white/70">{feature}</span>
                 </div>
               ))}
             </div>
@@ -75,7 +75,7 @@ export default function GoClient() {
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
 
-            <p className="text-p3 text-white/20 mt-6">
+            <p className="text-p3 text-white/70 mt-6">
               7-day free trial. Cancel anytime. No commitment.
             </p>
           </div>

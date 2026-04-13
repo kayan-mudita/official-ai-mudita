@@ -57,7 +57,7 @@ export function TrendVideoForm({ onSubmit, isGenerating }: TrendVideoFormProps) 
           value={topic}
           onChange={(e) => { setTopic(e.target.value); if (errors.topic) setErrors({}); }}
           placeholder="Luxury downtown condos with rooftop views..."
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[80px]"
+          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[80px]"
           rows={3}
         />
         {errors.topic && (
@@ -81,10 +81,10 @@ export function TrendVideoForm({ onSubmit, isGenerating }: TrendVideoFormProps) 
                   : "border-white/[0.04] hover:border-white/[0.08] hover:bg-white/[0.02]"
               }`}
             >
-              <div className={`text-[13px] font-medium ${visualStyle === opt.value ? "text-white/80" : "text-white/50"}`}>
+              <div className={`text-[13px] font-medium ${visualStyle === opt.value ? "text-white/80" : "text-white/70"}`}>
                 {opt.label}
               </div>
-              <div className="text-[10px] text-white/20 mt-0.5">{opt.description}</div>
+              <div className="text-[10px] text-white/70 mt-0.5">{opt.description}</div>
             </button>
           ))}
         </div>
@@ -108,10 +108,10 @@ export function TrendVideoForm({ onSubmit, isGenerating }: TrendVideoFormProps) 
                   : "border-white/[0.04] hover:border-white/[0.08] hover:bg-white/[0.02]"
               }`}
             >
-              <div className={`text-[16px] mb-1 ${musicStyle === opt.value ? "text-white/60" : "text-white/20"}`}>
+              <div className={`text-[16px] mb-1 ${musicStyle === opt.value ? "text-white/60" : "text-white/70"}`}>
                 {opt.icon}
               </div>
-              <div className={`text-[12px] font-medium ${musicStyle === opt.value ? "text-white/80" : "text-white/50"}`}>
+              <div className={`text-[12px] font-medium ${musicStyle === opt.value ? "text-white/80" : "text-white/70"}`}>
                 {opt.label}
               </div>
             </button>

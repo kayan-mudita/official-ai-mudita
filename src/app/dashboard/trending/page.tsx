@@ -118,7 +118,7 @@ export default function TrendingPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Trending Audio</h1>
-        <p className="text-sm text-white/40 mt-1">
+        <p className="text-sm text-white/70 mt-1">
           Popular tracks across Instagram and TikTok this week
         </p>
       </div>
@@ -126,8 +126,8 @@ export default function TrendingPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-white/30" />
-          <span className="text-xs text-white/40 uppercase tracking-wider">Platform</span>
+          <Filter className="w-4 h-4 text-white/70" />
+          <span className="text-xs text-white/70 uppercase tracking-wider">Platform</span>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {platforms.map((p) => (
@@ -137,7 +137,7 @@ export default function TrendingPage() {
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 platformFilter === p
                   ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                  : "text-white/40 hover:text-white/60 border border-transparent"
+                  : "text-white/70 hover:text-white/60 border border-transparent"
               }`}
             >
               {p === "All" ? "All" : p === "instagram" ? "Instagram" : "TikTok"}
@@ -145,7 +145,7 @@ export default function TrendingPage() {
           ))}
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-white/40 uppercase tracking-wider">Genre</span>
+          <span className="text-xs text-white/70 uppercase tracking-wider">Genre</span>
           {genres.slice(0, 6).map((g) => (
             <button
               key={g}
@@ -153,7 +153,7 @@ export default function TrendingPage() {
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize ${
                 genreFilter === g
                   ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                  : "text-white/40 hover:text-white/60 border border-transparent"
+                  : "text-white/70 hover:text-white/60 border border-transparent"
               }`}
             >
               {g}
@@ -163,7 +163,7 @@ export default function TrendingPage() {
       </div>
 
       {/* Results count */}
-      <p className="text-xs text-white/25">{filtered.length} track{filtered.length !== 1 ? "s" : ""}</p>
+      <p className="text-xs text-white/60">{filtered.length} track{filtered.length !== 1 ? "s" : ""}</p>
 
       {/* Track Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -183,7 +183,7 @@ export default function TrendingPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-[13px] font-semibold text-white/90 truncate">{track.name}</h3>
-                  <p className="text-[11px] text-white/30 truncate">{track.artist}</p>
+                  <p className="text-[11px] text-white/70 truncate">{track.artist}</p>
                 </div>
                 {track.trending && (
                   <TrendingUp className="w-3.5 h-3.5 text-green-400/70 flex-shrink-0" />
@@ -193,20 +193,20 @@ export default function TrendingPage() {
               {/* Metadata */}
               <div className="flex items-center gap-2 mb-3 flex-wrap">
                 {getPlatformBadge(track.platform)}
-                <span className="text-[10px] text-white/25 capitalize">{track.genre}</span>
-                <span className="text-[10px] text-white/15">|</span>
-                <span className="text-[10px] text-white/25">{track.bpm} BPM</span>
+                <span className="text-[10px] text-white/60 capitalize">{track.genre}</span>
+                <span className="text-[10px] text-white/70">|</span>
+                <span className="text-[10px] text-white/60">{track.bpm} BPM</span>
               </div>
 
               {/* Usage count */}
               <div className="flex items-center gap-2 mb-4">
-                <Play className="w-3 h-3 text-white/20" />
-                <span className="text-[12px] text-white/40 font-medium">{track.usageCount} uses this week</span>
+                <Play className="w-3 h-3 text-white/70" />
+                <span className="text-[12px] text-white/70 font-medium">{track.usageCount} uses this week</span>
               </div>
 
               {/* Mood tag */}
               <div className="flex items-center justify-between">
-                <span className="text-[10px] px-2 py-1 rounded-lg bg-white/[0.04] text-white/30 border border-white/[0.04]">
+                <span className="text-[10px] px-2 py-1 rounded-lg bg-white/[0.04] text-white/70 border border-white/[0.04]">
                   {track.mood}
                 </span>
 
@@ -243,9 +243,9 @@ export default function TrendingPage() {
       {/* Empty state */}
       {filtered.length === 0 && (
         <div className="text-center py-16 rounded-xl border border-white/[0.04] bg-white/[0.015]">
-          <Music className="w-8 h-8 text-white/15 mx-auto mb-3" />
+          <Music className="w-8 h-8 text-white/70 mx-auto mb-3" />
           <h3 className="text-[15px] font-semibold text-white/60 mb-1">No tracks match your filters</h3>
-          <p className="text-[13px] text-white/30">Try adjusting the platform or genre filter.</p>
+          <p className="text-[13px] text-white/70">Try adjusting the platform or genre filter.</p>
         </div>
       )}
     </div>

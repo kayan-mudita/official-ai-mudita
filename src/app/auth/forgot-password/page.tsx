@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
             </span>
           </Link>
           <h1 className="text-3xl font-bold mb-2">Reset your password</h1>
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-white/70">
             Enter your email to continue to password reset
           </p>
         </div>
@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
                 Email address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
                 <input
                   type="email"
                   value={email}
@@ -82,7 +82,7 @@ export default function ForgotPasswordPage() {
           </form>
         </div>
 
-        <p className="text-center text-white/40 mt-6 text-sm">
+        <p className="text-center text-white/70 mt-6 text-sm">
           <Link href="/auth/login" className="text-blue-400 hover:text-blue-300 font-medium inline-flex items-center gap-1">
             <ArrowLeft className="w-3 h-3" />
             Back to login

@@ -50,32 +50,31 @@ const colors = {
     50: "#FCF3FF",
   },
   utility: {
-    900: "#0C0F11",  // * designer
-    800: "#0C1A26",  // * designer
-    750: "#0C1A26",  // * designer
-    700: "#0A3A54",
+    900: "#0C1926",  // * Figma — darkest background, secondary button fill (dark)
+    800: "#0C0F11",  // * Figma — app background (dark mode), primary button fill (light)
+    700: "#153856",  // * Figma — primary button hover (dark), dark navy accent
     600: "#055779",
-    500: "#00749E",  // * anchor
+    500: "#00749E",  // * Figma — links, secondary button text (light)
     450: "#089FCC",
-    400: "#0FCBFF",  // * designer
-    300: "#6FDDFF",
-    200: "#C8F2FF",  // * designer
-    100: "#E1F6FF",  // * designer
-    75: "#ECF9FF",   // * designer
-    50: "#F6FCFF",   // * designer
+    400: "#0FCBFF",  // * Figma — mapped as utility-300 in Figma spec
+    300: "#0FCBFF",  // * Figma — accent/interactive highlight, hover text (dark)
+    200: "#C7F2FF",  // * Figma — light blue tint
+    100: "#E1F6FF",  // * Figma — primary light surface, tag bg (light)
+    75: "#ECF9FF",   // * Figma — nav toolbar background (light)
+    50: "#F6FCFF",   // * Figma — off-white background (light)
   },
   positive: {
-    900: "#0A2006",
-    800: "#073109",  // * designer
+    900: "#073109",  // * Figma — positive tag/micro bg (dark)
+    800: "#073109",  // * Figma
     750: "#0C4A08",
-    700: "#0F5D04",
+    700: "#117000",  // * Figma — positive dark accent
     600: "#107000",
-    500: "#117000",  // * anchor
+    500: "#117000",  // * Figma
     450: "#2EA320",
-    400: "#53E65B",  // * designer
-    300: "#83EE8A",
+    400: "#53E65B",  // * Figma — mapped as positive-300 in Figma spec
+    300: "#53E65B",  // * Figma — positive text, success indicator
     200: "#B3F5B6",
-    100: "#E1FFDE",  // * designer
+    100: "#E1FFDE",  // * Figma — positive tag bg (light)
     75: "#EEFEED",
     50: "#F6FFF5",
   },
@@ -95,7 +94,7 @@ const colors = {
     50: "#FFF5F7",
   },
   gray: {
-    "pure-dark": "#000000",
+    "pure-dark": "#070707",  // * Figma — absolute black, dark text on light
     900: "#181A1E",  // * designer
     800: "#37393E",  // * designer
     750: "#383D47",  // * designer
@@ -117,17 +116,18 @@ const colors = {
 // Corner Radius
 // ---------------------------------------------------------------------------
 const borderRadius = {
-  sm: "8px",       // Small — tiny corners in components
-  DEFAULT: "12px", // Most sizes and uses
-  display: "24px", // Drawers, modals, content presentations
+  sm: "8px",       // Small — checkboxes, mobile image containers
+  DEFAULT: "12px", // Most components — buttons, cards, form fields, tags
+  display: "24px", // Modals, drawers, elevated cards, site headers, nav toolbar
+  pill: "200px",   // Micro buttons, radio buttons, profile avatars
 };
 
 // ---------------------------------------------------------------------------
 // Elevation / Shadows
 // ---------------------------------------------------------------------------
 const boxShadow = {
-  lite: "0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06)",
-  sm: "0 4px 12px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08)",
+  lite: "0 4px 45px rgba(0, 0, 0, 0.05)",   // Figma — subtle elevation
+  sm: "0 4px 24px rgba(0, 0, 0, 0.10)",     // Figma — cards, elevated surfaces
 };
 
 module.exports = { fontSize, colors, borderRadius, boxShadow };

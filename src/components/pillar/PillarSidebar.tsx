@@ -86,7 +86,7 @@ export default function PillarSidebar({
       <div className="sticky top-24 space-y-6">
         {/* Pillar title */}
         <div className={`border-l-2 ${accentBorder} pl-3`}>
-          <div className="text-p3 text-white/25 uppercase tracking-wider mb-1 font-semibold">
+          <div className="text-p3 text-white/60 uppercase tracking-wider mb-1 font-semibold">
             Guide
           </div>
           <div className="text-p2 font-semibold text-white/80">{pillarTitle}</div>
@@ -96,7 +96,7 @@ export default function PillarSidebar({
         <div>
           <button
             onClick={() => setTopicsOpen(!topicsOpen)}
-            className="w-full flex items-center justify-between text-p3 font-medium text-white/40 uppercase tracking-wider mb-2"
+            className="w-full flex items-center justify-between text-p3 font-medium text-white/70 uppercase tracking-wider mb-2"
           >
             Topics
             <ChevronDown className={`w-3 h-3 transition-transform ${topicsOpen ? "rotate-180" : ""}`} />
@@ -107,7 +107,7 @@ export default function PillarSidebar({
                 <li key={st.slug}>
                   <Link
                     href={`/${pillarSlug}/${st.slug}`}
-                    className="block text-p3 text-white/30 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
+                    className="block text-p3 text-white/70 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
                   >
                     {st.title}
                   </Link>
@@ -122,7 +122,7 @@ export default function PillarSidebar({
           <div>
             <button
               onClick={() => setBlogsOpen(!blogsOpen)}
-              className="w-full flex items-center justify-between text-p3 font-medium text-white/40 uppercase tracking-wider mb-2"
+              className="w-full flex items-center justify-between text-p3 font-medium text-white/70 uppercase tracking-wider mb-2"
             >
               Articles
               <ChevronDown className={`w-3 h-3 transition-transform ${blogsOpen ? "rotate-180" : ""}`} />
@@ -133,7 +133,7 @@ export default function PillarSidebar({
                   <li key={slug}>
                     <Link
                       href={`/blog/${slug}`}
-                      className="block text-p3 text-white/30 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
+                      className="block text-p3 text-white/70 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
                     >
                       {formatBlogSlug(slug)}
                     </Link>
@@ -149,7 +149,7 @@ export default function PillarSidebar({
           <div>
             <button
               onClick={() => setIndustryOpen(!industryOpen)}
-              className="w-full flex items-center justify-between text-p3 font-medium text-white/40 uppercase tracking-wider mb-2"
+              className="w-full flex items-center justify-between text-p3 font-medium text-white/70 uppercase tracking-wider mb-2"
             >
               Industries
               <ChevronDown className={`w-3 h-3 transition-transform ${industryOpen ? "rotate-180" : ""}`} />
@@ -160,7 +160,7 @@ export default function PillarSidebar({
                   <li key={slug}>
                     <Link
                       href={`/for/${slug}`}
-                      className="block text-p3 text-white/30 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
+                      className="block text-p3 text-white/70 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
                     >
                       {industryLabels[slug] || slug}
                     </Link>
@@ -174,7 +174,7 @@ export default function PillarSidebar({
         {/* Cross-link pillars */}
         {crossLinkPillarSlugs.length > 0 && (
           <div>
-            <div className="text-p3 font-medium text-white/40 uppercase tracking-wider mb-2">
+            <div className="text-p3 font-medium text-white/70 uppercase tracking-wider mb-2">
               Related Guides
             </div>
             <ul className="space-y-1">
@@ -182,7 +182,7 @@ export default function PillarSidebar({
                 <li key={slug}>
                   <Link
                     href={`/${slug}`}
-                    className="block text-p3 text-white/30 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
+                    className="block text-p3 text-white/70 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
                   >
                     {pillarLabels[slug] || formatBlogSlug(slug)}
                   </Link>
@@ -204,7 +204,7 @@ export default function PillarSidebar({
           <p className="text-p3 font-semibold text-white/70 mb-1">
             See it in action
           </p>
-          <p className="text-p3 text-white/30 mb-3 leading-relaxed">
+          <p className="text-p3 text-white/70 mb-3 leading-relaxed">
             Try the free demo — no signup required.
           </p>
           <Link

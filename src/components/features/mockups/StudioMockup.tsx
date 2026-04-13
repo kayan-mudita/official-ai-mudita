@@ -48,7 +48,7 @@ export default function StudioMockup() {
                 className={`px-3 py-1.5 rounded-full border text-[11px] font-medium ${
                   i === 0
                     ? "bg-special-500/[0.12] border-special-500/40 text-special-200"
-                    : "bg-white/[0.03] border-white/[0.08] text-white/40"
+                    : "bg-white/[0.03] border-white/[0.08] text-white/70"
                 }`}
               >
                 {f}
@@ -66,7 +66,7 @@ export default function StudioMockup() {
                 TIMELINE · 5 CUTS
               </span>
             </div>
-            <span className="text-[10px] font-mono text-white/35">
+            <span className="text-[10px] font-mono text-white/70">
               00:00 — 00:48
             </span>
           </div>
@@ -91,7 +91,7 @@ export default function StudioMockup() {
                     </div>
                     <div className="absolute bottom-1 left-1 right-1 h-0.5 rounded-full bg-white/15" />
                   </motion.div>
-                  <span className="text-[8px] text-white/40 font-medium">
+                  <span className="text-[8px] text-white/70 font-medium">
                     {cut.label}
                   </span>
                 </div>

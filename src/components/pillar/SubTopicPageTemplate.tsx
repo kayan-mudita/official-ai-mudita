@@ -18,6 +18,7 @@ import MobileSidebarNav from "@/components/pillar/MobileSidebarNav";
 import ReferencesSection from "@/components/pillar/ReferencesSection";
 import { getSubTopic } from "@/data/topic-libraries";
 import { getFeaturesForPillar } from "@/data/pillar-feature-map";
+import { siteUrl } from "@/lib/site-config";
 
 interface SubTopicPageTemplateProps {
   pillarSlug: string;
@@ -55,7 +56,6 @@ export default function SubTopicPageTemplate({
   if (!result) return null;
 
   const { pillar, subTopic, prevSubTopic, nextSubTopic } = result;
-  const siteUrl = "https://officialai.com";
   const pageUrl = `${siteUrl}/${pillarSlug}/${subTopicSlug}`;
   const brand = accentToBrand[pillar.accentColor] ?? accentToBrand.blue;
   const { lead, tail } = splitHeadline(subTopic.title, 2);
@@ -69,7 +69,7 @@ export default function SubTopicPageTemplate({
     publisher: {
       "@type": "Organization",
       name: "Official AI",
-      logo: { "@type": "ImageObject", url: `${siteUrl}/og-image.png` },
+      logo: { "@type": "ImageObject", url: `${siteUrl}/logo.png` },
     },
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     isPartOf: {
@@ -167,7 +167,7 @@ export default function SubTopicPageTemplate({
 
             {/* Prose content */}
             <FadeIn duration={0.6}>
-              <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:tracking-[-0.02em] prose-p:text-white/55 prose-p:leading-relaxed prose-a:text-utility-300 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/85 prose-li:text-white/55 prose-blockquote:border-special-500/40 prose-blockquote:bg-white/[0.02] prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-white/65 prose-h2:text-h4 prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-title prose-h3:mt-8 prose-h3:mb-3 prose-figcaption:text-p3 prose-figcaption:text-white/35 prose-figcaption:text-center prose-figcaption:mt-2">
+              <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:tracking-[-0.02em] prose-p:text-white/70 prose-p:leading-relaxed prose-a:text-utility-300 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/85 prose-li:text-white/70 prose-blockquote:border-special-500/40 prose-blockquote:bg-white/[0.02] prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-white/70 prose-h2:text-h4 prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-title prose-h3:mt-8 prose-h3:mb-3 prose-figcaption:text-p3 prose-figcaption:text-white/70 prose-figcaption:text-center prose-figcaption:mt-2">
                 {children}
               </div>
             </FadeIn>
@@ -192,11 +192,11 @@ export default function SubTopicPageTemplate({
                           : "from-special-500/40 via-special-500/15 to-transparent"
                       }`}
                     />
-                    <div className="text-p3 text-white/30 mb-1.5 flex items-center gap-1.5">
+                    <div className="text-p3 text-white/70 mb-1.5 flex items-center gap-1.5">
                       <ArrowLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />{" "}
                       Previous chapter
                     </div>
-                    <div className="text-p1 font-semibold text-white/65 group-hover:text-white transition-colors">
+                    <div className="text-p1 font-semibold text-white/70 group-hover:text-white transition-colors">
                       {prevSubTopic.title}
                     </div>
                   </Link>
@@ -215,11 +215,11 @@ export default function SubTopicPageTemplate({
                           : "from-special-500/40 via-special-500/15 to-transparent"
                       }`}
                     />
-                    <div className="text-p3 text-white/30 mb-1.5 flex items-center sm:justify-end gap-1.5">
+                    <div className="text-p3 text-white/70 mb-1.5 flex items-center sm:justify-end gap-1.5">
                       Next chapter{" "}
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                     </div>
-                    <div className="text-p1 font-semibold text-white/65 group-hover:text-white transition-colors">
+                    <div className="text-p1 font-semibold text-white/70 group-hover:text-white transition-colors">
                       {nextSubTopic.title}
                     </div>
                   </Link>
@@ -268,16 +268,16 @@ export default function SubTopicPageTemplate({
                             : "from-special-500/40 via-special-500/15 to-transparent"
                         }`}
                       />
-                      <div className="text-p3 text-white/30 font-mono mb-2">
+                      <div className="text-p3 text-white/70 font-mono mb-2">
                         Chapter
                       </div>
                       <h3 className="text-p1 font-semibold text-white/90 mb-2 leading-snug">
                         {ch.title}
                       </h3>
-                      <p className="text-p2 text-white/45 leading-relaxed mb-4 line-clamp-2">
+                      <p className="text-p2 text-white/70 leading-relaxed mb-4 line-clamp-2">
                         {ch.description}
                       </p>
-                      <span className="inline-flex items-center gap-1.5 text-p3 text-white/50 group-hover:text-white/85 transition-colors">
+                      <span className="inline-flex items-center gap-1.5 text-p3 text-white/70 group-hover:text-white/85 transition-colors">
                         Read chapter
                         <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                       </span>
@@ -352,7 +352,7 @@ export default function SubTopicPageTemplate({
                             <h3 className="text-p1 font-semibold text-white/90 mb-1">
                               {feature.shortLabel}
                             </h3>
-                            <p className="text-p2 text-white/45 leading-relaxed">
+                            <p className="text-p2 text-white/70 leading-relaxed">
                               {feature.subtitle}
                             </p>
                           </div>
@@ -388,7 +388,7 @@ export default function SubTopicPageTemplate({
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Upload a photo and see AI create a video of you in 30 seconds. No
               credit card needed.
             </p>

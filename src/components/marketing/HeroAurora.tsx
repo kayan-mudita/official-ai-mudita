@@ -82,7 +82,7 @@ export default function HeroAurora({
           {description && (
             <FadeIn duration={0.7} delay={0.15}>
               <p
-                className={`text-title text-white/45 leading-relaxed ${
+                className={`text-title text-white/70 leading-relaxed ${
                   align === "center" ? "max-w-2xl" : "max-w-2xl"
                 }`}
               >

@@ -102,7 +102,7 @@ export default function AboutClient() {
                   <div className="text-h3 sm:text-h2 font-bold tracking-tight text-white leading-none mb-1">
                     <GradientText tone="white">{s.value}</GradientText>
                   </div>
-                  <div className="text-p3 text-white/45">{s.label}</div>
+                  <div className="text-p3 text-white/70">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -122,22 +122,22 @@ export default function AboutClient() {
               <h2 className="text-h2 font-bold tracking-tight text-white leading-tight mb-6">
                 Professionals know they need to post.
                 <br />
-                <span className="text-white/40">They never do.</span>
+                <span className="text-white/70">They never do.</span>
               </h2>
               <div className="space-y-4">
-                <p className="text-p2 text-white/30 leading-relaxed">
+                <p className="text-p2 text-white/70 leading-relaxed">
                   Every real estate agent, attorney, financial advisor, and doctor
                   knows the same thing: the professionals who post content consistently
                   get more clients. Social proof is not optional anymore. It is the
                   new word-of-mouth.
                 </p>
-                <p className="text-p2 text-white/30 leading-relaxed">
+                <p className="text-p2 text-white/70 leading-relaxed">
                   But filming content takes time they do not have. Hiring a video
                   team costs $5,000 a month. And the polished corporate videos that
                   agencies produce do not even perform well — audiences scroll right
                   past them.
                 </p>
-                <p className="text-p2 text-white/30 leading-relaxed">
+                <p className="text-p2 text-white/70 leading-relaxed">
                   So the best experts in every field stay invisible. Their
                   competitors who happen to be comfortable on camera dominate every
                   feed. Expertise does not equal visibility. Until now.
@@ -180,7 +180,7 @@ export default function AboutClient() {
                     <span className="text-h2 font-bold text-white flex-shrink-0 w-20 tabular-nums">
                       <GradientText tone="white">{item.stat}</GradientText>
                     </span>
-                    <p className="text-p2 text-white/45 leading-relaxed pt-1">
+                    <p className="text-p2 text-white/70 leading-relaxed pt-1">
                       {item.text}
                     </p>
                   </div>
@@ -200,21 +200,21 @@ export default function AboutClient() {
           <h2 className="text-h2 font-bold tracking-tight text-white leading-tight mb-8">
             The best content looks like it was
             <br />
-            <span className="text-white/40">shot on an iPhone in 30 seconds.</span>
+            <span className="text-white/70">shot on an iPhone in 30 seconds.</span>
           </h2>
 
           <div className="space-y-6">
-            <p className="text-p1 text-white/30 leading-relaxed">
+            <p className="text-p1 text-white/70 leading-relaxed">
               The content that performs best on social media is not the polished
               corporate video with three cameras and a lighting rig. It is the raw,
               face-to-camera UGC — a professional looking into their phone and
               sharing something useful.
             </p>
-            <p className="text-p1 text-white/30 leading-relaxed">
+            <p className="text-p1 text-white/70 leading-relaxed">
               That is the content that feels authentic. That is what people engage
               with. That is what drives consultations, appointments, and deals.
             </p>
-            <p className="text-p1 text-white/30 leading-relaxed">
+            <p className="text-p1 text-white/70 leading-relaxed">
               Our entire technology stack is built around one goal: creating AI
               content that is indistinguishable from self-shot iPhone video. Not
               polished. Not overproduced. Real. Raw. Effective.
@@ -224,7 +224,7 @@ export default function AboutClient() {
           <div className="mt-10 p-6 rounded-2xl border border-white/[0.04] bg-white/[0.015]">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-p2 font-medium text-white/50 mb-2">
+                <h3 className="text-p2 font-medium text-white/70 mb-2">
                   What agencies produce
                 </h3>
                 <ul className="space-y-2">
@@ -236,7 +236,7 @@ export default function AboutClient() {
                   ].map((item, i) => (
                     <li
                       key={i}
-                      className="flex items-center gap-2.5 text-p3 text-white/20"
+                      className="flex items-center gap-2.5 text-p3 text-white/70"
                     >
                       <div className="w-1.5 h-1.5 rounded-full bg-negative-400/50" />
                       {item}
@@ -245,7 +245,7 @@ export default function AboutClient() {
                 </ul>
               </div>
               <div>
-                <h3 className="text-p2 font-medium text-white/50 mb-2">
+                <h3 className="text-p2 font-medium text-white/70 mb-2">
                   What Official AI produces
                 </h3>
                 <ul className="space-y-2">
@@ -257,7 +257,7 @@ export default function AboutClient() {
                   ].map((item, i) => (
                     <li
                       key={i}
-                      className="flex items-center gap-2.5 text-p3 text-white/40"
+                      className="flex items-center gap-2.5 text-p3 text-white/70"
                     >
                       <div className="w-1.5 h-1.5 rounded-full bg-positive-400" />
                       {item}
@@ -280,26 +280,26 @@ export default function AboutClient() {
             <h2 className="text-h2 font-bold tracking-tight text-white leading-tight">
               AI that creates content
               <br />
-              <span className="text-white/40">
+              <span className="text-white/70">
                 indistinguishable from self-shot video.
               </span>
             </h2>
           </div>
 
           <div className="space-y-4">
-            <p className="text-p2 text-white/30 leading-relaxed max-w-2xl">
+            <p className="text-p2 text-white/70 leading-relaxed max-w-2xl">
               Most AI video tools generate a single continuous shot from a prompt.
               The result looks artificial because real video is not a single shot —
               it is composed of multiple cuts, angles, and edits.
             </p>
-            <p className="text-p2 text-white/30 leading-relaxed max-w-2xl">
+            <p className="text-p2 text-white/70 leading-relaxed max-w-2xl">
               Official AI uses multi-cut composition. Every video is 3-8 separate
               clips, each generated from a composed starting frame, then stitched
               together with professional editing — hooks, transitions, B-roll, and
               CTAs. The result looks like it was shot and edited by a real
               production team.
             </p>
-            <p className="text-p2 text-white/30 leading-relaxed max-w-2xl">
+            <p className="text-p2 text-white/70 leading-relaxed max-w-2xl">
               Combined with character sheets for visual consistency and voice cloning
               for audio authenticity, the output is content that looks and sounds
               exactly like you — because the AI was trained specifically on you.
@@ -368,7 +368,7 @@ export default function AboutClient() {
                 <h3 className="text-p1 font-semibold text-white/90 mb-2">
                   {value.title}
                 </h3>
-                <p className="text-p2 text-white/45 leading-relaxed">
+                <p className="text-p2 text-white/70 leading-relaxed">
                   {value.description}
                 </p>
               </motion.div>
@@ -387,7 +387,7 @@ export default function AboutClient() {
             <h2 className="text-h2 font-bold tracking-tight text-white leading-tight">
               The people behind
               <br />
-              <span className="text-white/40">Official AI.</span>
+              <span className="text-white/70">Official AI.</span>
             </h2>
           </div>
 
@@ -421,7 +421,7 @@ export default function AboutClient() {
                 <p className="text-p3 text-utility-300/80 mb-3 font-semibold">
                   {member.role}
                 </p>
-                <p className="text-p3 text-white/35 leading-relaxed">
+                <p className="text-p3 text-white/70 leading-relaxed">
                   {member.bio}
                 </p>
               </motion.div>
@@ -451,7 +451,7 @@ export default function AboutClient() {
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Start creating AI content that actually looks like you. No filming, no editing, no excuses.
             </p>
           </FadeIn>

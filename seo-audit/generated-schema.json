@@ -1,0 +1,240 @@
+{
+  "_notes": "Ready-to-use JSON-LD templates. Replace {{SITE_URL}} with the final production URL (e.g. https://www.theofficial.ai). Replace placeholders in {{DOUBLE_BRACES}} with real values before shipping.",
+  "_usage": "Each template is keyed by the page it belongs on. Embed via <script type=\"application/ld+json\"> in the server-rendered HTML (prefer SSR over client-side injection per Google's Dec 2025 JS SEO guidance).",
+
+  "global_organization": {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "{{SITE_URL}}/#organization",
+    "name": "Official AI",
+    "url": "{{SITE_URL}}",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{SITE_URL}}/logo.png",
+      "width": 512,
+      "height": 512
+    },
+    "foundingDate": "2025",
+    "email": "hello@theofficial.ai",
+    "sameAs": [
+      "https://twitter.com/theofficialai",
+      "https://linkedin.com/company/theofficialai",
+      "https://www.youtube.com/@theofficialai"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "hello@theofficial.ai",
+      "contactType": "customer service",
+      "availableLanguage": ["English"]
+    }
+  },
+
+  "global_website": {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "{{SITE_URL}}/#website",
+    "name": "Official AI",
+    "url": "{{SITE_URL}}",
+    "publisher": { "@id": "{{SITE_URL}}/#organization" },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "{{SITE_URL}}/blog?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  },
+
+  "homepage_only_software_application": {
+    "_comment": "Emit ONLY on the homepage. Remove the aggregateRating field until you have real, verifiable reviews — fabricated ratings violate Google's review-snippet policy.",
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": "{{SITE_URL}}/#software",
+    "name": "Official AI",
+    "applicationCategory": "MultimediaApplication",
+    "applicationSubCategory": "VideoEditing",
+    "operatingSystem": "Web",
+    "url": "{{SITE_URL}}",
+    "description": "AI-powered video content creation platform. Upload photos, get studio-quality social media videos with your face and voice. No filming required.",
+    "featureList": [
+      "AI Digital Twin creation",
+      "Multi-cut video composition",
+      "Voice cloning",
+      "Auto-posting to social platforms",
+      "Content calendar",
+      "Analytics and ROI tracking"
+    ],
+    "offers": {
+      "@type": "Offer",
+      "price": "79.00",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "url": "{{SITE_URL}}/pricing"
+    },
+    "publisher": { "@id": "{{SITE_URL}}/#organization" }
+  },
+
+  "pricing_product": {
+    "_comment": "Use on /pricing. Replace the offers array with real plan data from src/app/pricing/PricingClient.tsx.",
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": "{{SITE_URL}}/pricing#product",
+    "name": "Official AI",
+    "description": "One plan, everything included. $79/mo for 30 videos, all platforms, voice cloning, analytics, and auto-posting.",
+    "brand": { "@id": "{{SITE_URL}}/#organization" },
+    "url": "{{SITE_URL}}/pricing",
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Starter",
+        "price": "79.00",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "79.00",
+          "priceCurrency": "USD",
+          "billingIncrement": 1,
+          "unitCode": "MON"
+        },
+        "availability": "https://schema.org/InStock",
+        "url": "{{SITE_URL}}/pricing"
+      }
+    ]
+  },
+
+  "feature_detail_software": {
+    "_comment": "Use on each /features/[slug]. Replace {{FEATURE_NAME}} and {{FEATURE_DESCRIPTION}} per feature.",
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": "{{SITE_URL}}/features/{{SLUG}}#software",
+    "name": "{{FEATURE_NAME}} — Official AI",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Web",
+    "description": "{{FEATURE_DESCRIPTION}}",
+    "isPartOf": { "@id": "{{SITE_URL}}/#software" },
+    "offers": {
+      "@type": "Offer",
+      "price": "79.00",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+    "publisher": { "@id": "{{SITE_URL}}/#organization" }
+  },
+
+  "about_page": {
+    "_comment": "Use on /about. Fill the Person array with real founders/team.",
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "@id": "{{SITE_URL}}/about#webpage",
+    "url": "{{SITE_URL}}/about",
+    "name": "About Official AI",
+    "mainEntity": {
+      "@id": "{{SITE_URL}}/#organization"
+    },
+    "about": [
+      {
+        "@type": "Person",
+        "name": "{{FOUNDER_NAME}}",
+        "jobTitle": "{{FOUNDER_TITLE}}",
+        "knowsAbout": ["AI video generation", "Content automation", "Product marketing"],
+        "sameAs": [
+          "https://linkedin.com/in/{{FOUNDER_LINKEDIN}}",
+          "https://twitter.com/{{FOUNDER_TWITTER}}"
+        ]
+      }
+    ]
+  },
+
+  "tools_webapplication_template": {
+    "_comment": "Use on each /tools/[tool]. Replace placeholders per tool (speaking-time-calculator, video-roi-calculator, hook-generator).",
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "@id": "{{SITE_URL}}/tools/{{TOOL_SLUG}}#webapp",
+    "name": "{{TOOL_NAME}}",
+    "url": "{{SITE_URL}}/tools/{{TOOL_SLUG}}",
+    "description": "{{TOOL_DESCRIPTION}}",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "browserRequirements": "Requires JavaScript. Modern browser.",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "publisher": { "@id": "{{SITE_URL}}/#organization" }
+  },
+
+  "compare_product_vs": {
+    "_comment": "Use on each /compare/[slug]. Subject = Official AI. Replace {{COMPETITOR_NAME}}.",
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": "{{SITE_URL}}/compare/{{SLUG}}#product",
+    "name": "Official AI vs {{COMPETITOR_NAME}}",
+    "description": "Feature-by-feature comparison of Official AI and {{COMPETITOR_NAME}} for AI video creation.",
+    "brand": { "@id": "{{SITE_URL}}/#organization" },
+    "url": "{{SITE_URL}}/compare/{{SLUG}}",
+    "mentions": [
+      {
+        "@type": "Brand",
+        "name": "{{COMPETITOR_NAME}}"
+      }
+    ]
+  },
+
+  "blog_index_itemlist": {
+    "_comment": "Use on /blog. Populate itemListElement from src/data/blog-posts.ts in order.",
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "@id": "{{SITE_URL}}/blog#blog",
+    "url": "{{SITE_URL}}/blog",
+    "name": "Official AI Blog",
+    "description": "Insights on AI video generation, content strategy, and how professionals are using AI to build their brands.",
+    "publisher": { "@id": "{{SITE_URL}}/#organization" },
+    "blogPost": [
+      {
+        "@type": "BlogPosting",
+        "headline": "{{POST_TITLE}}",
+        "url": "{{SITE_URL}}/blog/{{POST_SLUG}}",
+        "datePublished": "{{YYYY-MM-DD}}",
+        "author": { "@type": "Person", "name": "{{AUTHOR}}" }
+      }
+    ]
+  },
+
+  "blog_post_article_fixed": {
+    "_comment": "Corrected Article template. Matches what BlogPostTemplate emits today, but with production domain and real logo.",
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "{{POST_TITLE}}",
+    "description": "{{POST_DESCRIPTION}}",
+    "author": { "@type": "Person", "name": "{{AUTHOR}}" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Official AI",
+      "logo": { "@type": "ImageObject", "url": "{{SITE_URL}}/logo.png" }
+    },
+    "datePublished": "{{YYYY-MM-DD}}",
+    "dateModified": "{{YYYY-MM-DD}}",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "{{SITE_URL}}/blog/{{SLUG}}" },
+    "image": "{{SITE_URL}}/images/featured/blog/{{SLUG}}.png"
+  },
+
+  "industry_service_fixed": {
+    "_comment": "Corrected Service schema for /for/[industry]. Use on advisors, attorneys, doctors, realtors. Swap hardcoded provider.url to production domain.",
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Official AI for {{INDUSTRY_LABEL}}",
+    "description": "{{INDUSTRY_SPECIFIC_DESCRIPTION}}",
+    "provider": { "@id": "{{SITE_URL}}/#organization" },
+    "serviceType": "AI Video Generation",
+    "areaServed": "US",
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "{{INDUSTRY_LABEL}}"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "79.00",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth, errorResponse } from "@/lib/api-helpers";
+import { siteUrl } from "@/lib/site-config";
 
 /**
  * GET /api/referral
@@ -41,7 +42,7 @@ export async function GET() {
 
     return NextResponse.json({
       referralCode,
-      referralLink: `https://officialai.com/ref/${referralCode}`,
+      referralLink: `${siteUrl}/ref/${referralCode}`,
       stats,
       reward: {
         give: "1 month free",

@@ -56,13 +56,13 @@ export function LipSyncForm({ onSubmit, isGenerating }: LipSyncFormProps) {
           value={script}
           onChange={(e) => { setScript(e.target.value); if (errors.script) setErrors({}); }}
           placeholder="Write your script or describe the topic you want to talk about..."
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[100px]"
+          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[100px]"
           rows={4}
         />
         {errors.script && (
           <p className="text-[11px] text-red-400/80 mt-1.5">{errors.script}</p>
         )}
-        <p className="text-[11px] text-white/20 mt-1.5">
+        <p className="text-[11px] text-white/70 mt-1.5">
           {script.length}/5000 characters
         </p>
       </div>
@@ -83,10 +83,10 @@ export function LipSyncForm({ onSubmit, isGenerating }: LipSyncFormProps) {
                   : "border-white/[0.04] hover:border-white/[0.08] hover:bg-white/[0.02]"
               }`}
             >
-              <div className={`text-[13px] font-medium ${tone === opt.value ? "text-white/80" : "text-white/50"}`}>
+              <div className={`text-[13px] font-medium ${tone === opt.value ? "text-white/80" : "text-white/70"}`}>
                 {opt.label}
               </div>
-              <div className="text-[10px] text-white/20 mt-0.5">{opt.description}</div>
+              <div className="text-[10px] text-white/70 mt-0.5">{opt.description}</div>
             </button>
           ))}
         </div>
@@ -108,10 +108,10 @@ export function LipSyncForm({ onSubmit, isGenerating }: LipSyncFormProps) {
                   : "border-white/[0.04] hover:border-white/[0.08] hover:bg-white/[0.02]"
               }`}
             >
-              <div className={`text-[15px] font-semibold ${duration === opt.value ? "text-white/80" : "text-white/50"}`}>
+              <div className={`text-[15px] font-semibold ${duration === opt.value ? "text-white/80" : "text-white/70"}`}>
                 {opt.label}
               </div>
-              <div className="text-[10px] text-white/20 mt-0.5">{opt.description}</div>
+              <div className="text-[10px] text-white/70 mt-0.5">{opt.description}</div>
             </button>
           ))}
         </div>

@@ -106,10 +106,10 @@ export default function TemplateSelector({
     <div className={`space-y-4 ${compact ? "" : ""}`}>
       {/* URL Paste Input */}
       <div className="space-y-2">
-        <label className="flex items-center gap-2 text-[13px] font-semibold text-white/50">
+        <label className="flex items-center gap-2 text-[13px] font-semibold text-white/70">
           <Link2 className="w-3.5 h-3.5" />
           Paste a video you like
-          <span className="text-white/20 font-normal">(TikTok, Instagram, YouTube)</span>
+          <span className="text-white/70 font-normal">(TikTok, Instagram, YouTube)</span>
         </label>
         <div className="flex gap-2">
           <input
@@ -118,7 +118,7 @@ export default function TemplateSelector({
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://www.tiktok.com/@user/video/..."
             disabled={analyzing}
-            className="flex-1 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[13px] text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/40 transition-all disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[13px] text-white placeholder:text-white/70 focus:outline-none focus:border-indigo-500/40 transition-all disabled:opacity-50"
             onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
           />
           <motion.button
@@ -159,7 +159,7 @@ export default function TemplateSelector({
       {/* Saved Templates Grid */}
       {!loading && templates.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[11px] text-white/25 uppercase tracking-wider">
+          <p className="text-[11px] text-white/60 uppercase tracking-wider">
             Saved templates ({templates.length})
           </p>
           <div className={`grid ${compact ? "grid-cols-2" : "grid-cols-3"} gap-2`}>
@@ -209,7 +209,7 @@ export default function TemplateSelector({
                       {cat.label}
                     </span>
                     {t.duration && (
-                      <span className="text-[9px] text-white/20">{Math.round(t.duration)}s</span>
+                      <span className="text-[9px] text-white/70">{Math.round(t.duration)}s</span>
                     )}
                   </div>
                 </motion.button>
@@ -223,7 +223,7 @@ export default function TemplateSelector({
       {!loading && templates.length === 0 && !compact && (
         <div className="text-center py-4">
           <MessageSquare className="w-5 h-5 text-white/10 mx-auto mb-2" />
-          <p className="text-[11px] text-white/20">
+          <p className="text-[11px] text-white/70">
             Paste a video URL above to create your first template.
           </p>
         </div>

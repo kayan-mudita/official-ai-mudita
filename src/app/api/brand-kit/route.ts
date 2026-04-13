@@ -50,10 +50,10 @@ export async function PATCH(req: NextRequest) {
 
     // Validate color format (basic hex check)
     if (primaryColor && !/^#[0-9a-fA-F]{6}$/.test(primaryColor)) {
-      return NextResponse.json({ error: "Invalid primary color format. Use hex (e.g. #4c6ef5)" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid primary color format. Use hex (e.g. #00749e)" }, { status: 400 });
     }
     if (secondaryColor && !/^#[0-9a-fA-F]{6}$/.test(secondaryColor)) {
-      return NextResponse.json({ error: "Invalid secondary color format. Use hex (e.g. #7c3aed)" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid secondary color format. Use hex (e.g. #81009e)" }, { status: 400 });
     }
 
     // Validate introStyle
@@ -81,8 +81,8 @@ export async function PATCH(req: NextRequest) {
       create: {
         userId: user.id,
         logoUrl: logoUrl || null,
-        primaryColor: primaryColor || "#4c6ef5",
-        secondaryColor: secondaryColor || "#7c3aed",
+        primaryColor: primaryColor || "#00749e",
+        secondaryColor: secondaryColor || "#81009e",
         introStyle: introStyle || "professional",
         outroTemplate: outroTemplate || "standard",
       },

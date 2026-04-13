@@ -66,7 +66,7 @@ export default function UpgradeModal({
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg text-white/30 hover:text-white/60 hover:bg-white/[0.05] transition-all z-10"
+          className="absolute top-4 right-4 p-1.5 rounded-lg text-white/70 hover:text-white/60 hover:bg-white/[0.05] transition-all z-10"
         >
           <X className="w-4 h-4" />
         </button>
@@ -96,7 +96,7 @@ export default function UpgradeModal({
                   <p className="text-sm font-medium text-white/80 truncate">
                     {firstVideoStats.title}
                   </p>
-                  <p className="text-xs text-white/30 mt-0.5">
+                  <p className="text-xs text-white/70 mt-0.5">
                     {firstVideoStats.status === "published"
                       ? "Published and live"
                       : firstVideoStats.status === "approved"
@@ -112,7 +112,7 @@ export default function UpgradeModal({
           )}
 
           {/* Value proposition */}
-          <p className="text-center text-sm text-white/50 leading-relaxed mb-6">
+          <p className="text-center text-sm text-white/70 leading-relaxed mb-6">
             Your first video is live. Upgrade to $79/mo to create 30 videos and
             keep your audience growing.
           </p>
@@ -126,7 +126,7 @@ export default function UpgradeModal({
             ].map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-white/[0.04] flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-3.5 h-3.5 text-white/40" />
+                  <Icon className="w-3.5 h-3.5 text-white/70" />
                 </div>
                 <span className="text-sm text-white/60">{text}</span>
               </div>
@@ -151,7 +151,7 @@ export default function UpgradeModal({
             </button>
             <button
               onClick={onClose}
-              className="w-full px-6 py-3 rounded-xl text-sm text-white/30 hover:text-white/50 hover:bg-white/[0.03] transition-all"
+              className="w-full px-6 py-3 rounded-xl text-sm text-white/70 hover:text-white/70 hover:bg-white/[0.03] transition-all"
             >
               Maybe later
             </button>

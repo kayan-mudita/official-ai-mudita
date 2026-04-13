@@ -97,7 +97,7 @@ const linkColumns: { title: string; links: FooterLink[] }[] = [
 function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
   return (
     <div>
-      <h4 className="text-p3 font-medium text-white/30 uppercase tracking-wider mb-4">{title}</h4>
+      <h4 className="text-p3 font-medium text-white/60 uppercase tracking-wider mb-4">{title}</h4>
       <ul className="space-y-2.5">
         {links.map((link) => {
           const Icon = link.icon;
@@ -105,13 +105,13 @@ function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) 
             <li key={link.href + link.label}>
               <Link
                 href={link.href}
-                className="group flex items-center gap-2 text-p3 text-white/20 hover:text-white/60 transition-colors"
+                className="group flex items-center gap-2 text-p3 text-white/60 hover:text-white/60 transition-colors"
               >
                 {Icon && (
                   <span
                     className={`w-4 h-4 rounded-md ${link.iconBg ?? "bg-white/[0.04]"} border border-white/[0.06] flex items-center justify-center flex-shrink-0`}
                   >
-                    <Icon className={`w-2.5 h-2.5 ${link.iconColor ?? "text-white/40"}`} />
+                    <Icon className={`w-2.5 h-2.5 ${link.iconColor ?? "text-white/70"}`} />
                   </span>
                 )}
                 <span>{link.label}</span>
@@ -139,7 +139,7 @@ export default function Footer() {
               <h3 className="text-h4 sm:text-h3 font-bold text-white mb-2">
                 See your AI twin in 30 seconds
               </h3>
-              <p className="text-p2 text-white/30 max-w-md">
+              <p className="text-p2 text-white/60 max-w-md">
                 Upload one photo, no signup required. See what AI video looks like with your face.
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function Footer() {
               </Link>
               <Link
                 href="/auth/signup"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/[0.1] text-white/50 text-p2 font-medium hover:text-white/70 hover:border-white/[0.15] transition-all"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-white/[0.1] text-white/70 text-p2 font-medium hover:text-white/70 hover:border-white/[0.15] transition-all"
               >
                 Sign up
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -171,7 +171,7 @@ export default function Footer() {
             <Link href="/">
               <Logo size="sm" />
             </Link>
-            <p className="text-p3 text-white/20 mt-3 leading-relaxed max-w-[220px]">
+            <p className="text-p3 text-white/60 mt-3 leading-relaxed max-w-[220px]">
               Your AI twin, posting for you. Studio-quality video without filming.
             </p>
 
@@ -179,38 +179,38 @@ export default function Footer() {
             <div className="mt-5 space-y-1.5">
               <Link
                 href="/auth/signup"
-                className="block text-p3 text-white/40 hover:text-white/80 transition-colors"
+                className="block text-p3 text-white/70 hover:text-white/80 transition-colors"
               >
                 Sign Up
               </Link>
               <Link
                 href="/demo"
-                className="block text-p3 text-white/40 hover:text-white/80 transition-colors"
+                className="block text-p3 text-white/70 hover:text-white/80 transition-colors"
               >
                 Request a Demo
               </Link>
               <Link
                 href="/auth/login"
-                className="block text-p3 text-white/40 hover:text-white/80 transition-colors"
+                className="block text-p3 text-white/70 hover:text-white/80 transition-colors"
               >
                 Sign In
               </Link>
             </div>
 
             <a
-              href="mailto:hello@officialai.com"
-              className="block text-p3 text-white/25 hover:text-white/50 transition-colors mt-5"
+              href="mailto:hello@theofficial.ai"
+              className="block text-p3 text-white/60 hover:text-white/70 transition-colors mt-5"
             >
-              hello@officialai.com
+              hello@theofficial.ai
             </a>
 
             {/* Social links */}
             <div className="flex flex-wrap items-center gap-2 mt-4">
               <a
-                href="https://twitter.com/officialai"
+                href="https://twitter.com/theofficialai"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/70 hover:border-white/[0.1] transition-all"
+                className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/60 hover:text-white/70 hover:border-white/[0.1] transition-all"
                 aria-label="Follow us on X (Twitter)"
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -221,7 +221,7 @@ export default function Footer() {
                 href="https://linkedin.com/company/officialai"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/70 hover:border-white/[0.1] transition-all"
+                className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/60 hover:text-white/70 hover:border-white/[0.1] transition-all"
                 aria-label="Follow us on LinkedIn"
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -232,7 +232,7 @@ export default function Footer() {
                 href="https://youtube.com/@officialai"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/70 hover:border-white/[0.1] transition-all"
+                className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/60 hover:text-white/70 hover:border-white/[0.1] transition-all"
                 aria-label="Subscribe on YouTube"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -243,7 +243,7 @@ export default function Footer() {
                 href="https://instagram.com/officialai"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/70 hover:border-white/[0.1] transition-all"
+                className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/60 hover:text-white/70 hover:border-white/[0.1] transition-all"
                 aria-label="Follow us on Instagram"
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -254,7 +254,7 @@ export default function Footer() {
                 href="https://tiktok.com/@officialai"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white/70 hover:border-white/[0.1] transition-all"
+                className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/60 hover:text-white/70 hover:border-white/[0.1] transition-all"
                 aria-label="Follow us on TikTok"
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -272,19 +272,19 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-white/[0.04] mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-p3 text-white/15">
+          <span className="text-p3 text-white/70">
             &copy; {new Date().getFullYear()} Official AI. All rights reserved.
           </span>
           <div className="flex items-center gap-6">
             <Link
               href="/privacy"
-              className="text-p3 text-white/15 hover:text-white/40 transition-colors"
+              className="text-p3 text-white/70 hover:text-white/70 transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
               href="/terms"
-              className="text-p3 text-white/15 hover:text-white/40 transition-colors"
+              className="text-p3 text-white/70 hover:text-white/70 transition-colors"
             >
               Terms of Service
             </Link>

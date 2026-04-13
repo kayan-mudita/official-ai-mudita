@@ -36,7 +36,7 @@ function Range({ label, value, min, max, step, suffix, onChange }: RangeProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <label className="text-p3 font-semibold text-white/65 uppercase tracking-wider">
+        <label className="text-p3 font-semibold text-white/70 uppercase tracking-wider">
           {label}
         </label>
         <span className="text-p1 font-bold text-white tabular-nums">
@@ -137,7 +137,7 @@ export default function VideoRoiClient() {
                   onChange={setHourlyRate}
                 />
                 <div>
-                  <label className="text-p3 font-semibold text-white/65 uppercase tracking-wider block mb-2">
+                  <label className="text-p3 font-semibold text-white/70 uppercase tracking-wider block mb-2">
                     Monthly outsourcing spend (optional)
                   </label>
                   <input
@@ -149,7 +149,7 @@ export default function VideoRoiClient() {
                     placeholder="0"
                     className="w-full bg-white/[0.02] border border-white/[0.08] rounded-lg px-3 py-2 text-p2 text-white tabular-nums focus:outline-none focus:border-utility-400/40 focus:bg-white/[0.04] transition-colors"
                   />
-                  <p className="text-p3 text-white/35 mt-2">
+                  <p className="text-p3 text-white/70 mt-2">
                     Editor, agency, freelancers, etc.
                   </p>
                 </div>
@@ -163,7 +163,7 @@ export default function VideoRoiClient() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-4 rounded-xl card-hairline">
-                    <div className="text-p3 text-white/35 uppercase tracking-wider mb-1 font-semibold">
+                    <div className="text-p3 text-white/70 uppercase tracking-wider mb-1 font-semibold">
                       You spend / mo
                     </div>
                     <div className="text-h3 font-bold text-white tabular-nums">
@@ -171,7 +171,7 @@ export default function VideoRoiClient() {
                     </div>
                   </div>
                   <div className="p-4 rounded-xl card-hairline">
-                    <div className="text-p3 text-white/35 uppercase tracking-wider mb-1 font-semibold">
+                    <div className="text-p3 text-white/70 uppercase tracking-wider mb-1 font-semibold">
                       Official AI / mo
                     </div>
                     <div className="text-h3 font-bold text-white tabular-nums">
@@ -189,7 +189,7 @@ export default function VideoRoiClient() {
                   </div>
                 </div>
 
-                <div className="space-y-2 text-p3 text-white/55">
+                <div className="space-y-2 text-p3 text-white/70">
                   <div className="flex justify-between">
                     <span>Hours back per month</span>
                     <span className="text-white font-semibold tabular-nums">
@@ -212,7 +212,7 @@ export default function VideoRoiClient() {
               <h2 className="text-p2 font-semibold text-white/85 mb-2">
                 How we calculate
               </h2>
-              <p className="text-p3 text-white/45 leading-relaxed">
+              <p className="text-p3 text-white/70 leading-relaxed">
                 Monthly cost = (videos × hours per video × your hourly rate) +
                 outsourcing spend. We compare against the Official AI flat plan:{" "}
                 {currency(OFFICIAL_AI_MONTHLY)}/mo for {OFFICIAL_AI_VIDEOS_INCLUDED}{" "}
@@ -244,7 +244,7 @@ export default function VideoRoiClient() {
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Generate, caption, and post 30 videos a month for less than one
               hour of agency time.
             </p>

@@ -91,19 +91,19 @@ export default function MobileSidebarNav({
         }`}
       >
         <div className="flex items-center gap-3">
-          <Menu className="w-4 h-4 text-white/40" />
+          <Menu className="w-4 h-4 text-white/70" />
           <div className="text-left">
             <div className="text-p3 font-medium text-white/70">
               {pillarTitle}
             </div>
-            <div className="text-p3 text-white/30">
+            <div className="text-p3 text-white/70">
               {subTopics.length} topics
               {relatedBlogSlugs.length > 0 && ` · ${relatedBlogSlugs.length} articles`}
             </div>
           </div>
         </div>
         <ChevronDown
-          className={`w-4 h-4 text-white/30 transition-transform duration-200 ${
+          className={`w-4 h-4 text-white/70 transition-transform duration-200 ${
             open ? "rotate-180" : ""
           }`}
         />
@@ -113,7 +113,7 @@ export default function MobileSidebarNav({
         <div className="mt-2 p-4 rounded-xl border border-white/[0.06] bg-white/[0.015] space-y-5">
           {/* Topics */}
           <div>
-            <div className="text-p3 font-medium text-white/30 uppercase tracking-wider mb-2 px-1">
+            <div className="text-p3 font-medium text-white/70 uppercase tracking-wider mb-2 px-1">
               Topics
             </div>
             <ul className="space-y-0.5">
@@ -127,7 +127,7 @@ export default function MobileSidebarNav({
                       className={`block text-p2 py-2.5 px-3 rounded-lg transition-colors ${
                         isActive
                           ? `text-white/90 font-medium ${activeBg}`
-                          : "text-white/40 active:text-white/70 active:bg-white/[0.04]"
+                          : "text-white/70 active:text-white/70 active:bg-white/[0.04]"
                       }`}
                     >
                       {st.title}
@@ -141,7 +141,7 @@ export default function MobileSidebarNav({
           {/* Related articles */}
           {relatedBlogSlugs.length > 0 && (
             <div>
-              <div className="text-p3 font-medium text-white/30 uppercase tracking-wider mb-2 px-1">
+              <div className="text-p3 font-medium text-white/70 uppercase tracking-wider mb-2 px-1">
                 Articles
               </div>
               <ul className="space-y-0.5">
@@ -150,7 +150,7 @@ export default function MobileSidebarNav({
                     <Link
                       href={`/blog/${slug}`}
                       onClick={() => setOpen(false)}
-                      className="block text-p2 text-white/35 active:text-white/70 py-2 px-3 rounded-lg active:bg-white/[0.04] transition-colors"
+                      className="block text-p2 text-white/70 active:text-white/70 py-2 px-3 rounded-lg active:bg-white/[0.04] transition-colors"
                     >
                       {formatBlogSlug(slug)}
                     </Link>
@@ -163,7 +163,7 @@ export default function MobileSidebarNav({
           {/* Industry pages */}
           {relatedIndustryPageSlugs.length > 0 && (
             <div>
-              <div className="text-p3 font-medium text-white/30 uppercase tracking-wider mb-2 px-1">
+              <div className="text-p3 font-medium text-white/70 uppercase tracking-wider mb-2 px-1">
                 Industries
               </div>
               <ul className="space-y-0.5">
@@ -172,7 +172,7 @@ export default function MobileSidebarNav({
                     <Link
                       href={`/for/${slug}`}
                       onClick={() => setOpen(false)}
-                      className="block text-p2 text-white/35 active:text-white/70 py-2 px-3 rounded-lg active:bg-white/[0.04] transition-colors"
+                      className="block text-p2 text-white/70 active:text-white/70 py-2 px-3 rounded-lg active:bg-white/[0.04] transition-colors"
                     >
                       {industryLabels[slug] || slug}
                     </Link>
@@ -185,7 +185,7 @@ export default function MobileSidebarNav({
           {/* Cross-link pillars (pillar pages only) */}
           {crossLinkPillarSlugs && crossLinkPillarSlugs.length > 0 && (
             <div>
-              <div className="text-p3 font-medium text-white/30 uppercase tracking-wider mb-2 px-1">
+              <div className="text-p3 font-medium text-white/70 uppercase tracking-wider mb-2 px-1">
                 Related Guides
               </div>
               <ul className="space-y-0.5">
@@ -194,7 +194,7 @@ export default function MobileSidebarNav({
                     <Link
                       href={`/${slug}`}
                       onClick={() => setOpen(false)}
-                      className="block text-p2 text-white/35 active:text-white/70 py-2 px-3 rounded-lg active:bg-white/[0.04] transition-colors"
+                      className="block text-p2 text-white/70 active:text-white/70 py-2 px-3 rounded-lg active:bg-white/[0.04] transition-colors"
                     >
                       {pillarLabels[slug] || formatBlogSlug(slug)}
                     </Link>
@@ -213,9 +213,9 @@ export default function MobileSidebarNav({
             >
               <div>
                 <div className="text-p3 font-medium text-white/60">Try the free demo</div>
-                <div className="text-p3 text-white/25">No signup required</div>
+                <div className="text-p3 text-white/60">No signup required</div>
               </div>
-              <ArrowRight className="w-4 h-4 text-white/30" />
+              <ArrowRight className="w-4 h-4 text-white/70" />
             </Link>
           </div>
         </div>

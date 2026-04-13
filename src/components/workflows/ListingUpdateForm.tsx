@@ -66,11 +66,11 @@ export function ListingUpdateForm({ onSubmit, isGenerating }: ListingUpdateFormP
               }`}
             >
               <div className={`text-[10px] font-bold tracking-wider mb-1 ${
-                eventType === opt.value ? "text-white/50" : "text-white/20"
+                eventType === opt.value ? "text-white/70" : "text-white/70"
               }`}>
                 {opt.emoji}
               </div>
-              <div className={`text-[12px] font-medium ${eventType === opt.value ? "text-white/80" : "text-white/50"}`}>
+              <div className={`text-[12px] font-medium ${eventType === opt.value ? "text-white/80" : "text-white/70"}`}>
                 {opt.label}
               </div>
             </button>
@@ -88,7 +88,7 @@ export function ListingUpdateForm({ onSubmit, isGenerating }: ListingUpdateFormP
           value={address}
           onChange={(e) => { setAddress(e.target.value); if (errors.address) setErrors((prev) => { const next = {...prev}; delete next.address; return next; }); }}
           placeholder="123 Main St, Austin, TX 78701"
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 focus:outline-none focus:border-white/[0.12] transition-colors"
+          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 focus:outline-none focus:border-white/[0.12] transition-colors"
         />
         {errors.address && (
           <p className="text-[11px] text-red-400/80 mt-1.5">{errors.address}</p>
@@ -104,7 +104,7 @@ export function ListingUpdateForm({ onSubmit, isGenerating }: ListingUpdateFormP
           value={eventDetails}
           onChange={(e) => { setEventDetails(e.target.value); if (errors.eventDetails) setErrors((prev) => { const next = {...prev}; delete next.eventDetails; return next; }); }}
           placeholder={detailPlaceholders[eventType]}
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[100px]"
+          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[100px]"
           rows={4}
         />
         {errors.eventDetails && (

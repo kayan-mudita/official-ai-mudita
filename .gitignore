@@ -42,3 +42,6 @@ prisma/dev.db-journal
 
 # Local Netlify folder
 .netlify
+
+# SEO audit raw fetches (reproducible; reports in seo-audit/*.md are tracked)
+seo-audit/raw/

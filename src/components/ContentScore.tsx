@@ -149,8 +149,8 @@ export default function ContentScore({ video }: ContentScoreProps) {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <Zap className="w-3.5 h-3.5 text-white/25" />
-        <span className="text-xs font-medium text-white/40 uppercase tracking-wider">
+        <Zap className="w-3.5 h-3.5 text-white/60" />
+        <span className="text-xs font-medium text-white/70 uppercase tracking-wider">
           Content Score
         </span>
       </div>
@@ -163,9 +163,9 @@ export default function ContentScore({ video }: ContentScoreProps) {
             <span className={`text-2xl font-bold ${getScoreColor(scores.overall)}`}>
               {scores.overall}
             </span>
-            <span className="text-sm text-white/25">/10</span>
+            <span className="text-sm text-white/60">/10</span>
           </div>
-          <p className="text-xs text-white/40 mt-0.5 leading-relaxed">
+          <p className="text-xs text-white/70 mt-0.5 leading-relaxed">
             {scores.recommendation}
           </p>
         </div>
@@ -181,8 +181,8 @@ export default function ContentScore({ video }: ContentScoreProps) {
               className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]"
             >
               <div className="flex items-center gap-2 mb-2">
-                <cat.icon className="w-3.5 h-3.5 text-white/25" />
-                <span className="text-xs font-medium text-white/50">{cat.label}</span>
+                <cat.icon className="w-3.5 h-3.5 text-white/60" />
+                <span className="text-xs font-medium text-white/70">{cat.label}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
@@ -195,7 +195,7 @@ export default function ContentScore({ video }: ContentScoreProps) {
                   {score}
                 </span>
               </div>
-              <p className="text-[10px] text-white/20 mt-1.5">{cat.description}</p>
+              <p className="text-[10px] text-white/70 mt-1.5">{cat.description}</p>
             </div>
           );
         })}

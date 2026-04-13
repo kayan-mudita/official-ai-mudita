@@ -111,7 +111,7 @@ export default function DemoClient() {
                   <br />
                   <GradientText tone="brand">in 30 seconds</GradientText>
                 </h1>
-                <p className="text-p1 text-white/45 font-light">
+                <p className="text-p1 text-white/70 font-light">
                   Upload one photo. No signup required.
                 </p>
               </div>
@@ -146,7 +146,7 @@ export default function DemoClient() {
                     {dragActive ? (
                       <Upload className="w-7 h-7 text-utility-300" />
                     ) : (
-                      <ImageIcon className="w-7 h-7 text-white/30" />
+                      <ImageIcon className="w-7 h-7 text-white/70" />
                     )}
                   </div>
 
@@ -155,18 +155,18 @@ export default function DemoClient() {
                       ? "Drop your photo here"
                       : "Drag and drop your photo"}
                   </p>
-                  <p className="text-p3 text-white/25 mb-6">
+                  <p className="text-p3 text-white/60 mb-6">
                     or click to browse
                   </p>
 
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
-                    <Upload className="w-3.5 h-3.5 text-white/30" />
-                    <span className="text-p3 text-white/40 font-medium">
+                    <Upload className="w-3.5 h-3.5 text-white/70" />
+                    <span className="text-p3 text-white/70 font-medium">
                       Choose a photo
                     </span>
                   </div>
 
-                  <p className="text-p3 text-white/15 mt-6">
+                  <p className="text-p3 text-white/70 mt-6">
                     JPG, PNG, or WEBP. Max 10MB.
                   </p>
                 </div>
@@ -174,12 +174,12 @@ export default function DemoClient() {
 
               {/* Trust signals */}
               <div className="flex items-center justify-center gap-4 mt-6">
-                <div className="flex items-center gap-1.5 text-p3 text-white/20">
+                <div className="flex items-center gap-1.5 text-p3 text-white/70">
                   <Lock className="w-3 h-3" />
                   Deleted after demo
                 </div>
                 <div className="w-px h-3 bg-white/[0.06]" />
-                <div className="text-p3 text-white/20">
+                <div className="text-p3 text-white/70">
                   No account needed
                 </div>
               </div>
@@ -193,9 +193,9 @@ export default function DemoClient() {
                 <h2 className="text-h2 font-bold tracking-tight text-white mb-3">
                   Creating your video
                 </h2>
-                <p className="text-p2 text-white/30">
+                <p className="text-p2 text-white/70">
                   {fileName && (
-                    <span className="text-white/40">{fileName}</span>
+                    <span className="text-white/70">{fileName}</span>
                   )}
                 </p>
               </div>
@@ -233,7 +233,7 @@ export default function DemoClient() {
                             className={`w-3.5 h-3.5 ${
                               isActive
                                 ? "text-utility-300 animate-pulse"
-                                : "text-white/20"
+                                : "text-white/70"
                             }`}
                           />
                         )}
@@ -243,8 +243,8 @@ export default function DemoClient() {
                           isActive
                             ? "text-white/85"
                             : isDone
-                              ? "text-white/45"
-                              : "text-white/25"
+                              ? "text-white/70"
+                              : "text-white/60"
                         }`}
                       >
                         {step.label}
@@ -292,7 +292,7 @@ export default function DemoClient() {
                   Your video is{" "}
                   <GradientText tone="brand">ready.</GradientText>
                 </h2>
-                <p className="text-p2 text-white/45">
+                <p className="text-p2 text-white/70">
                   Here is what AI created from your photo.
                 </p>
               </div>
@@ -329,11 +329,11 @@ export default function DemoClient() {
 
                   {/* Overlay CTA content */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center px-8">
-                    <Lock className="w-6 h-6 text-white/40 mb-4" />
+                    <Lock className="w-6 h-6 text-white/70 mb-4" />
                     <p className="text-p2 text-white/70 font-medium text-center mb-2">
                       Love it?
                     </p>
-                    <p className="text-p3 text-white/35 text-center mb-6">
+                    <p className="text-p3 text-white/70 text-center mb-6">
                       Sign up to download and share your AI video.
                     </p>
                     <Link

@@ -85,12 +85,12 @@ const insightStyleMap: Record<string, { bg: string; border: string; iconColor: s
   timing: { bg: "bg-purple-500/[0.06]", border: "border-purple-500/10", iconColor: "text-purple-400" },
   warning: { bg: "bg-orange-500/[0.06]", border: "border-orange-500/10", iconColor: "text-orange-400" },
   success: { bg: "bg-green-500/[0.06]", border: "border-green-500/10", iconColor: "text-green-400" },
-  suggestion: { bg: "bg-white/[0.03]", border: "border-white/[0.06]", iconColor: "text-white/40" },
+  suggestion: { bg: "bg-white/[0.03]", border: "border-white/[0.06]", iconColor: "text-white/70" },
 };
 
 export default function AnalyticsPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center py-32"><Loader2 className="w-5 h-5 text-white/20 animate-spin" /></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center py-32"><Loader2 className="w-5 h-5 text-white/70 animate-spin" /></div>}>
       <AnalyticsContent />
     </Suspense>
   );
@@ -118,7 +118,7 @@ function AnalyticsContent() {
   }, []);
 
   if (loading) {
-    return <div className="flex items-center justify-center py-32"><Loader2 className="w-5 h-5 text-white/20 animate-spin" /></div>;
+    return <div className="flex items-center justify-center py-32"><Loader2 className="w-5 h-5 text-white/70 animate-spin" /></div>;
   }
 
   const stats = [
@@ -155,7 +155,7 @@ function AnalyticsContent() {
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Analytics</h1>
-        <p className="text-sm text-white/40 mt-1">
+        <p className="text-sm text-white/70 mt-1">
           {summary ? `${summary.totalVideos} video${summary.totalVideos !== 1 ? "s" : ""} · ${summary.publishedVideos} published` : "\u00A0"}
         </p>
       </div>
@@ -168,7 +168,7 @@ function AnalyticsContent() {
               <Link
                 key={tab.id}
                 href={tab.href}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all text-white/40 hover:text-white/60 border border-transparent hover:border-white/[0.06]"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all text-white/70 hover:text-white/60 border border-transparent hover:border-white/[0.06]"
               >
                 <tab.icon className="w-4 h-4" />
                 {tab.label}
@@ -182,7 +182,7 @@ function AnalyticsContent() {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
                 activeTab === tab.id
                   ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                  : "text-white/40 hover:text-white/60 border border-transparent"
+                  : "text-white/70 hover:text-white/60 border border-transparent"
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -200,10 +200,10 @@ function AnalyticsContent() {
             {stats.map((stat) => (
               <div key={stat.label} className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <stat.icon className="w-4 h-4 text-white/20" />
+                  <stat.icon className="w-4 h-4 text-white/70" />
                 </div>
                 <div className="text-[24px] font-bold text-white">{formatNumber(stat.value)}</div>
-                <div className="text-[13px] text-white/30 mt-0.5">{stat.label}</div>
+                <div className="text-[13px] text-white/70 mt-0.5">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -216,15 +216,15 @@ function AnalyticsContent() {
               </div>
               <div>
                 <h2 className="text-[15px] font-semibold text-white/90">Growth Projection</h2>
-                <p className="text-[12px] text-white/30">Based on industry benchmarks and your posting frequency</p>
+                <p className="text-[12px] text-white/70">Based on industry benchmarks and your posting frequency</p>
               </div>
             </div>
 
             {/* Current frequency */}
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.04] mb-6">
-              <Clock className="w-4 h-4 text-white/30" />
+              <Clock className="w-4 h-4 text-white/70" />
               <div className="flex-1">
-                <span className="text-[13px] text-white/50">Current posting frequency</span>
+                <span className="text-[13px] text-white/70">Current posting frequency</span>
               </div>
               <span className="text-[15px] font-semibold text-white">
                 {currentFrequency > 0 ? `${currentFrequency} videos/week` : "No data yet"}
@@ -233,7 +233,7 @@ function AnalyticsContent() {
 
             {/* Timeline visualization */}
             <div className="relative mb-6">
-              <div className="text-[12px] font-medium text-white/40 uppercase tracking-wider mb-4">Projected Milestones at 4 videos/week</div>
+              <div className="text-[12px] font-medium text-white/70 uppercase tracking-wider mb-4">Projected Milestones at 4 videos/week</div>
               <div className="relative">
                 {/* Timeline line */}
                 <div className="absolute left-[18px] top-3 bottom-3 w-px bg-gradient-to-b from-blue-500/40 via-purple-500/30 to-transparent" />
@@ -251,7 +251,7 @@ function AnalyticsContent() {
                             : "bg-white/[0.04] border-white/[0.08]"
                         }`}>
                           <Target className={`w-4 h-4 ${
-                            idx === 0 ? "text-blue-400" : idx === 1 ? "text-purple-400" : "text-white/30"
+                            idx === 0 ? "text-blue-400" : idx === 1 ? "text-purple-400" : "text-white/70"
                           }`} />
                         </div>
                       </div>
@@ -260,7 +260,7 @@ function AnalyticsContent() {
                       <div className="flex-1 flex items-center justify-between py-2.5 px-4 rounded-xl bg-white/[0.02] border border-white/[0.03] group-hover:bg-white/[0.035] group-hover:border-white/[0.06] transition-all">
                         <div>
                           <div className="text-[14px] font-semibold text-white/90">{milestone.followers} followers</div>
-                          <div className="text-[12px] text-white/30 mt-0.5">
+                          <div className="text-[12px] text-white/70 mt-0.5">
                             ~{formatWeeks(milestone.weeksAt4)} at 4/week
                           </div>
                         </div>
@@ -294,10 +294,10 @@ function AnalyticsContent() {
           {!hasData && (
             <div className="text-center py-16 rounded-xl border border-white/[0.04] bg-white/[0.015]">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/[0.03] mb-5">
-                <BarChart3 className="w-6 h-6 text-white/15" />
+                <BarChart3 className="w-6 h-6 text-white/70" />
               </div>
               <h3 className="text-[17px] font-semibold text-white/80 mb-1">No analytics yet</h3>
-              <p className="text-[14px] text-white/30 max-w-sm mx-auto">
+              <p className="text-[14px] text-white/70 max-w-sm mx-auto">
                 Publish videos and connect your social accounts to start seeing performance data here.
               </p>
             </div>
@@ -310,11 +310,11 @@ function AnalyticsContent() {
               <div className="grid grid-cols-2 gap-6">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center">
-                    <Video className="w-5 h-5 text-white/25" />
+                    <Video className="w-5 h-5 text-white/60" />
                   </div>
                   <div>
                     <div className="text-[20px] font-bold text-white">{summary?.totalVideos || 0}</div>
-                    <div className="text-[13px] text-white/30">Total Videos</div>
+                    <div className="text-[13px] text-white/70">Total Videos</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -323,7 +323,7 @@ function AnalyticsContent() {
                   </div>
                   <div>
                     <div className="text-[20px] font-bold text-white">{summary?.publishedVideos || 0}</div>
-                    <div className="text-[13px] text-white/30">Published</div>
+                    <div className="text-[13px] text-white/70">Published</div>
                   </div>
                 </div>
               </div>
@@ -353,7 +353,7 @@ function AnalyticsContent() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-[13px] font-semibold text-white/80 mb-1">{insight.title}</div>
-                          <p className="text-[12px] text-white/45 leading-relaxed">{insight.message}</p>
+                          <p className="text-[12px] text-white/70 leading-relaxed">{insight.message}</p>
                         </div>
                       </div>
                     </div>
@@ -364,10 +364,10 @@ function AnalyticsContent() {
           ) : (
             <div className="text-center py-16 rounded-xl border border-white/[0.04] bg-white/[0.015]">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/[0.03] mb-5">
-                <Lightbulb className="w-6 h-6 text-white/15" />
+                <Lightbulb className="w-6 h-6 text-white/70" />
               </div>
               <h3 className="text-[17px] font-semibold text-white/80 mb-1">No insights yet</h3>
-              <p className="text-[14px] text-white/30 max-w-sm mx-auto">
+              <p className="text-[14px] text-white/70 max-w-sm mx-auto">
                 Publish more videos to unlock AI-powered performance insights.
               </p>
             </div>

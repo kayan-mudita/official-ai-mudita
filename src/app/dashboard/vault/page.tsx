@@ -33,7 +33,7 @@ export default function VaultPage() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [voices, setVoices] = useState<Voice[]>([]);
   const [brand, setBrand] = useState<Brand>({});
-  const [brandKit, setBrandKit] = useState<BrandKit>({ primaryColor: "#4c6ef5", secondaryColor: "#7c3aed", introStyle: "professional", outroTemplate: "standard" });
+  const [brandKit, setBrandKit] = useState<BrandKit>({ primaryColor: "#00749e", secondaryColor: "#81009e", introStyle: "professional", outroTemplate: "standard" });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savingKit, setSavingKit] = useState(false);
@@ -182,23 +182,23 @@ export default function VaultPage() {
   ];
 
   if (loading) {
-    return <div className="flex items-center justify-center py-32"><Loader2 className="w-5 h-5 text-white/20 animate-spin" /></div>;
+    return <div className="flex items-center justify-center py-32"><Loader2 className="w-5 h-5 text-white/70 animate-spin" /></div>;
   }
 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Vault</h1>
-        <p className="text-sm text-white/40 mt-1">Your photos, voice samples, and brand profile</p>
+        <p className="text-sm text-white/70 mt-1">Your photos, voice samples, and brand profile</p>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 mb-8 border-b border-white/[0.04]">
         {tabs.map((t) => (
-          <button key={t.id} onClick={() => setTab(t.id)} className={`flex items-center gap-2 px-4 py-3 text-[14px] border-b-2 transition-all ${tab === t.id ? "border-white/60 text-white/90" : "border-transparent text-white/30 hover:text-white/50"}`}>
+          <button key={t.id} onClick={() => setTab(t.id)} className={`flex items-center gap-2 px-4 py-3 text-[14px] border-b-2 transition-all ${tab === t.id ? "border-white/60 text-white/90" : "border-transparent text-white/70 hover:text-white/70"}`}>
             <t.icon className="w-4 h-4" />
             {t.label}
-            {t.count !== undefined && <span className="text-[11px] text-white/20 ml-1">{t.count}</span>}
+            {t.count !== undefined && <span className="text-[11px] text-white/70 ml-1">{t.count}</span>}
           </button>
         ))}
       </div>
@@ -209,10 +209,10 @@ export default function VaultPage() {
           {photos.length === 0 ? (
             <div className="text-center py-20">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/[0.03] mb-5">
-                <ImageIcon className="w-6 h-6 text-white/15" />
+                <ImageIcon className="w-6 h-6 text-white/70" />
               </div>
               <h3 className="text-[17px] font-semibold text-white/80 mb-1">No photos uploaded</h3>
-              <p className="text-[14px] text-white/30">Upload photos during onboarding or here to improve your AI avatar.</p>
+              <p className="text-[14px] text-white/70">Upload photos during onboarding or here to improve your AI avatar.</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -232,7 +232,7 @@ export default function VaultPage() {
                       <Star className="w-2.5 h-2.5" /> Primary
                     </div>
                   )}
-                  <p className="text-[12px] text-white/25 mt-2 truncate">{photo.filename}</p>
+                  <p className="text-[12px] text-white/60 mt-2 truncate">{photo.filename}</p>
                 </div>
               ))}
             </div>
@@ -246,21 +246,21 @@ export default function VaultPage() {
           {voices.length === 0 ? (
             <div className="text-center py-20">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/[0.03] mb-5">
-                <Mic className="w-6 h-6 text-white/15" />
+                <Mic className="w-6 h-6 text-white/70" />
               </div>
               <h3 className="text-[17px] font-semibold text-white/80 mb-1">No voice samples</h3>
-              <p className="text-[14px] text-white/30">Record a voice sample to give your AI avatar your voice.</p>
+              <p className="text-[14px] text-white/70">Record a voice sample to give your AI avatar your voice.</p>
             </div>
           ) : (
             <div className="space-y-2">
               {voices.map((voice) => (
                 <div key={voice.id} className="flex items-center gap-4 px-5 py-4 rounded-xl border border-white/[0.04] bg-white/[0.015]">
                   <div className="w-10 h-10 rounded-full bg-white/[0.04] flex items-center justify-center">
-                    <Mic className="w-4 h-4 text-white/30" />
+                    <Mic className="w-4 h-4 text-white/70" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[14px] font-medium text-white/80 truncate">{voice.filename}</div>
-                    <div className="text-[12px] text-white/25">{voice.duration}s</div>
+                    <div className="text-[12px] text-white/60">{voice.duration}s</div>
                   </div>
                   {voice.isDefault && (
                     <span className="text-[11px] text-blue-400/70 px-2 py-0.5 rounded-full bg-blue-500/10">Default</span>
@@ -277,17 +277,17 @@ export default function VaultPage() {
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[12px] text-white/30 mb-1.5">Brand Name</label>
+              <label className="block text-[12px] text-white/70 mb-1.5">Brand Name</label>
               <input type="text" value={brand.brandName || ""} onChange={(e) => setBrand({ ...brand, brandName: e.target.value })} placeholder="Your business name" className="input-field text-sm" />
             </div>
             <div>
-              <label className="block text-[12px] text-white/30 mb-1.5">Tagline</label>
+              <label className="block text-[12px] text-white/70 mb-1.5">Tagline</label>
               <input type="text" value={brand.tagline || ""} onChange={(e) => setBrand({ ...brand, tagline: e.target.value })} placeholder="Your tagline or slogan" className="input-field text-sm" />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[12px] text-white/30 mb-1.5">Tone of Voice</label>
+              <label className="block text-[12px] text-white/70 mb-1.5">Tone of Voice</label>
               <select value={brand.toneOfVoice || ""} onChange={(e) => setBrand({ ...brand, toneOfVoice: e.target.value })} className="input-field text-sm">
                 <option value="">Select tone</option>
                 <option value="professional">Professional</option>
@@ -299,12 +299,12 @@ export default function VaultPage() {
               </select>
             </div>
             <div>
-              <label className="block text-[12px] text-white/30 mb-1.5">Target Audience</label>
+              <label className="block text-[12px] text-white/70 mb-1.5">Target Audience</label>
               <input type="text" value={brand.targetAudience || ""} onChange={(e) => setBrand({ ...brand, targetAudience: e.target.value })} placeholder="Who are you trying to reach?" className="input-field text-sm" />
             </div>
           </div>
           <div>
-            <label className="block text-[12px] text-white/30 mb-1.5">Brand Guidelines</label>
+            <label className="block text-[12px] text-white/70 mb-1.5">Brand Guidelines</label>
             <textarea value={brand.guidelines || ""} onChange={(e) => setBrand({ ...brand, guidelines: e.target.value })} placeholder="Any specific guidelines for AI-generated content..." className="input-field text-sm min-h-[100px] resize-y" />
           </div>
           <button onClick={saveBrand} disabled={saving} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-[#050508] text-[14px] font-medium hover:bg-white/90 disabled:opacity-40 transition-all">
@@ -334,7 +334,7 @@ export default function VaultPage() {
                   {brandKit.logoUrl ? "Change Logo" : "Upload Logo"}
                   <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleLogoUpload} className="hidden" />
                 </label>
-                <p className="text-[11px] text-white/20 mt-1.5">JPG, PNG, or WebP. Max 10MB.</p>
+                <p className="text-[11px] text-white/70 mt-1.5">JPG, PNG, or WebP. Max 10MB.</p>
               </div>
             </div>
           </div>
@@ -344,7 +344,7 @@ export default function VaultPage() {
             <label className="block text-[13px] font-medium text-white/60 mb-4">Brand Colors</label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[12px] text-white/30 mb-1.5">Primary Color</label>
+                <label className="block text-[12px] text-white/70 mb-1.5">Primary Color</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
@@ -357,12 +357,12 @@ export default function VaultPage() {
                     value={brandKit.primaryColor}
                     onChange={(e) => setBrandKit({ ...brandKit, primaryColor: e.target.value })}
                     className="input-field text-sm flex-1"
-                    placeholder="#4c6ef5"
+                    placeholder="#00749e"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-[12px] text-white/30 mb-1.5">Secondary Color</label>
+                <label className="block text-[12px] text-white/70 mb-1.5">Secondary Color</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
@@ -375,7 +375,7 @@ export default function VaultPage() {
                     value={brandKit.secondaryColor}
                     onChange={(e) => setBrandKit({ ...brandKit, secondaryColor: e.target.value })}
                     className="input-field text-sm flex-1"
-                    placeholder="#7c3aed"
+                    placeholder="#81009e"
                   />
                 </div>
               </div>
@@ -383,7 +383,7 @@ export default function VaultPage() {
             {/* Color preview */}
             <div className="flex items-center gap-3 mt-4">
               <div className="h-8 flex-1 rounded-lg" style={{ background: `linear-gradient(135deg, ${brandKit.primaryColor}, ${brandKit.secondaryColor})` }} />
-              <span className="text-[11px] text-white/20">Preview</span>
+              <span className="text-[11px] text-white/70">Preview</span>
             </div>
           </div>
 
@@ -398,7 +398,7 @@ export default function VaultPage() {
                   className={`px-4 py-3 rounded-xl border text-[13px] font-medium capitalize transition-all ${
                     brandKit.introStyle === style
                       ? "border-blue-500/30 bg-blue-500/10 text-blue-400"
-                      : "border-white/[0.06] bg-white/[0.02] text-white/50 hover:bg-white/[0.04]"
+                      : "border-white/[0.06] bg-white/[0.02] text-white/70 hover:bg-white/[0.04]"
                   }`}
                 >
                   {style}
@@ -418,7 +418,7 @@ export default function VaultPage() {
                   className={`px-4 py-3 rounded-xl border text-[13px] font-medium capitalize transition-all ${
                     brandKit.outroTemplate === tmpl
                       ? "border-blue-500/30 bg-blue-500/10 text-blue-400"
-                      : "border-white/[0.06] bg-white/[0.02] text-white/50 hover:bg-white/[0.04]"
+                      : "border-white/[0.06] bg-white/[0.02] text-white/70 hover:bg-white/[0.04]"
                   }`}
                 >
                   {tmpl}
@@ -445,7 +445,7 @@ export default function VaultPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-[16px] font-semibold text-white/90 mb-1">Train Your Voice</h3>
-                <p className="text-[13px] text-white/40 leading-relaxed mb-4">
+                <p className="text-[13px] text-white/70 leading-relaxed mb-4">
                   Upload a 30-second audio sample of your voice. We will use it to generate videos that sound like you.
                   Supported formats: .mp3, .wav, .m4a
                 </p>
@@ -471,7 +471,7 @@ export default function VaultPage() {
           {/* Uploaded Voices */}
           {voices.length > 0 && (
             <div>
-              <h3 className="text-[14px] font-medium text-white/50 mb-3">Your Voice Samples</h3>
+              <h3 className="text-[14px] font-medium text-white/70 mb-3">Your Voice Samples</h3>
               <div className="space-y-2">
                 {voices.map((voice) => (
                   <div key={voice.id} className="flex items-center gap-4 px-5 py-4 rounded-xl border border-white/[0.04] bg-white/[0.015]">
@@ -480,7 +480,7 @@ export default function VaultPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-[14px] font-medium text-white/80 truncate">{voice.filename}</div>
-                      <div className="text-[12px] text-white/25">{voice.duration}s</div>
+                      <div className="text-[12px] text-white/60">{voice.duration}s</div>
                     </div>
                     {voice.isDefault && (
                       <div className="flex items-center gap-1.5 text-[11px] text-green-400/70 px-2 py-0.5 rounded-full bg-green-500/10">
@@ -501,7 +501,7 @@ export default function VaultPage() {
 
           {voices.length === 0 && (
             <div className="text-center py-10">
-              <p className="text-[13px] text-white/25">No voice samples yet. Upload your first sample above.</p>
+              <p className="text-[13px] text-white/60">No voice samples yet. Upload your first sample above.</p>
             </div>
           )}
         </div>
@@ -520,7 +520,7 @@ export default function VaultPage() {
                 <h3 className="text-[17px] font-semibold text-white mb-1">
                   All your content lives here. Your AI twin knows you.
                 </h3>
-                <p className="text-[14px] text-white/40 leading-relaxed">
+                <p className="text-[14px] text-white/70 leading-relaxed">
                   {(dataStats.photos + dataStats.videos + dataStats.voices) > 0
                     ? `You've created ${dataStats.videos} video${dataStats.videos !== 1 ? "s" : ""}, uploaded ${dataStats.photos} photo${dataStats.photos !== 1 ? "s" : ""}, and trained ${dataStats.voices} voice sample${dataStats.voices !== 1 ? "s" : ""}. Your digital twin lives here.`
                     : "Start uploading photos and creating videos to build your digital twin."}
@@ -534,27 +534,27 @@ export default function VaultPage() {
             <div className="bg-[#0f1420] border border-white/[0.04] rounded-xl p-4 text-center">
               <Camera className="w-5 h-5 text-blue-400/50 mx-auto mb-2" />
               <p className="text-2xl font-bold text-white">{dataStats.photos}</p>
-              <p className="text-[11px] text-white/25 mt-0.5">Photos Uploaded</p>
+              <p className="text-[11px] text-white/60 mt-0.5">Photos Uploaded</p>
             </div>
             <div className="bg-[#0f1420] border border-white/[0.04] rounded-xl p-4 text-center">
               <Film className="w-5 h-5 text-purple-400/50 mx-auto mb-2" />
               <p className="text-2xl font-bold text-white">{dataStats.videos}</p>
-              <p className="text-[11px] text-white/25 mt-0.5">Videos Created</p>
+              <p className="text-[11px] text-white/60 mt-0.5">Videos Created</p>
             </div>
             <div className="bg-[#0f1420] border border-white/[0.04] rounded-xl p-4 text-center">
               <Mic className="w-5 h-5 text-emerald-400/50 mx-auto mb-2" />
               <p className="text-2xl font-bold text-white">{dataStats.voices}</p>
-              <p className="text-[11px] text-white/25 mt-0.5">Voice Samples</p>
+              <p className="text-[11px] text-white/60 mt-0.5">Voice Samples</p>
             </div>
             <div className="bg-[#0f1420] border border-white/[0.04] rounded-xl p-4 text-center">
               <Layers className="w-5 h-5 text-amber-400/50 mx-auto mb-2" />
               <p className="text-2xl font-bold text-white">{dataStats.characterSheets}</p>
-              <p className="text-[11px] text-white/25 mt-0.5">Character Sheets</p>
+              <p className="text-[11px] text-white/60 mt-0.5">Character Sheets</p>
             </div>
             <div className="bg-[#0f1420] border border-white/[0.04] rounded-xl p-4 text-center">
               <CalendarDays className="w-5 h-5 text-pink-400/50 mx-auto mb-2" />
               <p className="text-2xl font-bold text-white">{dataStats.schedules}</p>
-              <p className="text-[11px] text-white/25 mt-0.5">Schedules Created</p>
+              <p className="text-[11px] text-white/60 mt-0.5">Schedules Created</p>
             </div>
           </div>
 
@@ -563,7 +563,7 @@ export default function VaultPage() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-sm font-semibold text-white mb-1">Export Your Data</h3>
-                <p className="text-[13px] text-white/30 leading-relaxed max-w-md">
+                <p className="text-[13px] text-white/70 leading-relaxed max-w-md">
                   Download a complete JSON export of all your data including photos, videos, voice samples, character sheets, and brand settings. GDPR compliant.
                 </p>
               </div>

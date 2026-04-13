@@ -104,7 +104,7 @@ export default function PublicVideoClient({ video }: { video: VideoData }) {
                 </>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="text-white/30 text-sm">
+                  <p className="text-white/70 text-sm">
                     Video preview not available
                   </p>
                 </div>
@@ -117,11 +117,11 @@ export default function PublicVideoClient({ video }: { video: VideoData }) {
                 {video.title}
               </h1>
               {video.description && (
-                <p className="text-[14px] text-white/40 leading-relaxed mb-4">
+                <p className="text-[14px] text-white/70 leading-relaxed mb-4">
                   {video.description}
                 </p>
               )}
-              <div className="flex items-center gap-4 text-[13px] text-white/30">
+              <div className="flex items-center gap-4 text-[13px] text-white/70">
                 <div className="flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5" />
                   {formatDuration(video.duration)}
@@ -136,7 +136,7 @@ export default function PublicVideoClient({ video }: { video: VideoData }) {
                 </span>
                 <button
                   onClick={handleShare}
-                  className="flex items-center gap-1.5 ml-auto text-white/40 hover:text-white/70 transition-colors"
+                  className="flex items-center gap-1.5 ml-auto text-white/70 hover:text-white/70 transition-colors"
                 >
                   <Share2 className="w-3.5 h-3.5" />
                   {copied ? "Copied!" : "Share"}
@@ -154,7 +154,7 @@ export default function PublicVideoClient({ video }: { video: VideoData }) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-sm font-bold text-white/50">
+                  <span className="text-sm font-bold text-white/70">
                     {video.creator.name.charAt(0)}
                   </span>
                 )}
@@ -163,7 +163,7 @@ export default function PublicVideoClient({ video }: { video: VideoData }) {
                 <p className="text-[14px] font-medium text-white/80">
                   {video.creator.name}
                 </p>
-                <p className="text-[12px] text-white/30">
+                <p className="text-[12px] text-white/70">
                   Created with Official AI
                 </p>
               </div>
@@ -182,12 +182,12 @@ export default function PublicVideoClient({ video }: { video: VideoData }) {
                   <p className="text-[14px] font-semibold text-white">
                     Made with Official AI
                   </p>
-                  <p className="text-[12px] text-white/30">
+                  <p className="text-[12px] text-white/70">
                     AI-Powered Video Creation
                   </p>
                 </div>
               </div>
-              <p className="text-[13px] text-white/40 leading-relaxed mb-5">
+              <p className="text-[13px] text-white/70 leading-relaxed mb-5">
                 Create studio-quality videos featuring your face and voice. No
                 filming, no editing, no crew. Your AI twin posts for you.
               </p>
@@ -215,7 +215,7 @@ export default function PublicVideoClient({ video }: { video: VideoData }) {
                   <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   </div>
-                  <p className="text-[13px] text-white/50">{feature}</p>
+                  <p className="text-[13px] text-white/70">{feature}</p>
                 </div>
               ))}
             </div>
@@ -226,19 +226,19 @@ export default function PublicVideoClient({ video }: { video: VideoData }) {
       {/* Footer */}
       <footer className="border-t border-white/5 mt-12">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex items-center justify-between">
-          <p className="text-[12px] text-white/20">
+          <p className="text-[12px] text-white/70">
             &copy; {new Date().getFullYear()} Official AI. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link
               href="/features"
-              className="text-[12px] text-white/20 hover:text-white/40 transition-colors"
+              className="text-[12px] text-white/70 hover:text-white/70 transition-colors"
             >
               Features
             </Link>
             <Link
               href="/pricing"
-              className="text-[12px] text-white/20 hover:text-white/40 transition-colors"
+              className="text-[12px] text-white/70 hover:text-white/70 transition-colors"
             >
               Pricing
             </Link>

@@ -46,7 +46,7 @@ export default function StatCard({
 
       {/* Caption */}
       {caption && (
-        <p className="text-p3 text-white/30 leading-relaxed">{caption}</p>
+        <p className="text-p3 text-white/70 leading-relaxed">{caption}</p>
       )}
     </div>
   );

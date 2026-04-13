@@ -141,7 +141,7 @@ export default function VideoLoadingScreen({
               className="space-y-1"
             >
               <p className="text-[20px] font-extrabold text-emerald-400">Your video is ready!</p>
-              <p className="text-[13px] text-white/40">Loading your preview...</p>
+              <p className="text-[13px] text-white/70">Loading your preview...</p>
             </motion.div>
           ) : (
             <motion.div
@@ -153,7 +153,7 @@ export default function VideoLoadingScreen({
               className="space-y-1"
             >
               <p className="text-[18px] font-bold text-white">{stage.main}</p>
-              <p className="text-[13px] text-white/35 font-medium">{stage.sub}</p>
+              <p className="text-[13px] text-white/70 font-medium">{stage.sub}</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -198,7 +198,7 @@ export default function VideoLoadingScreen({
         transition={{ delay: 3 }}
         className="text-center px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.04]"
       >
-        <p className="text-[11px] text-white/20 italic">
+        <p className="text-[11px] text-white/70 italic">
           &ldquo;My first video got 12,000 views. I generated it in under 2 minutes.&rdquo;
         </p>
         <p className="text-[10px] text-white/10 mt-1">Sarah K. — Real Estate Agent</p>

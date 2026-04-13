@@ -113,25 +113,25 @@ export function DocumentForm({ onSubmit, isGenerating }: DocumentFormProps) {
             className="w-full flex flex-col items-center gap-3 px-5 py-8 rounded-xl border border-dashed border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.02] transition-all cursor-pointer"
           >
             {isExtracting ? (
-              <Loader2 className="w-6 h-6 text-white/20 animate-spin" />
+              <Loader2 className="w-6 h-6 text-white/70 animate-spin" />
             ) : (
-              <Upload className="w-6 h-6 text-white/20" />
+              <Upload className="w-6 h-6 text-white/70" />
             )}
             <div className="text-center">
-              <p className="text-[13px] text-white/50">
+              <p className="text-[13px] text-white/70">
                 {isExtracting ? "Extracting text..." : "Click to upload"}
               </p>
-              <p className="text-[11px] text-white/20 mt-1">PDF, PPTX, or TXT</p>
+              <p className="text-[11px] text-white/70 mt-1">PDF, PPTX, or TXT</p>
             </div>
           </button>
         ) : (
           <div className="flex items-center justify-between px-4 py-3 rounded-xl border border-white/[0.08] bg-white/[0.03]">
             <div className="flex items-center gap-3">
-              <FileText className="w-4 h-4 text-white/30" />
+              <FileText className="w-4 h-4 text-white/70" />
               <span className="text-[13px] text-white/60 truncate max-w-[200px]">{fileName}</span>
             </div>
             <button onClick={clearFile} className="p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors">
-              <X className="w-3.5 h-3.5 text-white/30" />
+              <X className="w-3.5 h-3.5 text-white/70" />
             </button>
           </div>
         )}
@@ -146,13 +146,13 @@ export function DocumentForm({ onSubmit, isGenerating }: DocumentFormProps) {
           value={documentText}
           onChange={(e) => { setDocumentText(e.target.value); if (errors.documentText) setErrors({}); }}
           placeholder="Paste your document text, key points, or slides content here..."
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[120px]"
+          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[120px]"
           rows={5}
         />
         {errors.documentText && (
           <p className="text-[11px] text-red-400/80 mt-1.5">{errors.documentText}</p>
         )}
-        <p className="text-[11px] text-white/20 mt-1.5">
+        <p className="text-[11px] text-white/70 mt-1.5">
           {documentText.length}/5000 characters
         </p>
       </div>
@@ -173,10 +173,10 @@ export function DocumentForm({ onSubmit, isGenerating }: DocumentFormProps) {
                   : "border-white/[0.04] hover:border-white/[0.08] hover:bg-white/[0.02]"
               }`}
             >
-              <div className={`text-[13px] font-medium ${presentationStyle === opt.value ? "text-white/80" : "text-white/50"}`}>
+              <div className={`text-[13px] font-medium ${presentationStyle === opt.value ? "text-white/80" : "text-white/70"}`}>
                 {opt.label}
               </div>
-              <div className="text-[10px] text-white/20 mt-0.5">{opt.description}</div>
+              <div className="text-[10px] text-white/70 mt-0.5">{opt.description}</div>
             </button>
           ))}
         </div>

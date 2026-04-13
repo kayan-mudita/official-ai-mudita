@@ -233,7 +233,7 @@ export function WorkflowSelector({
         {/* Back button + title */}
         <button
           onClick={handleBack}
-          className="flex items-center gap-2 text-[13px] text-white/30 hover:text-white/50 transition-colors mb-4 group"
+          className="flex items-center gap-2 text-[13px] text-white/70 hover:text-white/70 transition-colors mb-4 group"
         >
           <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
           Back to workflows
@@ -241,11 +241,11 @@ export function WorkflowSelector({
 
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center border border-white/[0.06]">
-            <workflowDef.icon className="w-5 h-5 text-white/40" />
+            <workflowDef.icon className="w-5 h-5 text-white/70" />
           </div>
           <div>
             <h2 className="text-[16px] font-semibold text-white/90">{workflowDef.label}</h2>
-            <p className="text-[12px] text-white/30">{workflowDef.description}</p>
+            <p className="text-[12px] text-white/70">{workflowDef.description}</p>
           </div>
         </div>
 
@@ -278,7 +278,7 @@ export function WorkflowSelector({
     <div className="space-y-5 animate-fade-in">
       {/* Section: Universal Workflows */}
       <div>
-        <p className="text-[11px] font-medium text-white/20 uppercase tracking-wider mb-3">
+        <p className="text-[11px] font-medium text-white/70 uppercase tracking-wider mb-3">
           Workflows
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -295,7 +295,7 @@ export function WorkflowSelector({
       {/* Section: Real Estate Workflows */}
       {realEstateWorkflows.length > 0 && (
         <div>
-          <p className="text-[11px] font-medium text-white/20 uppercase tracking-wider mb-3">
+          <p className="text-[11px] font-medium text-white/70 uppercase tracking-wider mb-3">
             Real Estate
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -330,17 +330,17 @@ function WorkflowCard({
       className="flex items-center gap-4 p-4 rounded-xl border border-white/[0.04] hover:border-white/[0.10] hover:bg-white/[0.02] transition-all text-left group active:scale-[0.98]"
     >
       <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center flex-shrink-0 group-hover:bg-white/[0.06] transition-colors border border-white/[0.04] group-hover:border-white/[0.08]">
-        <Icon className="w-5 h-5 text-white/25 group-hover:text-white/40 transition-colors" />
+        <Icon className="w-5 h-5 text-white/60 group-hover:text-white/70 transition-colors" />
       </div>
       <div className="flex-1 min-w-0">
         <div className="text-[14px] font-medium text-white/70 group-hover:text-white/90 transition-colors">
           {workflow.label}
         </div>
-        <p className="text-[12px] text-white/25 mt-0.5 line-clamp-1 group-hover:text-white/35 transition-colors">
+        <p className="text-[12px] text-white/60 mt-0.5 line-clamp-1 group-hover:text-white/70 transition-colors">
           {workflow.description}
         </p>
       </div>
-      <ChevronRight className="w-4 h-4 text-white/10 group-hover:text-white/25 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+      <ChevronRight className="w-4 h-4 text-white/10 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
     </button>
   );
 }

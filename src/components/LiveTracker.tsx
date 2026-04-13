@@ -92,7 +92,7 @@ export default function LiveTracker({ video, averageViews = 350 }: LiveTrackerPr
           <Activity className="w-4 h-4 text-blue-400" />
           <h3 className="text-[15px] font-semibold text-white/90">Live Performance</h3>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-white/30">
+        <div className="flex items-center gap-1.5 text-xs text-white/70">
           <Clock className="w-3 h-3" />
           <span>{hoursAgo < 1 ? "Just now" : `${hoursAgo}h ago`}</span>
         </div>
@@ -121,7 +121,7 @@ export default function LiveTracker({ video, averageViews = 350 }: LiveTrackerPr
           </div>
           <div className="min-w-0">
             <p className="text-sm font-medium text-white/85 truncate">{video.title}</p>
-            <p className="text-xs text-white/30 capitalize">{video.contentType.replace(/_/g, " ")}</p>
+            <p className="text-xs text-white/70 capitalize">{video.contentType.replace(/_/g, " ")}</p>
           </div>
         </div>
 
@@ -129,26 +129,26 @@ export default function LiveTracker({ video, averageViews = 350 }: LiveTrackerPr
         <div className="grid grid-cols-3 gap-3">
           <div className="px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04]">
             <div className="text-lg font-bold text-white">{formatNumber(currentViews)}</div>
-            <div className="text-[11px] text-white/30 mt-0.5">Views</div>
+            <div className="text-[11px] text-white/70 mt-0.5">Views</div>
           </div>
           <div className="px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04]">
             <div className="text-lg font-bold text-white">
               {formatNumber(data.reduce((s, d) => s + d.likes, 0))}
             </div>
-            <div className="text-[11px] text-white/30 mt-0.5">Likes</div>
+            <div className="text-[11px] text-white/70 mt-0.5">Likes</div>
           </div>
           <div className="px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.04]">
             <div className="text-lg font-bold text-white">
               {formatNumber(data.reduce((s, d) => s + d.comments, 0))}
             </div>
-            <div className="text-[11px] text-white/30 mt-0.5">Comments</div>
+            <div className="text-[11px] text-white/70 mt-0.5">Comments</div>
           </div>
         </div>
 
         {/* Hourly Breakdown Sparkline */}
         {data.length > 0 && (
           <div>
-            <p className="text-xs font-medium text-white/30 uppercase tracking-wider mb-3">
+            <p className="text-xs font-medium text-white/70 uppercase tracking-wider mb-3">
               Hourly Views
             </p>
             <div className="flex items-end gap-1 h-16">
@@ -159,7 +159,7 @@ export default function LiveTracker({ video, averageViews = 350 }: LiveTrackerPr
                     style={{ height: `${(d.views / maxViews) * 100}%` }}
                     title={`Hour ${d.hour}: ${d.views} views`}
                   />
-                  <span className="text-[9px] text-white/20">{d.hour}h</span>
+                  <span className="text-[9px] text-white/70">{d.hour}h</span>
                 </div>
               ))}
             </div>
@@ -174,8 +174,8 @@ export default function LiveTracker({ video, averageViews = 350 }: LiveTrackerPr
                 key={i}
                 className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.04]"
               >
-                <Eye className="w-3 h-3 text-white/25" />
-                <span className="text-[11px] text-white/40">
+                <Eye className="w-3 h-3 text-white/60" />
+                <span className="text-[11px] text-white/70">
                   Hour {point.hour}: {formatNumber(point.views)} views
                 </span>
                 {i < 2 && <ArrowUpRight className="w-2.5 h-2.5 text-green-400/50" />}

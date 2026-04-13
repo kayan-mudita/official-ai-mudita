@@ -155,14 +155,14 @@ export default function BlogClient() {
                     <h2 className="text-h3 sm:text-h2 font-bold tracking-[-0.02em] text-white leading-[1.1] mb-4">
                       {featured.title}
                     </h2>
-                    <p className="text-p2 text-white/50 leading-relaxed mb-6">
+                    <p className="text-p2 text-white/70 leading-relaxed mb-6">
                       {featured.excerpt}
                     </p>
                     <div className="flex items-center gap-4 mb-6">
-                      <span className="text-p3 text-white/35">
+                      <span className="text-p3 text-white/70">
                         {featured.date}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 text-p3 text-white/35">
+                      <span className="inline-flex items-center gap-1.5 text-p3 text-white/70">
                         <Clock className="w-3 h-3" />
                         {featured.readTime}
                       </span>
@@ -267,14 +267,14 @@ export default function BlogClient() {
                       <h3 className="text-p1 font-semibold text-white/90 leading-snug mb-2 group-hover:text-white transition-colors">
                         {post.title}
                       </h3>
-                      <p className="text-p3 text-white/40 leading-relaxed mb-4 line-clamp-2">
+                      <p className="text-p3 text-white/70 leading-relaxed mb-4 line-clamp-2">
                         {post.excerpt}
                       </p>
                       <div className="flex items-center justify-between">
-                        <span className="text-p3 text-white/30">
+                        <span className="text-p3 text-white/70">
                           {post.date}
                         </span>
-                        <span className="inline-flex items-center gap-1 text-p3 text-white/30">
+                        <span className="inline-flex items-center gap-1 text-p3 text-white/70">
                           <Clock className="w-2.5 h-2.5" />
                           {post.readTime}
                         </span>
@@ -309,7 +309,7 @@ export default function BlogClient() {
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Your first video is free. Upload a photo and see AI create a video
               of you in 30 seconds.
             </p>

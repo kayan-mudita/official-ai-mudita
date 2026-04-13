@@ -86,7 +86,7 @@ export default function ReferralPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
+        <Loader2 className="w-5 h-5 text-white/70 animate-spin" />
       </div>
     );
   }
@@ -94,7 +94,7 @@ export default function ReferralPage() {
   if (!data) {
     return (
       <div className="max-w-3xl mx-auto text-center py-24">
-        <p className="text-white/40">Unable to load referral data. Please try again.</p>
+        <p className="text-white/70">Unable to load referral data. Please try again.</p>
       </div>
     );
   }
@@ -104,7 +104,7 @@ export default function ReferralPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Referral Program</h1>
-        <p className="text-sm text-white/40 mt-1">
+        <p className="text-sm text-white/70 mt-1">
           Give 1 month free, get 1 month free
         </p>
       </div>
@@ -121,7 +121,7 @@ export default function ReferralPage() {
               <h2 className="text-lg font-semibold text-white/90">
                 Share Official AI, earn free months
               </h2>
-              <p className="text-sm text-white/40 mt-1 leading-relaxed">
+              <p className="text-sm text-white/70 mt-1 leading-relaxed">
                 For every friend who subscribes with your link, you both get 1 month free.
                 There is no limit to how many months you can earn.
               </p>
@@ -130,7 +130,7 @@ export default function ReferralPage() {
 
           {/* Referral link */}
           <div className="mb-6">
-            <label className="block text-xs text-white/30 mb-2 font-medium uppercase tracking-wide">
+            <label className="block text-xs text-white/70 mb-2 font-medium uppercase tracking-wide">
               Your referral link
             </label>
             <div className="flex items-center gap-2">
@@ -160,13 +160,13 @@ export default function ReferralPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={handleEmailShare}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.06] text-sm text-white/50 hover:text-white/70 hover:bg-white/[0.03] transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.06] text-sm text-white/70 hover:text-white/70 hover:bg-white/[0.03] transition-all"
             >
               <Mail className="w-4 h-4" /> Email
             </button>
             <button
               onClick={handleSocialShare}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.06] text-sm text-white/50 hover:text-white/70 hover:bg-white/[0.03] transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.06] text-sm text-white/70 hover:text-white/70 hover:bg-white/[0.03] transition-all"
             >
               <Share2 className="w-4 h-4" /> Share
             </button>
@@ -181,21 +181,21 @@ export default function ReferralPage() {
             <UserPlus className="w-4 h-4 text-blue-400" />
           </div>
           <div className="text-2xl font-bold text-white">{data.stats.invited}</div>
-          <div className="text-sm text-white/35 mt-0.5">Invited</div>
+          <div className="text-sm text-white/70 mt-0.5">Invited</div>
         </div>
         <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-5">
           <div className="w-9 h-9 rounded-lg bg-green-500/10 flex items-center justify-center mb-3">
             <Users className="w-4 h-4 text-green-400" />
           </div>
           <div className="text-2xl font-bold text-white">{data.stats.signedUp}</div>
-          <div className="text-sm text-white/35 mt-0.5">Signed Up</div>
+          <div className="text-sm text-white/70 mt-0.5">Signed Up</div>
         </div>
         <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-5">
           <div className="w-9 h-9 rounded-lg bg-purple-500/10 flex items-center justify-center mb-3">
             <UserCheck className="w-4 h-4 text-purple-400" />
           </div>
           <div className="text-2xl font-bold text-white">{data.stats.active}</div>
-          <div className="text-sm text-white/35 mt-0.5">Active</div>
+          <div className="text-sm text-white/70 mt-0.5">Active</div>
         </div>
       </div>
 
@@ -221,12 +221,12 @@ export default function ReferralPage() {
             },
           ].map((item, i) => (
             <div key={item.step} className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-lg bg-white/[0.06] flex items-center justify-center flex-shrink-0 text-xs font-bold text-white/50">
+              <div className="w-8 h-8 rounded-lg bg-white/[0.06] flex items-center justify-center flex-shrink-0 text-xs font-bold text-white/70">
                 {item.step}
               </div>
               <div className="flex-1 pt-0.5">
                 <p className="text-sm font-medium text-white/70">{item.title}</p>
-                <p className="text-xs text-white/30 mt-0.5">{item.description}</p>
+                <p className="text-xs text-white/70 mt-0.5">{item.description}</p>
               </div>
               {i < 2 && (
                 <ArrowRight className="w-3 h-3 text-white/10 mt-2 flex-shrink-0 hidden sm:block" />

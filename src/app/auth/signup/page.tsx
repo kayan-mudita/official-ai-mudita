@@ -84,7 +84,7 @@ function SignupForm() {
             Your AI marketing<br />
             <span className="gradient-text">teammate awaits</span>
           </h1>
-          <p className="text-lg text-white/40 mb-8">
+          <p className="text-lg text-white/70 mb-8">
             Join professionals who save 15+ hours per week on content creation.
           </p>
 
@@ -112,30 +112,30 @@ function SignupForm() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-white/40 mb-1.5">First Name</label>
+                  <label className="block text-xs text-white/70 mb-1.5">First Name</label>
                   <input type="text" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} placeholder="First name" autoComplete="off" className="input-field !py-2.5 text-sm" required />
                 </div>
                 <div>
-                  <label className="block text-xs text-white/40 mb-1.5">Last Name</label>
+                  <label className="block text-xs text-white/70 mb-1.5">Last Name</label>
                   <input type="text" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} placeholder="Last name" autoComplete="off" className="input-field !py-2.5 text-sm" required />
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-white/40 mb-1.5">Email</label>
+                <label className="block text-xs text-white/70 mb-1.5">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
                   <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email address" autoComplete="off" className="input-field pl-11 !py-2.5 text-sm" required />
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-white/40 mb-1.5">Password</label>
+                <label className="block text-xs text-white/70 mb-1.5">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
                   <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Min 8 characters" autoComplete="new-password" className="input-field pl-11 !py-2.5 text-sm" required minLength={8} />
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-white/40 mb-1.5">Industry</label>
+                <label className="block text-xs text-white/70 mb-1.5">Industry</label>
                 <select value={form.industry} onChange={(e) => setForm({ ...form, industry: e.target.value })} className="input-field !py-2.5 text-sm">
                   <option value="real_estate">Real Estate</option>
                   <option value="legal">Legal / Attorney</option>
@@ -145,7 +145,7 @@ function SignupForm() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-white/40 mb-1.5">Company (optional)</label>
+                <label className="block text-xs text-white/70 mb-1.5">Company (optional)</label>
                 <input type="text" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Company name (optional)" autoComplete="off" className="input-field !py-2.5 text-sm" />
               </div>
 
@@ -155,12 +155,12 @@ function SignupForm() {
               </button>
             </form>
 
-            <p className="text-xs text-white/20 text-center mt-4">
+            <p className="text-xs text-white/70 text-center mt-4">
               No credit card required · Cancel anytime
             </p>
           </div>
 
-          <p className="text-center text-white/40 mt-6 text-sm">
+          <p className="text-center text-white/70 mt-6 text-sm">
             Already have an account?{" "}
             <Link href="/auth/login" className="text-blue-400 hover:text-blue-300 font-medium">
               Log in

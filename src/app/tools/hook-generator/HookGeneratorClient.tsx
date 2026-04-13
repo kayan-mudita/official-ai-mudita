@@ -175,7 +175,7 @@ export default function HookGeneratorClient() {
                     className={`text-p3 font-semibold px-4 py-2 rounded-lg border transition-all ${
                       industry === key
                         ? "bg-special-500/[0.12] border-special-500/40 text-special-200"
-                        : "bg-white/[0.02] border-white/[0.08] text-white/45 hover:text-white/85 hover:border-white/[0.16]"
+                        : "bg-white/[0.02] border-white/[0.08] text-white/70 hover:text-white/85 hover:border-white/[0.16]"
                     }`}
                   >
                     {LABELS[key]}
@@ -215,7 +215,7 @@ export default function HookGeneratorClient() {
                     {copied === hook ? (
                       <Check className="w-4 h-4 mt-1 text-utility-400 flex-shrink-0" />
                     ) : (
-                      <Copy className="w-4 h-4 mt-1 text-white/25 group-hover:text-white/70 flex-shrink-0 transition-colors" />
+                      <Copy className="w-4 h-4 mt-1 text-white/60 group-hover:text-white/70 flex-shrink-0 transition-colors" />
                     )}
                   </motion.button>
                 ))}
@@ -226,7 +226,7 @@ export default function HookGeneratorClient() {
               <h2 className="text-p2 font-semibold text-white/85 mb-2">
                 How to use these hooks
               </h2>
-              <p className="text-p3 text-white/45 leading-relaxed">
+              <p className="text-p3 text-white/70 leading-relaxed">
                 The first 3 seconds of a short-form video decide whether someone keeps
                 watching. These hooks are pattern-tested across LinkedIn, TikTok, and
                 Reels. Pair one with a single concrete claim and one CTA — that's the
@@ -258,7 +258,7 @@ export default function HookGeneratorClient() {
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Official AI writes the hook, the script, and ships the whole
               video — automatically.
             </p>

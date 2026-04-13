@@ -22,7 +22,7 @@ export default function OnboardingBanner() {
             <p className="text-[14px] font-medium text-white/85">
               Complete your setup to get your first AI video
             </p>
-            <p className="text-[12px] text-white/30 mt-0.5 hidden sm:block">
+            <p className="text-[12px] text-white/70 mt-0.5 hidden sm:block">
               Finish onboarding to unlock personalized video generation
             </p>
           </div>

@@ -220,7 +220,7 @@ function HeroStepRail() {
                   <Icon className={`w-4 h-4 ${colors.text}`} />
                 </div>
                 <div className="relative min-w-0">
-                  <div className="text-[10px] font-mono font-semibold text-white/35 tracking-widest">
+                  <div className="text-[10px] font-mono font-semibold text-white/70 tracking-widest">
                     STEP {step.num}
                   </div>
                   <div className="text-p3 sm:text-p2 font-semibold text-white/90 truncate">
@@ -234,7 +234,7 @@ function HeroStepRail() {
                 </div>
               </Link>
               {i < steps.length - 1 && (
-                <ArrowRight className="flex-shrink-0 w-4 h-4 text-white/25" />
+                <ArrowRight className="flex-shrink-0 w-4 h-4 text-white/60" />
               )}
             </div>
           );
@@ -287,7 +287,7 @@ function StepSection({ step, index }: { step: Step; index: number }) {
                   >
                     <Icon className={`w-5 h-5 ${colors.text}`} />
                   </div>
-                  <span className="text-p3 text-white/30 font-mono font-semibold tracking-widest">
+                  <span className="text-p3 text-white/70 font-mono font-semibold tracking-widest">
                     STEP {step.num}
                   </span>
                 </div>
@@ -297,7 +297,7 @@ function StepSection({ step, index }: { step: Step; index: number }) {
                 <p className={`text-p1 font-semibold ${colors.text} mb-4`}>
                   {step.subtitle}
                 </p>
-                <p className="text-p2 text-white/45 leading-relaxed">
+                <p className="text-p2 text-white/70 leading-relaxed">
                   {step.description}
                 </p>
               </div>
@@ -349,7 +349,7 @@ function StepSection({ step, index }: { step: Step; index: number }) {
                     <h3 className="text-p2 font-semibold text-white/85 mb-1">
                       {detail.label}
                     </h3>
-                    <p className="text-p3 text-white/45 leading-relaxed">
+                    <p className="text-p3 text-white/70 leading-relaxed">
                       {detail.text}
                     </p>
                   </div>
@@ -405,7 +405,7 @@ function ComparisonSection() {
               Why this looks real{" "}
               <GradientText tone="brand">and others don&apos;t.</GradientText>
             </h2>
-            <p className="text-p1 text-white/45 mt-5 max-w-2xl mx-auto">
+            <p className="text-p1 text-white/70 mt-5 max-w-2xl mx-auto">
               The four engineering decisions that separate us from every other
               AI video tool on the market.
             </p>
@@ -419,7 +419,7 @@ function ComparisonSection() {
 
             {/* Header */}
             <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-white/[0.06] bg-white/[0.02]">
-              <div className="col-span-12 md:col-span-3 text-p3 font-mono font-semibold text-white/35 uppercase tracking-widest">
+              <div className="col-span-12 md:col-span-3 text-p3 font-mono font-semibold text-white/70 uppercase tracking-widest">
                 Feature
               </div>
               <div className="col-span-12 md:col-span-5 flex items-center gap-2">
@@ -432,9 +432,9 @@ function ComparisonSection() {
               </div>
               <div className="col-span-12 md:col-span-4 flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-white/[0.04] border border-white/[0.10] flex items-center justify-center">
-                  <X className="w-3 h-3 text-white/40" strokeWidth={3} />
+                  <X className="w-3 h-3 text-white/70" strokeWidth={3} />
                 </div>
-                <span className="text-p3 font-semibold text-white/40 tracking-wide">
+                <span className="text-p3 font-semibold text-white/70 tracking-wide">
                   Other AI tools
                 </span>
               </div>
@@ -462,7 +462,7 @@ function ComparisonSection() {
                     <div className="w-4 h-4 mt-1 rounded-full bg-positive-500/10 border border-positive-500/25 flex items-center justify-center flex-shrink-0">
                       <div className="w-1.5 h-1.5 rounded-full bg-positive-400" />
                     </div>
-                    <p className="text-p2 text-white/65 leading-relaxed">
+                    <p className="text-p2 text-white/70 leading-relaxed">
                       {row.ours}
                     </p>
                   </div>
@@ -470,7 +470,7 @@ function ComparisonSection() {
                     <div className="w-4 h-4 mt-1 rounded-full bg-negative-500/10 border border-negative-500/25 flex items-center justify-center flex-shrink-0">
                       <div className="w-1.5 h-1.5 rounded-full bg-negative-400" />
                     </div>
-                    <p className="text-p2 text-white/35 leading-relaxed">
+                    <p className="text-p2 text-white/70 leading-relaxed">
                       {row.theirs}
                     </p>
                   </div>
@@ -552,7 +552,7 @@ function CtaOutro() {
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <p className="text-p1 text-white/45 max-w-2xl mx-auto mb-8">
+          <p className="text-p1 text-white/70 max-w-2xl mx-auto mb-8">
             Upload your photos, pick a format, and let the AI handle the rest.
             From idea to published clip in under five minutes.
           </p>
@@ -575,7 +575,7 @@ function CtaOutro() {
                     </span>
                   </div>
                   {i < steps.length - 1 && (
-                    <ArrowRight className="w-3.5 h-3.5 text-white/25" />
+                    <ArrowRight className="w-3.5 h-3.5 text-white/60" />
                   )}
                 </div>
               );

@@ -26,7 +26,7 @@ export default function CTASection({
         <div className="relative">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] mb-8">
             <Zap className="w-3 h-3 text-yellow-400/70" />
-            <span className="text-p3 text-white/40 font-medium">
+            <span className="text-p3 text-white/70 font-medium">
               {badge}
             </span>
           </div>
@@ -34,7 +34,7 @@ export default function CTASection({
           <h2 className="text-h2 sm:text-h0 font-bold tracking-tight text-white mb-4">
             {heading}
           </h2>
-          <p className="text-p1 text-white/30 mb-8 max-w-md mx-auto">
+          <p className="text-p1 text-white/70 mb-8 max-w-md mx-auto">
             {description}
           </p>
           <Link

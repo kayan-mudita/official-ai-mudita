@@ -101,7 +101,7 @@ export default function SocialConnect({ onComplete }: SocialConnectProps) {
         <h2 className="text-[24px] font-extrabold text-white tracking-tight">
           Connect your accounts
         </h2>
-        <p className="text-[14px] text-white/40 font-medium">
+        <p className="text-[14px] text-white/70 font-medium">
           So your videos auto-publish when they are ready.
           {connectedCount > 0 && (
             <span className="text-emerald-400 ml-1">{connectedCount} connected</span>
@@ -147,7 +147,7 @@ export default function SocialConnect({ onComplete }: SocialConnectProps) {
               ) : isConnecting ? (
                 <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />
               ) : (
-                <ExternalLink className="w-4 h-4 text-white/20" />
+                <ExternalLink className="w-4 h-4 text-white/70" />
               )}
             </motion.button>
           );
@@ -185,7 +185,7 @@ export default function SocialConnect({ onComplete }: SocialConnectProps) {
         </motion.button>
 
         {connectedCount === 0 && (
-          <p className="text-[11px] text-white/15 text-center">
+          <p className="text-[11px] text-white/70 text-center">
             You can connect accounts later from Settings.
           </p>
         )}

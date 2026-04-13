@@ -41,7 +41,7 @@ async function getVideo(id: string) {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const video = await getVideo(params.id);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://officialai.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.theofficial.ai";
 
   if (!video) {
     return {
@@ -114,7 +114,7 @@ export default async function PublicVideoPage({ params }: PageProps) {
           <h1 className="text-2xl font-bold text-white mb-2">
             Video Not Found
           </h1>
-          <p className="text-white/40 mb-6">
+          <p className="text-white/70 mb-6">
             This video is no longer available or has not been published yet.
           </p>
           <a

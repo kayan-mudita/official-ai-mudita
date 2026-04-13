@@ -44,7 +44,7 @@ const statusStyles: Record<string, string> = {
   review: "bg-yellow-500/10 text-yellow-400",
   scheduled: "bg-blue-500/10 text-blue-400",
   approved: "bg-emerald-500/10 text-emerald-400",
-  draft: "bg-white/[0.06] text-white/40",
+  draft: "bg-white/[0.06] text-white/70",
   generating: "bg-purple-500/10 text-purple-400",
   failed: "bg-red-500/10 text-red-400",
 };
@@ -248,7 +248,7 @@ export default function ContentPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Content Library</h1>
-          <p className="text-sm text-white/40 mt-1">
+          <p className="text-sm text-white/70 mt-1">
             {loading ? "\u00A0" : `${videos.length} video${videos.length !== 1 ? "s" : ""}`}
           </p>
         </div>
@@ -260,7 +260,7 @@ export default function ContentPage() {
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
           <input
             type="text"
             placeholder="Search videos..."
@@ -279,7 +279,7 @@ export default function ContentPage() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
                   activeFilter === f
                     ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                    : "text-white/40 hover:text-white/60 border border-transparent"
+                    : "text-white/70 hover:text-white/60 border border-transparent"
                 }`}
               >
                 {f}
@@ -295,13 +295,13 @@ export default function ContentPage() {
         <div className="flex items-center gap-1 ml-auto">
           <button
             onClick={() => setViewMode("grid")}
-            className={`p-2 rounded-lg transition-colors ${viewMode === "grid" ? "bg-white/10 text-white" : "text-white/30 hover:text-white/50"}`}
+            className={`p-2 rounded-lg transition-colors ${viewMode === "grid" ? "bg-white/10 text-white" : "text-white/70 hover:text-white/70"}`}
           >
             <Grid3X3 className="w-4 h-4" />
           </button>
           <button
             onClick={() => setViewMode("list")}
-            className={`p-2 rounded-lg transition-colors ${viewMode === "list" ? "bg-white/10 text-white" : "text-white/30 hover:text-white/50"}`}
+            className={`p-2 rounded-lg transition-colors ${viewMode === "list" ? "bg-white/10 text-white" : "text-white/70 hover:text-white/70"}`}
           >
             <List className="w-4 h-4" />
           </button>
@@ -311,7 +311,7 @@ export default function ContentPage() {
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
+          <Loader2 className="w-5 h-5 text-white/70 animate-spin" />
         </div>
       )}
 
@@ -319,10 +319,10 @@ export default function ContentPage() {
       {!loading && videos.length === 0 && (
         <div className="text-center py-20">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/[0.03] mb-5">
-            <Film className="w-6 h-6 text-white/15" />
+            <Film className="w-6 h-6 text-white/70" />
           </div>
           <h3 className="text-[17px] font-semibold text-white/80 mb-1">No videos yet</h3>
-          <p className="text-[14px] text-white/30 mb-6">Create your first AI video to get started.</p>
+          <p className="text-[14px] text-white/70 mb-6">Create your first AI video to get started.</p>
           <Link href="/dashboard/generate" className="btn-primary gap-2 text-sm">
             <Video className="w-4 h-4" /> Create Video
           </Link>
@@ -332,7 +332,7 @@ export default function ContentPage() {
       {/* No results for filter */}
       {!loading && videos.length > 0 && filtered.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-[14px] text-white/30">No videos match this filter.</p>
+          <p className="text-[14px] text-white/70">No videos match this filter.</p>
         </div>
       )}
 
@@ -369,14 +369,14 @@ export default function ContentPage() {
                   {video.thumbnailUrl ? (
                     <img src={video.thumbnailUrl} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <Play className="w-3 h-3 text-white/15" />
+                    <Play className="w-3 h-3 text-white/70" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium truncate text-white/90">{video.title}</div>
-                  <div className="text-xs text-white/25">{modelLabels[video.model] || video.model} · {formatDuration(video.duration)}</div>
+                  <div className="text-xs text-white/60">{modelLabels[video.model] || video.model} · {formatDuration(video.duration)}</div>
                 </div>
-                <div className="hidden sm:block text-xs text-white/25">{formatDate(video.createdAt)}</div>
+                <div className="hidden sm:block text-xs text-white/60">{formatDate(video.createdAt)}</div>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${statusStyles[video.status] || statusStyles.draft}`}>
                   {video.status}
                 </span>
@@ -385,7 +385,7 @@ export default function ContentPage() {
                   <button
                     onClick={(e) => { e.stopPropagation(); handleRegenerate(video.id, e); }}
                     disabled={regeneratingId === video.id}
-                    className="p-1.5 rounded-lg hover:bg-white/5 text-white/20 hover:text-white/50 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-white/5 text-white/70 hover:text-white/70 transition-colors"
                     title="Regenerate"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${regeneratingId === video.id ? "animate-spin" : ""}`} />
@@ -394,7 +394,7 @@ export default function ContentPage() {
                   {hasVersions && (
                     <button
                       onClick={(e) => handleCompare(video, e)}
-                      className="p-1.5 rounded-lg hover:bg-white/5 text-white/20 hover:text-white/50 transition-colors"
+                      className="p-1.5 rounded-lg hover:bg-white/5 text-white/70 hover:text-white/70 transition-colors"
                       title="Compare versions"
                     >
                       <GitCompare className="w-3.5 h-3.5" />
@@ -470,7 +470,7 @@ export default function ContentPage() {
                 <h3 className="text-lg font-semibold text-white/90 mb-2">
                   {publishResult.success ? "Published!" : "Publishing Failed"}
                 </h3>
-                <p className="text-sm text-white/40 mb-6">{publishResult.message}</p>
+                <p className="text-sm text-white/70 mb-6">{publishResult.message}</p>
                 <button
                   onClick={() => { setConfirmPublishVideo(null); setPublishResult(null); }}
                   className="px-6 py-2.5 rounded-xl bg-white/[0.06] text-sm text-white/70 hover:bg-white/[0.1] transition-colors"
@@ -484,12 +484,12 @@ export default function ContentPage() {
                   <h3 className="text-lg font-semibold text-white/90">Post Now</h3>
                   <button
                     onClick={() => setConfirmPublishVideo(null)}
-                    className="p-1.5 rounded-lg hover:bg-white/5 text-white/30"
+                    className="p-1.5 rounded-lg hover:bg-white/5 text-white/70"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
-                <p className="text-sm text-white/50 mb-4">
+                <p className="text-sm text-white/70 mb-4">
                   Post &quot;{confirmPublishVideo.title}&quot; to your connected platforms?
                 </p>
                 <div className="flex flex-wrap gap-2 mb-6">
@@ -502,7 +502,7 @@ export default function ContentPage() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setConfirmPublishVideo(null)}
-                    className="flex-1 px-4 py-2.5 rounded-xl border border-white/[0.06] text-sm text-white/50 hover:bg-white/[0.03] transition-colors"
+                    className="flex-1 px-4 py-2.5 rounded-xl border border-white/[0.06] text-sm text-white/70 hover:bg-white/[0.03] transition-colors"
                   >
                     Cancel
                   </button>
@@ -613,7 +613,7 @@ function VideoGridCard({
         ) : isDemoOrInvalidUrl(video.videoUrl) && video.status !== "generating" ? (
           <div className="flex flex-col items-center justify-center gap-1">
             <Film className="w-8 h-8 text-white/[0.06]" />
-            <span className="text-[10px] text-white/20">Demo mode</span>
+            <span className="text-[10px] text-white/70">Demo mode</span>
           </div>
         ) : (
           <Film className="w-8 h-8 text-white/[0.06]" />
@@ -639,7 +639,7 @@ function VideoGridCard({
           {video.title}
         </h3>
         <div className="flex items-center justify-between mt-2">
-          <span className="text-xs text-white/25">
+          <span className="text-xs text-white/60">
             {formatDate(video.createdAt)}
           </span>
           <span
@@ -657,7 +657,7 @@ function VideoGridCard({
           <button
             onClick={onRegenerate}
             disabled={isRegenerating}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-white/40 hover:text-white/70 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-white/70 hover:text-white/70 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] transition-all disabled:opacity-50"
           >
             <RefreshCw className={`w-3 h-3 ${isRegenerating ? "animate-spin" : ""}`} />
             {isRegenerating ? "Regenerating..." : "Regenerate"}
@@ -667,7 +667,7 @@ function VideoGridCard({
           {hasVersions && (
             <button
               onClick={onCompare}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-white/40 hover:text-white/70 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] transition-all"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-white/70 hover:text-white/70 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.04] transition-all"
             >
               <GitCompare className="w-3 h-3" />
               Compare

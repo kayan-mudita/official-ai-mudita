@@ -65,6 +65,17 @@ export interface Industry {
   };
   /** Related feature slugs to link to (from src/data/features.ts). */
   relatedFeatures: string[];
+  /**
+   * YMYL compliance disclaimer block. Present for regulated professions
+   * (attorneys, doctors, financial advisors) where professional rules require
+   * explicit statements about the tool's role and the user's responsibility.
+   */
+  compliance?: {
+    eyebrow: string;
+    heading: string;
+    body: string;
+    bullets: string[];
+  };
 }
 
 export const industries: Industry[] = [
@@ -193,6 +204,17 @@ export const industries: Industry[] = [
       badge: "Built specifically for attorneys",
     },
     relatedFeatures: ["script-engine", "ai-twin-voice"],
+    compliance: {
+      eyebrow: "Compliance & disclaimers",
+      heading: "Built to keep you in control of what you publish.",
+      body: "Official AI is a content creation tool, not legal advice. Every script is fully editable before a single frame is generated, and nothing publishes without your review and approval — so you always stay compliant with your state bar's advertising rules, solicitation restrictions, and advertising-review requirements.",
+      bullets: [
+        "You are the publisher. Review, edit, and approve every script before generation; nothing auto-publishes without your explicit sign-off.",
+        "State bar compliance is your responsibility. Advertising and solicitation rules vary by jurisdiction (Model Rules 7.1–7.3, plus state-specific amendments) — run videos past your firm's advertising review where required.",
+        "No confidential client information should ever be used as input. Use hypotheticals and general educational content only.",
+        "Add the disclaimers your jurisdiction requires (e.g., \"attorney advertising,\" \"prior results do not guarantee a similar outcome\") directly in your scripts or video captions before publishing.",
+      ],
+    },
   },
   {
     slug: "doctors",
@@ -256,6 +278,17 @@ export const industries: Industry[] = [
       badge: "Built specifically for doctors",
     },
     relatedFeatures: ["script-engine", "ai-twin-voice"],
+    compliance: {
+      eyebrow: "Compliance & disclaimers",
+      heading: "General education only. You control every script.",
+      body: "Official AI is a content creation tool, not medical advice. Content produced here is intended as general patient education — it does not diagnose, treat, or replace a clinical consultation. Every script is fully editable before generation and nothing publishes without your explicit review and approval, so you stay inside HIPAA and your professional board's standards.",
+      bullets: [
+        "No PHI as input. Never use identifiable patient information, case details, or images of real patients when generating a script.",
+        "General education only. Content should be framed as educational, not as personal medical advice for any individual patient.",
+        "Add a standard disclaimer to every video (e.g., \"for educational purposes only — consult your physician\") directly in the script or on-screen caption before approving.",
+        "You remain the clinical reviewer. Every script passes through your queue for medical-accuracy review before a single frame is generated.",
+      ],
+    },
   },
   {
     slug: "advisors",
@@ -318,6 +351,17 @@ export const industries: Industry[] = [
       badge: "Built specifically for financial advisors",
     },
     relatedFeatures: ["script-engine", "analytics"],
+    compliance: {
+      eyebrow: "Compliance & disclaimers",
+      heading: "Built for the compliance review your firm already runs.",
+      body: "Official AI is a content creation tool, not financial advice. Every script is fully editable before generation and nothing publishes without your explicit approval — so you can run each video through the same SEC, FINRA, and firm-level advertising review process you already use for any other public-facing communication.",
+      bullets: [
+        "Review before generation. SEC Marketing Rule (206(4)-1) and FINRA Rule 2210 both treat social content as advertising — every script passes through your queue for compliance review before a frame is rendered.",
+        "No individualized advice. Content should be framed as general financial education, not as a recommendation for any specific client or account.",
+        "Performance claims. If you include historical returns, add the required disclaimers (net of fees, past performance, hypothetical vs. actual) directly in the script and on-screen captions.",
+        "Archive every approved piece. Retain the final scripts and videos per your firm's books-and-records requirements (SEC Rule 204-2 / FINRA 17a-4).",
+      ],
+    },
   },
 ];
 

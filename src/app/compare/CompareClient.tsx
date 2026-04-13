@@ -43,17 +43,17 @@ function CellValue({ value, highlight }: { value: string; highlight?: boolean })
   if (value === "yes") {
     return (
       <Check
-        className={`w-4 h-4 mx-auto ${highlight ? "text-positive-400" : "text-white/30"}`}
+        className={`w-4 h-4 mx-auto ${highlight ? "text-positive-400" : "text-white/70"}`}
         strokeWidth={3}
       />
     );
   }
   if (value === "no") {
-    return <X className="w-4 h-4 mx-auto text-white/15" strokeWidth={3} />;
+    return <X className="w-4 h-4 mx-auto text-white/70" strokeWidth={3} />;
   }
   return (
     <span
-      className={`text-p3 ${highlight ? "text-white font-semibold" : "text-white/40"}`}
+      className={`text-p3 ${highlight ? "text-white font-semibold" : "text-white/70"}`}
     >
       {value}
     </span>
@@ -135,18 +135,18 @@ export default function CompareClient() {
             <div className="grid grid-cols-4 gap-3 mb-2">
               <div />
               <div className="p-5 rounded-t-2xl border border-white/[0.06] border-b-0 bg-white/[0.02] text-center">
-                <div className="text-p3 text-white/30 uppercase tracking-wider font-semibold mb-2">
+                <div className="text-p3 text-white/70 uppercase tracking-wider font-semibold mb-2">
                   Option 1
                 </div>
-                <h3 className="text-p2 font-semibold text-white/65">
+                <h3 className="text-p2 font-semibold text-white/70">
                   Do it yourself
                 </h3>
               </div>
               <div className="p-5 rounded-t-2xl border border-white/[0.06] border-b-0 bg-white/[0.02] text-center">
-                <div className="text-p3 text-white/30 uppercase tracking-wider font-semibold mb-2">
+                <div className="text-p3 text-white/70 uppercase tracking-wider font-semibold mb-2">
                   Option 2
                 </div>
-                <h3 className="text-p2 font-semibold text-white/65">
+                <h3 className="text-p2 font-semibold text-white/70">
                   Hire an agency
                 </h3>
               </div>
@@ -170,7 +170,7 @@ export default function CompareClient() {
                 return (
                   <div key={i} className="grid grid-cols-4 gap-3 group/row">
                     <div
-                      className={`flex items-center px-4 py-4 text-p3 text-white/55 font-semibold transition-colors group-hover/row:text-white/85 ${
+                      className={`flex items-center px-4 py-4 text-p3 text-white/70 font-semibold transition-colors group-hover/row:text-white/85 ${
                         i === 0 ? "" : "border-t border-white/[0.06]"
                       }`}
                     >
@@ -259,16 +259,16 @@ export default function CompareClient() {
                   <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-utility-400/30 via-special-500/20 to-transparent" />
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center">
-                      <GitCompareArrows className="w-4 h-4 text-white/50" />
+                      <GitCompareArrows className="w-4 h-4 text-white/70" />
                     </div>
                     <h3 className="text-p2 font-semibold text-white/90">
                       vs {c.name}
                     </h3>
                   </div>
-                  <p className="text-p3 text-white/40 leading-relaxed line-clamp-2">
+                  <p className="text-p3 text-white/70 leading-relaxed line-clamp-2">
                     {c.tagline}
                   </p>
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-p3 text-white/55 group-hover:text-white/85 transition-colors">
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-p3 text-white/70 group-hover:text-white/85 transition-colors">
                     See comparison
                     <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                   </span>
@@ -300,7 +300,7 @@ export default function CompareClient() {
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Get 30 professional videos a month for less than the cost of one
               agency-produced video.
             </p>

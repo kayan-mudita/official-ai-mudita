@@ -186,7 +186,7 @@ export default function ROIPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
+        <Loader2 className="w-5 h-5 text-white/70 animate-spin" />
       </div>
     );
   }
@@ -199,7 +199,7 @@ export default function ROIPage() {
           <Calculator className="w-5 h-5 text-green-400" />
           <h1 className="text-2xl font-bold">ROI Calculator</h1>
         </div>
-        <p className="text-sm text-white/40">
+        <p className="text-sm text-white/70">
           See the potential revenue impact of your AI video content
         </p>
       </div>
@@ -212,7 +212,7 @@ export default function ROIPage() {
 
             {/* Videos Per Month */}
             <div>
-              <label className="text-xs font-medium text-white/40 uppercase tracking-wider block mb-2">
+              <label className="text-xs font-medium text-white/70 uppercase tracking-wider block mb-2">
                 Videos per Month
               </label>
               <div className="flex items-center gap-3">
@@ -230,7 +230,7 @@ export default function ROIPage() {
 
             {/* Industry */}
             <div>
-              <label className="text-xs font-medium text-white/40 uppercase tracking-wider block mb-2">
+              <label className="text-xs font-medium text-white/70 uppercase tracking-wider block mb-2">
                 Industry
               </label>
               <select
@@ -248,7 +248,7 @@ export default function ROIPage() {
 
             {/* Average Deal Size */}
             <div>
-              <label className="text-xs font-medium text-white/40 uppercase tracking-wider block mb-2">
+              <label className="text-xs font-medium text-white/70 uppercase tracking-wider block mb-2">
                 Average Deal Size ($)
               </label>
               <input
@@ -263,7 +263,7 @@ export default function ROIPage() {
 
           {/* Industry defaults note */}
           <div className="px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-            <p className="text-[11px] text-white/25 leading-relaxed">
+            <p className="text-[11px] text-white/60 leading-relaxed">
               Defaults are pre-filled based on your profile and {calculations.config.label} industry benchmarks.
               Adjust to match your specific business.
             </p>
@@ -281,7 +281,7 @@ export default function ROIPage() {
               <div className="text-2xl font-bold text-white">
                 {formatNumber(calculations.estimatedViews)}
               </div>
-              <div className="text-xs text-white/30 mt-0.5">Estimated Monthly Views</div>
+              <div className="text-xs text-white/70 mt-0.5">Estimated Monthly Views</div>
             </div>
             <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-5">
               <div className="flex items-center gap-2 mb-3">
@@ -290,7 +290,7 @@ export default function ROIPage() {
               <div className="text-2xl font-bold text-white">
                 {formatNumber(calculations.estimatedLeads)}
               </div>
-              <div className="text-xs text-white/30 mt-0.5">Estimated Monthly Leads</div>
+              <div className="text-xs text-white/70 mt-0.5">Estimated Monthly Leads</div>
             </div>
             <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-5">
               <div className="flex items-center gap-2 mb-3">
@@ -299,7 +299,7 @@ export default function ROIPage() {
               <div className="text-2xl font-bold text-green-400">
                 {formatCurrency(calculations.estimatedRevenue)}
               </div>
-              <div className="text-xs text-white/30 mt-0.5">Estimated Monthly Revenue</div>
+              <div className="text-xs text-white/70 mt-0.5">Estimated Monthly Revenue</div>
             </div>
             <div className={`rounded-xl border p-5 ${
               calculations.roiMultiplier >= 10
@@ -307,12 +307,12 @@ export default function ROIPage() {
                 : "bg-white/[0.015] border-white/[0.04]"
             }`}>
               <div className="flex items-center gap-2 mb-3">
-                <TrendingUp className={`w-4 h-4 ${calculations.roiMultiplier >= 10 ? "text-green-400" : "text-white/20"}`} />
+                <TrendingUp className={`w-4 h-4 ${calculations.roiMultiplier >= 10 ? "text-green-400" : "text-white/70"}`} />
               </div>
               <div className={`text-2xl font-bold ${calculations.roiMultiplier >= 10 ? "text-green-400" : "text-white"}`}>
                 {calculations.roiMultiplier}x
               </div>
-              <div className="text-xs text-white/30 mt-0.5">Annual ROI Multiplier</div>
+              <div className="text-xs text-white/70 mt-0.5">Annual ROI Multiplier</div>
             </div>
           </div>
 
@@ -322,15 +322,15 @@ export default function ROIPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
                 <div className="flex items-center gap-2">
-                  <Video className="w-3.5 h-3.5 text-white/20" />
-                  <span className="text-sm text-white/50">Videos per month</span>
+                  <Video className="w-3.5 h-3.5 text-white/70" />
+                  <span className="text-sm text-white/70">Videos per month</span>
                 </div>
                 <span className="text-sm font-medium text-white/70">{videosPerMonth}</span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
                 <div className="flex items-center gap-2">
-                  <Eye className="w-3.5 h-3.5 text-white/20" />
-                  <span className="text-sm text-white/50">
+                  <Eye className="w-3.5 h-3.5 text-white/70" />
+                  <span className="text-sm text-white/70">
                     Avg views per video ({calculations.config.label})
                   </span>
                 </div>
@@ -339,15 +339,15 @@ export default function ROIPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
-                <span className="text-sm text-white/50 ml-6">= Estimated monthly views</span>
+                <span className="text-sm text-white/70 ml-6">= Estimated monthly views</span>
                 <span className="text-sm font-medium text-white/70">
                   {calculations.estimatedViews.toLocaleString()}
                 </span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
                 <div className="flex items-center gap-2">
-                  <Users className="w-3.5 h-3.5 text-white/20" />
-                  <span className="text-sm text-white/50">
+                  <Users className="w-3.5 h-3.5 text-white/70" />
+                  <span className="text-sm text-white/70">
                     Lead conversion rate
                   </span>
                 </div>
@@ -356,15 +356,15 @@ export default function ROIPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
-                <span className="text-sm text-white/50 ml-6">= Monthly leads</span>
+                <span className="text-sm text-white/70 ml-6">= Monthly leads</span>
                 <span className="text-sm font-medium text-white/70">
                   {calculations.estimatedLeads}
                 </span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-white/[0.04]">
                 <div className="flex items-center gap-2">
-                  <DollarSign className="w-3.5 h-3.5 text-white/20" />
-                  <span className="text-sm text-white/50">
+                  <DollarSign className="w-3.5 h-3.5 text-white/70" />
+                  <span className="text-sm text-white/70">
                     Deal close rate x avg deal size
                   </span>
                 </div>
@@ -386,15 +386,15 @@ export default function ROIPage() {
             <div className="mt-6 pt-4 border-t border-white/[0.04]">
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <p className="text-xs text-white/25 mb-1">Annual Revenue</p>
+                  <p className="text-xs text-white/60 mb-1">Annual Revenue</p>
                   <p className="text-lg font-bold text-white">{formatCurrency(calculations.annualRevenue)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-white/25 mb-1">Annual Cost</p>
+                  <p className="text-xs text-white/60 mb-1">Annual Cost</p>
                   <p className="text-lg font-bold text-white/60">{formatCurrency(calculations.annualCost)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-white/25 mb-1">ROI</p>
+                  <p className="text-xs text-white/60 mb-1">ROI</p>
                   <p className={`text-lg font-bold ${calculations.roiMultiplier >= 10 ? "text-green-400" : "text-white"}`}>
                     {calculations.roiMultiplier}x return
                   </p>
@@ -410,7 +410,7 @@ export default function ROIPage() {
                 <h3 className="text-[15px] font-semibold text-white/90 mb-1">
                   Share this ROI report with your team
                 </h3>
-                <p className="text-sm text-white/35">
+                <p className="text-sm text-white/70">
                   Generate a shareable link with your current inputs pre-filled
                 </p>
               </div>

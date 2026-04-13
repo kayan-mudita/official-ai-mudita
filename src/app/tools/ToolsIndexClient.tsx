@@ -123,7 +123,7 @@ export default function ToolsIndexClient() {
                 title={tool.name}
                 description={tool.description}
               >
-                <span className="inline-flex items-center gap-1.5 text-p3 font-semibold text-white/55 group-hover:text-white/90 transition-colors">
+                <span className="inline-flex items-center gap-1.5 text-p3 font-semibold text-white/70 group-hover:text-white/90 transition-colors">
                   Open tool
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </span>
@@ -207,7 +207,7 @@ export default function ToolsIndexClient() {
                           <h3 className="text-p1 font-semibold text-white/90 mb-1">
                             {feature.shortLabel}
                           </h3>
-                          <p className="text-p2 text-white/45 leading-relaxed">
+                          <p className="text-p2 text-white/70 leading-relaxed">
                             {feature.subtitle}
                           </p>
                         </div>
@@ -242,7 +242,7 @@ export default function ToolsIndexClient() {
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Official AI is the platform that automates the rest — script,
               video, captions, and auto-posting.
             </p>

@@ -279,12 +279,12 @@ export default function UseCasesClient() {
                         className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${colors.line}`}
                       />
                       <div className="flex items-center gap-2 mb-3">
-                        <Clock className="w-3.5 h-3.5 text-white/30" />
-                        <span className="text-p3 font-semibold text-white/45 uppercase tracking-wider">
+                        <Clock className="w-3.5 h-3.5 text-white/70" />
+                        <span className="text-p3 font-semibold text-white/70 uppercase tracking-wider">
                           The problem
                         </span>
                       </div>
-                      <p className="text-p2 text-white/55 leading-relaxed">
+                      <p className="text-p2 text-white/70 leading-relaxed">
                         {uc.scenario}
                       </p>
                     </div>
@@ -296,12 +296,12 @@ export default function UseCasesClient() {
                         className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${colors.line}`}
                       />
                       <div className="flex items-center gap-2 mb-3">
-                        <Play className="w-3.5 h-3.5 text-white/30" />
-                        <span className="text-p3 font-semibold text-white/45 uppercase tracking-wider">
+                        <Play className="w-3.5 h-3.5 text-white/70" />
+                        <span className="text-p3 font-semibold text-white/70 uppercase tracking-wider">
                           The solution
                         </span>
                       </div>
-                      <p className="text-p2 text-white/55 leading-relaxed">
+                      <p className="text-p2 text-white/70 leading-relaxed">
                         {uc.solution}
                       </p>
                     </div>
@@ -330,8 +330,8 @@ export default function UseCasesClient() {
                         className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r ${colors.line}`}
                       />
                       <div className="flex items-center gap-2 mb-4">
-                        <BarChart3 className="w-3.5 h-3.5 text-white/30" />
-                        <span className="text-p3 font-semibold text-white/45 uppercase tracking-wider">
+                        <BarChart3 className="w-3.5 h-3.5 text-white/70" />
+                        <span className="text-p3 font-semibold text-white/70 uppercase tracking-wider">
                           Content types
                         </span>
                       </div>
@@ -339,7 +339,7 @@ export default function UseCasesClient() {
                         {uc.contentTypes.map((type, i) => (
                           <li
                             key={i}
-                            className="flex items-center gap-3 text-p2 text-white/55"
+                            className="flex items-center gap-3 text-p2 text-white/70"
                           >
                             <div
                               className={`w-1.5 h-1.5 rounded-full ${colors.dot}`}
@@ -369,7 +369,7 @@ export default function UseCasesClient() {
       {/* Cross-links */}
       <section className="relative py-16 px-6 border-t border-white/[0.04]">
         <div className="max-w-3xl mx-auto text-center space-y-5">
-          <p className="text-p1 text-white/40">
+          <p className="text-p1 text-white/70">
             Same technology, same quality — regardless of your industry.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-5">
@@ -419,7 +419,7 @@ export default function UseCasesClient() {
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Upload your photos and get your first AI video in under five
               minutes.
             </p>

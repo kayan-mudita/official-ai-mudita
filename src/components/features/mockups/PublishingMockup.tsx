@@ -75,7 +75,7 @@ export default function PublishingMockup() {
                   <div className="text-[10px] font-semibold text-white/85 truncate">
                     {q.title}
                   </div>
-                  <div className="text-[9px] text-white/35">5 platforms</div>
+                  <div className="text-[9px] text-white/70">5 platforms</div>
                 </div>
                 <div
                   className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center border ${

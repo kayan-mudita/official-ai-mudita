@@ -75,7 +75,7 @@ export default function SpeakingTimeClient() {
                     className={`text-p3 font-semibold px-3 py-1.5 rounded-lg border transition-all ${
                       wpm === p.wpm
                         ? "bg-utility-400/[0.12] border-utility-400/40 text-utility-200"
-                        : "bg-white/[0.02] border-white/[0.08] text-white/45 hover:text-white/85 hover:border-white/[0.16]"
+                        : "bg-white/[0.02] border-white/[0.08] text-white/70 hover:text-white/85 hover:border-white/[0.16]"
                     }`}
                   >
                     {p.label}
@@ -88,12 +88,12 @@ export default function SpeakingTimeClient() {
               onChange={(e) => setText(e.target.value)}
               placeholder="Paste your script here…"
               rows={10}
-              className="w-full bg-white/[0.02] border border-white/[0.08] rounded-xl p-4 text-p2 text-white/85 placeholder:text-white/25 focus:outline-none focus:border-utility-400/40 focus:bg-white/[0.04] transition-colors resize-y"
+              className="w-full bg-white/[0.02] border border-white/[0.08] rounded-xl p-4 text-p2 text-white/85 placeholder:text-white/60 focus:outline-none focus:border-utility-400/40 focus:bg-white/[0.04] transition-colors resize-y"
             />
 
             <div className="grid grid-cols-3 gap-3 mt-6">
               <div className="relative overflow-hidden p-4 rounded-xl card-hairline text-center">
-                <div className="text-p3 text-white/35 uppercase tracking-wider mb-1 font-semibold">
+                <div className="text-p3 text-white/70 uppercase tracking-wider mb-1 font-semibold">
                   Words
                 </div>
                 <div className="text-h3 font-bold text-white tabular-nums">
@@ -101,7 +101,7 @@ export default function SpeakingTimeClient() {
                 </div>
               </div>
               <div className="relative overflow-hidden p-4 rounded-xl card-hairline text-center">
-                <div className="text-p3 text-white/35 uppercase tracking-wider mb-1 font-semibold">
+                <div className="text-p3 text-white/70 uppercase tracking-wider mb-1 font-semibold">
                   Characters
                 </div>
                 <div className="text-h3 font-bold text-white tabular-nums">
@@ -120,7 +120,7 @@ export default function SpeakingTimeClient() {
             </div>
 
             <div className="mt-6">
-              <div className="text-p3 text-white/45 uppercase tracking-wider mb-3 font-semibold">
+              <div className="text-p3 text-white/70 uppercase tracking-wider mb-3 font-semibold">
                 Fits on
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -134,7 +134,7 @@ export default function SpeakingTimeClient() {
                     key={p.name}
                     className={`p-3 rounded-lg border text-center transition-colors ${
                       stats.words === 0
-                        ? "bg-white/[0.02] border-white/[0.06] text-white/30"
+                        ? "bg-white/[0.02] border-white/[0.06] text-white/70"
                         : p.ok
                           ? "bg-positive-500/[0.06] border-positive-500/25 text-positive-300"
                           : "bg-negative-500/[0.06] border-negative-500/25 text-negative-300"
@@ -151,7 +151,7 @@ export default function SpeakingTimeClient() {
               <h2 className="text-p2 font-semibold text-white/85 mb-2">
                 How it works
               </h2>
-              <p className="text-p3 text-white/45 leading-relaxed">
+              <p className="text-p3 text-white/70 leading-relaxed">
                 We count words and divide by your selected speaking pace. 150 wpm is
                 the average for natural, conversational delivery on social video.
                 Slower paces work better for emotional or educational content; faster
@@ -183,7 +183,7 @@ export default function SpeakingTimeClient() {
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Official AI writes scripts in your voice and turns them into
               ready-to-post videos.
             </p>

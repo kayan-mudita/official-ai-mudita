@@ -52,7 +52,7 @@ export default function MultiCutMethodClient() {
       {/* Anatomy diagram — preserved from legacy layout */}
       <div className="not-prose relative overflow-hidden my-8 p-6 rounded-2xl card-hairline">
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-utility-400/30 via-special-500/15 to-transparent" />
-        <p className="text-p3 font-semibold text-white/45 uppercase tracking-wider mb-4">
+        <p className="text-p3 font-semibold text-white/70 uppercase tracking-wider mb-4">
           Anatomy of a multi-cut video
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -72,7 +72,7 @@ export default function MultiCutMethodClient() {
               <div className="text-p2 font-semibold text-white/85 mb-1">
                 {cut.label}
               </div>
-              <div className="text-p3 text-white/35 leading-relaxed">
+              <div className="text-p3 text-white/70 leading-relaxed">
                 {cut.desc}
               </div>
             </div>

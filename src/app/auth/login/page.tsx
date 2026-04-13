@@ -47,7 +47,7 @@ function LoginForm() {
             </span>
           </Link>
           <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
-          <p className="text-sm text-white/40">Log in to manage your AI content</p>
+          <p className="text-sm text-white/70">Log in to manage your AI content</p>
         </div>
 
         <div className="glass-card p-8">
@@ -62,7 +62,7 @@ function LoginForm() {
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
                 <input
                   type="email"
                   value={email}
@@ -80,7 +80,7 @@ function LoginForm() {
                 <Link href="/auth/forgot-password" className="text-xs text-blue-400 hover:text-blue-300">Forgot password?</Link>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
                 <input
                   type="password"
                   value={password}
@@ -103,7 +103,7 @@ function LoginForm() {
           </form>
         </div>
 
-        <p className="text-center text-white/40 mt-6 text-sm">
+        <p className="text-center text-white/70 mt-6 text-sm">
           Don&apos;t have an account?{" "}
           <Link href="/auth/signup" className="text-blue-400 hover:text-blue-300 font-medium">
             Start free trial

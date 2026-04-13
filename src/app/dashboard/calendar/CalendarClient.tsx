@@ -137,7 +137,7 @@ export default function CalendarClient() {
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center py-32"><Loader2 className="w-5 h-5 text-white/20 animate-spin" /></div>;
+    return <div className="flex items-center justify-center py-32"><Loader2 className="w-5 h-5 text-white/70 animate-spin" /></div>;
   }
 
   return (
@@ -145,7 +145,7 @@ export default function CalendarClient() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold">Calendar</h1>
-          <p className="text-sm text-white/40 mt-1">{schedules.length} scheduled post{schedules.length !== 1 ? "s" : ""}</p>
+          <p className="text-sm text-white/70 mt-1">{schedules.length} scheduled post{schedules.length !== 1 ? "s" : ""}</p>
         </div>
         <div className="flex items-center gap-3">
           {/* Toggle AI Suggestions */}
@@ -154,20 +154,20 @@ export default function CalendarClient() {
             className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
               showSuggestions
                 ? "bg-purple-500/15 text-purple-400 border border-purple-500/20"
-                : "text-white/40 hover:text-white/60 border border-white/[0.06]"
+                : "text-white/70 hover:text-white/60 border border-white/[0.06]"
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
             AI Suggestions
           </button>
 
-          <button onClick={prevMonth} className="p-2 rounded-lg border border-white/[0.06] text-white/30 hover:text-white/60 transition-all">
+          <button onClick={prevMonth} className="p-2 rounded-lg border border-white/[0.06] text-white/70 hover:text-white/60 transition-all">
             <ChevronLeft className="w-4 h-4" />
           </button>
           <span className="text-[15px] font-medium text-white/80 min-w-[160px] text-center">
             {MONTHS[month]} {year}
           </span>
-          <button onClick={nextMonth} className="p-2 rounded-lg border border-white/[0.06] text-white/30 hover:text-white/60 transition-all">
+          <button onClick={nextMonth} className="p-2 rounded-lg border border-white/[0.06] text-white/70 hover:text-white/60 transition-all">
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
@@ -178,7 +178,7 @@ export default function CalendarClient() {
         {/* Day headers */}
         <div className="grid grid-cols-7 border-b border-white/[0.04]">
           {DAYS.map((day) => (
-            <div key={day} className="px-3 py-2.5 text-[11px] text-white/25 uppercase tracking-wider text-center">
+            <div key={day} className="px-3 py-2.5 text-[11px] text-white/60 uppercase tracking-wider text-center">
               {day}
             </div>
           ))}
@@ -200,13 +200,13 @@ export default function CalendarClient() {
 
             return (
               <div key={day} className={`min-h-[120px] border-b border-r border-white/[0.02] p-2 ${isToday ? "bg-blue-500/[0.03]" : ""}`}>
-                <div className={`text-[13px] mb-1.5 ${isToday ? "text-blue-400 font-semibold" : "text-white/30"}`}>
+                <div className={`text-[13px] mb-1.5 ${isToday ? "text-blue-400 font-semibold" : "text-white/70"}`}>
                   {day}
                 </div>
                 <div className="space-y-1">
                   {/* Scheduled videos */}
                   {daySchedules.map((s) => (
-                    <div key={s.id} className={`px-1.5 py-1 rounded text-[10px] truncate ${platformColors[s.platform] || "bg-white/[0.06] text-white/50"}`}>
+                    <div key={s.id} className={`px-1.5 py-1 rounded text-[10px] truncate ${platformColors[s.platform] || "bg-white/[0.06] text-white/70"}`}>
                       {s.video.title}
                     </div>
                   ))}
@@ -214,7 +214,7 @@ export default function CalendarClient() {
                   {/* AI Suggestion */}
                   {suggestion && !isPast && daySchedules.length === 0 && (
                     <div className="group/suggest relative">
-                      <div className={`px-1.5 py-1 rounded text-[10px] truncate border border-dashed ${categoryColors[suggestion.category] || "bg-white/[0.03] text-white/30 border-white/[0.06]"}`}>
+                      <div className={`px-1.5 py-1 rounded text-[10px] truncate border border-dashed ${categoryColors[suggestion.category] || "bg-white/[0.03] text-white/70 border-white/[0.06]"}`}>
                         <span className="flex items-center gap-1">
                           <Sparkles className="w-2.5 h-2.5 flex-shrink-0 opacity-60" />
                           {suggestion.topic}
@@ -253,7 +253,7 @@ export default function CalendarClient() {
             <button
               onClick={fetchSuggestions}
               disabled={loadingSuggestions}
-              className="flex items-center gap-1.5 text-xs text-white/30 hover:text-white/50 transition-colors"
+              className="flex items-center gap-1.5 text-xs text-white/70 hover:text-white/70 transition-colors"
             >
               <RefreshCw className={`w-3 h-3 ${loadingSuggestions ? "animate-spin" : ""}`} />
               Refresh
@@ -267,7 +267,7 @@ export default function CalendarClient() {
               </div>
             ))}
           </div>
-          <p className="text-[11px] text-white/20 mt-3">
+          <p className="text-[11px] text-white/70 mt-3">
             Dashed cards are AI suggestions. Hover and click Generate to create a video from any suggestion.
           </p>
         </div>
@@ -286,11 +286,11 @@ export default function CalendarClient() {
                 <div key={s.id} className="flex items-center gap-4 px-5 py-3 rounded-xl border border-white/[0.04] bg-white/[0.015]">
                   <div className="flex-1 min-w-0">
                     <div className="text-[14px] font-medium text-white/80 truncate">{s.video.title}</div>
-                    <div className="text-[12px] text-white/25 mt-0.5">
+                    <div className="text-[12px] text-white/60 mt-0.5">
                       {new Date(s.scheduledAt).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} · {formatTime(s.scheduledAt)}
                     </div>
                   </div>
-                  <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${platformColors[s.platform] || "bg-white/[0.06] text-white/50"}`}>
+                  <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${platformColors[s.platform] || "bg-white/[0.06] text-white/70"}`}>
                     {s.platform}
                   </span>
                 </div>
@@ -302,7 +302,7 @@ export default function CalendarClient() {
       {schedules.length === 0 && !showSuggestions && (
         <div className="text-center py-8 mt-4">
           <CalendarDays className="w-6 h-6 text-white/10 mx-auto mb-3" />
-          <p className="text-[14px] text-white/25">No posts scheduled yet.</p>
+          <p className="text-[14px] text-white/60">No posts scheduled yet.</p>
         </div>
       )}
     </div>

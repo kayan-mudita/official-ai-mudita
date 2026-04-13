@@ -21,7 +21,7 @@ export default function GlobalError({
         <h1 className="text-[24px] font-extrabold text-white tracking-tight">
           Something went wrong
         </h1>
-        <p className="text-[14px] text-white/40">
+        <p className="text-[14px] text-white/70">
           We hit an unexpected error. Our team has been notified.
         </p>
         <button
@@ -34,7 +34,7 @@ export default function GlobalError({
         >
           Try again
         </button>
-        <p className="text-[11px] text-white/15">
+        <p className="text-[11px] text-white/70">
           Error ID: {error.digest || "unknown"}
         </p>
       </div>

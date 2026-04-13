@@ -1,90 +1,84 @@
 import type { MetadataRoute } from "next";
 import { getAllPillars } from "@/data/topic-libraries";
 import { competitors } from "@/data/competitors";
-
-const siteUrl = "https://officialai.com";
+import { features } from "@/data/features";
+import { pillarContent, subTopicContentRegistry } from "@/content";
+import { siteUrl } from "@/lib/site-config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date().toISOString();
-
   const routes: MetadataRoute.Sitemap = [
     // Homepage
-    { url: `${siteUrl}/`, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
+    { url: `${siteUrl}/` },
 
     // Core marketing pages
-    { url: `${siteUrl}/pricing`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
-    { url: `${siteUrl}/features`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
-    { url: `${siteUrl}/how-it-works`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${siteUrl}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${siteUrl}/compare`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${siteUrl}/use-cases`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${siteUrl}/demo`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${siteUrl}/pricing` },
+    { url: `${siteUrl}/features` },
+    { url: `${siteUrl}/how-it-works` },
+    { url: `${siteUrl}/about` },
+    { url: `${siteUrl}/compare` },
+    { url: `${siteUrl}/use-cases` },
+    { url: `${siteUrl}/demo` },
 
     // Industry pages
-    { url: `${siteUrl}/for/realtors`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
-    { url: `${siteUrl}/for/attorneys`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
-    { url: `${siteUrl}/for/doctors`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
-    { url: `${siteUrl}/for/advisors`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
+    { url: `${siteUrl}/for/realtors` },
+    { url: `${siteUrl}/for/attorneys` },
+    { url: `${siteUrl}/for/doctors` },
+    { url: `${siteUrl}/for/advisors` },
 
     // Blog
-    { url: `${siteUrl}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: `${siteUrl}/blog/multi-cut-method`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/ai-ugc-future`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/real-estate-agents-ai`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/five-content-formats`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/voice-cloning-guide`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/video-marketing-roi-guide`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/linkedin-video-tips`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/tiktok-professional-guide`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/neighborhood-video-seo`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/lawyer-video-marketing`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/financial-advisor-video`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/batch-video-workflow`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/blog/scaling-personal-brand-ai`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${siteUrl}/blog` },
+    { url: `${siteUrl}/blog/multi-cut-method` },
+    { url: `${siteUrl}/blog/ai-ugc-future` },
+    { url: `${siteUrl}/blog/real-estate-agents-ai` },
+    { url: `${siteUrl}/blog/five-content-formats` },
+    { url: `${siteUrl}/blog/voice-cloning-guide` },
+    { url: `${siteUrl}/blog/video-marketing-roi-guide` },
+    { url: `${siteUrl}/blog/linkedin-video-tips` },
+    { url: `${siteUrl}/blog/tiktok-professional-guide` },
+    { url: `${siteUrl}/blog/neighborhood-video-seo` },
+    { url: `${siteUrl}/blog/lawyer-video-marketing` },
+    { url: `${siteUrl}/blog/financial-advisor-video` },
+    { url: `${siteUrl}/blog/batch-video-workflow` },
+    { url: `${siteUrl}/blog/scaling-personal-brand-ai` },
 
     // Guides index
-    { url: `${siteUrl}/learn`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${siteUrl}/learn` },
 
     // Landing pages
-    { url: `${siteUrl}/go`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${siteUrl}/go` },
 
     // Auth (public-facing)
-    { url: `${siteUrl}/auth/login`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${siteUrl}/auth/signup`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${siteUrl}/auth/login` },
+    { url: `${siteUrl}/auth/signup` },
 
     // Free tools
-    { url: `${siteUrl}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
-    { url: `${siteUrl}/tools/speaking-time-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${siteUrl}/tools/video-roi-calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${siteUrl}/tools/hook-generator`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${siteUrl}/tools` },
+    { url: `${siteUrl}/tools/speaking-time-calculator` },
+    { url: `${siteUrl}/tools/video-roi-calculator` },
+    { url: `${siteUrl}/tools/hook-generator` },
   ];
+
+  // Feature detail pages
+  for (const f of features) {
+    routes.push({ url: `${siteUrl}/features/${f.slug}` });
+  }
 
   // Competitor comparison pages
   for (const c of competitors) {
-    routes.push({
-      url: `${siteUrl}/compare/${c.slug}`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.85,
-    });
+    routes.push({ url: `${siteUrl}/compare/${c.slug}` });
   }
 
-  // Pillar pages and subtopic pages
-  const pillars = getAllPillars();
-  for (const pillar of pillars) {
-    routes.push({
-      url: `${siteUrl}/${pillar.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.85,
-    });
+  // Pillar + subtopic pages — only emit slugs that have real content modules.
+  // Any pillar or subtopic without a module 404s via dynamicParams = false,
+  // so the sitemap must match that filter to avoid submitting dead URLs.
+  for (const pillar of getAllPillars()) {
+    if (!pillarContent[pillar.slug]) continue;
+    routes.push({ url: `${siteUrl}/${pillar.slug}` });
+
+    const subModules = subTopicContentRegistry[pillar.slug] ?? {};
     for (const subTopic of pillar.subTopics) {
-      routes.push({
-        url: `${siteUrl}/${pillar.slug}/${subTopic.slug}`,
-        lastModified: now,
-        changeFrequency: "monthly",
-        priority: 0.75,
-      });
+      if (!subModules[subTopic.slug]) continue;
+      routes.push({ url: `${siteUrl}/${pillar.slug}/${subTopic.slug}` });
     }
   }
 

@@ -155,7 +155,7 @@ function trackEvent(event: string, metadata?: Record<string, unknown>) {
 
 // ─── Shared input styling ─────────────────────────────────────────
 
-const inputClass = "w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition-all";
+const inputClass = "w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-white placeholder:text-white/70 focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition-all";
 
 const PLATFORM_OPTIONS = [
   { id: "instagram", label: "Instagram", emoji: "\uD83D\uDCF7" },
@@ -278,14 +278,14 @@ function InputPhase({
         <div className="text-center space-y-2">
           <span className="text-3xl">{emoji}</span>
           <h1 className="text-[24px] font-extrabold text-white tracking-tight">{title}</h1>
-          <p className="text-[14px] text-white/40 font-medium">{sub}</p>
+          <p className="text-[14px] text-white/70 font-medium">{sub}</p>
         </div>
 
         {/* ── Screen A: Business ── */}
         {screen === 1 && (
           <div className="space-y-5">
             <div className="space-y-3">
-              <label className="flex items-center gap-2 text-[13px] font-semibold text-white/50">
+              <label className="flex items-center gap-2 text-[13px] font-semibold text-white/70">
                 <Briefcase className="w-3.5 h-3.5" /> Industry
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -297,29 +297,29 @@ function InputPhase({
                         : "border-white/[0.07] bg-white/[0.02] hover:border-white/[0.15]"
                     }`}>
                     <span className="text-[16px]">{ind.emoji}</span>
-                    <span className={`text-[10px] font-semibold ${industry === ind.value ? "text-indigo-300" : "text-white/40"}`}>{ind.label}</span>
+                    <span className={`text-[10px] font-semibold ${industry === ind.value ? "text-indigo-300" : "text-white/70"}`}>{ind.label}</span>
                   </motion.button>
                 ))}
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-[13px] font-semibold text-white/50">Your name</label>
+              <label className="text-[13px] font-semibold text-white/70">Your name</label>
               <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="e.g. Sarah Chen" className={inputClass} />
             </div>
 
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-[13px] font-semibold text-white/50"><Building2 className="w-3.5 h-3.5" /> Business name</label>
+              <label className="flex items-center gap-2 text-[13px] font-semibold text-white/70"><Building2 className="w-3.5 h-3.5" /> Business name</label>
               <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="e.g. Smith & Associates" className={inputClass} />
             </div>
 
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-[13px] font-semibold text-white/50"><Globe className="w-3.5 h-3.5" /> Website <span className="text-white/20 font-normal">(helps AI research you)</span></label>
+              <label className="flex items-center gap-2 text-[13px] font-semibold text-white/70"><Globe className="w-3.5 h-3.5" /> Website <span className="text-white/70 font-normal">(helps AI research you)</span></label>
               <input type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://yoursite.com" className={inputClass} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-[13px] font-semibold text-white/50">Geographic market</label>
+              <label className="text-[13px] font-semibold text-white/70">Geographic market</label>
               <input type="text" value={geography} onChange={(e) => setGeography(e.target.value)} placeholder="e.g. Beverly Hills, CA" className={inputClass} />
             </div>
 
@@ -335,23 +335,23 @@ function InputPhase({
         {screen === 2 && (
           <div className="space-y-5">
             <div className="space-y-2">
-              <label className="text-[13px] font-semibold text-white/50">Who is your ideal client?</label>
+              <label className="text-[13px] font-semibold text-white/70">Who is your ideal client?</label>
               <input type="text" value={idealClient} onChange={(e) => setIdealClient(e.target.value)} placeholder="e.g. First-time homebuyers in their 30s" className={inputClass} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-[13px] font-semibold text-white/50">Key services <span className="text-white/20 font-normal">(comma-separated)</span></label>
+              <label className="text-[13px] font-semibold text-white/70">Key services <span className="text-white/70 font-normal">(comma-separated)</span></label>
               <input type="text" value={keyServices} onChange={(e) => setKeyServices(e.target.value)} placeholder="e.g. Luxury residential, investment properties, relocation" className={inputClass} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-[13px] font-semibold text-white/50">What makes you different?</label>
+              <label className="text-[13px] font-semibold text-white/70">What makes you different?</label>
               <textarea value={differentiator} onChange={(e) => setDifferentiator(e.target.value)} placeholder="e.g. 15 years in Beverly Hills, known for off-market deals and white-glove service" rows={3}
                 className={`${inputClass} resize-none`} />
             </div>
 
             <div className="flex gap-3">
-              <button onClick={() => setScreen(1)} className="flex items-center gap-1.5 px-4 py-3 rounded-xl text-[13px] text-white/40 hover:text-white/60 border border-white/[0.06] transition-all">
+              <button onClick={() => setScreen(1)} className="flex items-center gap-1.5 px-4 py-3 rounded-xl text-[13px] text-white/70 hover:text-white/60 border border-white/[0.06] transition-all">
                 <ArrowLeft className="w-3.5 h-3.5" /> Back
               </button>
               <motion.button onClick={() => setScreen(3)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
@@ -367,24 +367,24 @@ function InputPhase({
         {screen === 3 && (
           <div className="space-y-5">
             <div className="space-y-3">
-              <label className="text-[13px] font-semibold text-white/50">Posting frequency</label>
+              <label className="text-[13px] font-semibold text-white/70">Posting frequency</label>
               <div className="flex gap-2">
                 {FREQUENCY_OPTIONS.map((f) => (
                   <button key={f.value} onClick={() => setPostingFrequency(f.value)}
                     className={`flex-1 py-2.5 rounded-xl text-[12px] font-semibold border transition-all ${
-                      postingFrequency === f.value ? "border-indigo-500/40 bg-indigo-500/10 text-indigo-300" : "border-white/[0.06] text-white/30 hover:border-white/[0.12]"
+                      postingFrequency === f.value ? "border-indigo-500/40 bg-indigo-500/10 text-indigo-300" : "border-white/[0.06] text-white/70 hover:border-white/[0.12]"
                     }`}>{f.label}</button>
                 ))}
               </div>
             </div>
 
             <div className="space-y-3">
-              <label className="text-[13px] font-semibold text-white/50">Platforms to post on</label>
+              <label className="text-[13px] font-semibold text-white/70">Platforms to post on</label>
               <div className="flex flex-wrap gap-2">
                 {PLATFORM_OPTIONS.map((p) => (
                   <button key={p.id} onClick={() => togglePlatform(p.id)}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold border transition-all ${
-                      platforms.includes(p.id) ? "border-indigo-500/40 bg-indigo-500/10 text-indigo-300" : "border-white/[0.06] text-white/30 hover:border-white/[0.12]"
+                      platforms.includes(p.id) ? "border-indigo-500/40 bg-indigo-500/10 text-indigo-300" : "border-white/[0.06] text-white/70 hover:border-white/[0.12]"
                     }`}>
                     <span>{p.emoji}</span> {p.label}
                   </button>
@@ -393,12 +393,12 @@ function InputPhase({
             </div>
 
             <div className="space-y-2">
-              <label className="text-[13px] font-semibold text-white/50">Tone</label>
+              <label className="text-[13px] font-semibold text-white/70">Tone</label>
               <div className="flex items-center gap-3">
-                <span className="text-[11px] text-white/25">Formal</span>
+                <span className="text-[11px] text-white/60">Formal</span>
                 <input type="range" min={0} max={100} value={tone} onChange={(e) => setTone(Number(e.target.value))}
                   className="flex-1 h-1.5 rounded-full appearance-none bg-white/[0.08] accent-indigo-500" />
-                <span className="text-[11px] text-white/25">Casual</span>
+                <span className="text-[11px] text-white/60">Casual</span>
               </div>
             </div>
 
@@ -410,7 +410,7 @@ function InputPhase({
                 compact
               />
 
-              <label className="text-[13px] font-semibold text-white/50">Social handles <span className="text-white/20 font-normal">(optional — helps analyze your existing content)</span></label>
+              <label className="text-[13px] font-semibold text-white/70">Social handles <span className="text-white/70 font-normal">(optional — helps analyze your existing content)</span></label>
               <div className="grid grid-cols-2 gap-2">
                 <input type="text" value={igHandle} onChange={(e) => setIgHandle(e.target.value)} placeholder="@instagram" className={inputClass} />
                 <input type="text" value={liHandle} onChange={(e) => setLiHandle(e.target.value)} placeholder="linkedin.com/in/..." className={inputClass} />
@@ -418,7 +418,7 @@ function InputPhase({
             </div>
 
             <div className="flex gap-3">
-              <button onClick={() => setScreen(2)} className="flex items-center gap-1.5 px-4 py-3 rounded-xl text-[13px] text-white/40 hover:text-white/60 border border-white/[0.06] transition-all">
+              <button onClick={() => setScreen(2)} className="flex items-center gap-1.5 px-4 py-3 rounded-xl text-[13px] text-white/70 hover:text-white/60 border border-white/[0.06] transition-all">
                 <ArrowLeft className="w-3.5 h-3.5" /> Back
               </button>
               <motion.button onClick={handleLaunch} disabled={launching} whileHover={!launching ? { scale: 1.02 } : {}} whileTap={!launching ? { scale: 0.97 } : {}}
@@ -493,7 +493,7 @@ function ResearchPhase({
         {/* Back button */}
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 text-[13px] text-white/30 hover:text-white/50 transition-colors"
+          className="flex items-center gap-1.5 text-[13px] text-white/70 hover:text-white/70 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to edit
@@ -503,7 +503,7 @@ function ResearchPhase({
           <h1 className="text-[24px] font-extrabold text-white tracking-tight">
             {hasFailed ? "Something went wrong" : "Building your content strategy..."}
           </h1>
-          <p className="text-[14px] text-white/40">
+          <p className="text-[14px] text-white/70">
             {hasFailed
               ? "One of our research agents hit an issue. You can try again."
               : "Our AI agents are researching your market and building your plan."}
@@ -539,12 +539,12 @@ function ResearchPhase({
                   ) : isActive ? (
                     <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />
                   ) : (
-                    <Icon className="w-5 h-5 text-white/20" />
+                    <Icon className="w-5 h-5 text-white/70" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className={`text-[14px] font-semibold ${
-                    isDone ? "text-emerald-300" : isActive ? "text-white" : "text-white/30"
+                    isDone ? "text-emerald-300" : isActive ? "text-white" : "text-white/70"
                   }`}>
                     {isDone ? agent.doneLabel : agent.label}
                   </p>
@@ -557,8 +557,8 @@ function ResearchPhase({
                         animate={{ opacity: 1, height: "auto" }}
                         className="mt-2 space-y-1"
                       >
-                        <p className="text-[12px] text-white/50">{research.business.result.summary}</p>
-                        <p className="text-[11px] text-white/25">
+                        <p className="text-[12px] text-white/70">{research.business.result.summary}</p>
+                        <p className="text-[11px] text-white/60">
                           {research.business.result.services.slice(0, 3).join(" · ")} · {research.business.result.geography}
                         </p>
                       </motion.div>
@@ -569,7 +569,7 @@ function ResearchPhase({
                         animate={{ opacity: 1, height: "auto" }}
                         className="mt-2"
                       >
-                        <p className="text-[12px] text-white/50">
+                        <p className="text-[12px] text-white/70">
                           {research.trends.result.trending.length} trending · {research.trends.result.evergreen.length} evergreen · {research.trends.result.seasonal.length} seasonal
                         </p>
                       </motion.div>
@@ -580,7 +580,7 @@ function ResearchPhase({
                         animate={{ opacity: 1, height: "auto" }}
                         className="mt-2"
                       >
-                        <p className="text-[12px] text-white/50">
+                        <p className="text-[12px] text-white/70">
                           {research.competitors.result.gaps.length} gaps found · {research.competitors.result.opportunities.length} opportunities
                         </p>
                       </motion.div>
@@ -591,7 +591,7 @@ function ResearchPhase({
                         animate={{ opacity: 1, height: "auto" }}
                         className="mt-2"
                       >
-                        <p className="text-[12px] text-white/50">30 videos planned · Week 1 scripted</p>
+                        <p className="text-[12px] text-white/70">30 videos planned · Week 1 scripted</p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -866,12 +866,12 @@ function CalendarPhase({
             >
               Your 30-Day Content Calendar
             </motion.h1>
-            <p className="text-[14px] text-white/40 mt-1">
+            <p className="text-[14px] text-white/70 mt-1">
               {business ? `Built for ${business.companyName}` : "Personalized for your business"} · Review, edit, and approve your strategy
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[13px] text-white/30">
+            <span className="text-[13px] text-white/70">
               {approvedCount}/{totalCount} approved
             </span>
             <div className="w-24 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
@@ -887,11 +887,11 @@ function CalendarPhase({
         {/* Strategy summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {Object.entries(platformCounts).map(([platform, count]) => {
-            const p = platformColors[platform] || { bg: "bg-white/[0.06]", text: "text-white/50", label: platform };
+            const p = platformColors[platform] || { bg: "bg-white/[0.06]", text: "text-white/70", label: platform };
             return (
               <div key={platform} className={`px-4 py-3 rounded-xl border border-white/[0.06] ${p.bg}`}>
                 <p className={`text-[20px] font-bold ${p.text}`}>{count}</p>
-                <p className="text-[11px] text-white/30 mt-0.5">{p.label} posts</p>
+                <p className="text-[11px] text-white/70 mt-0.5">{p.label} posts</p>
               </div>
             );
           })}
@@ -903,7 +903,7 @@ function CalendarPhase({
             <button
               onClick={() => setViewMode("list")}
               className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all ${
-                viewMode === "list" ? "bg-white/[0.08] text-white" : "text-white/30 hover:text-white/50"
+                viewMode === "list" ? "bg-white/[0.08] text-white" : "text-white/70 hover:text-white/70"
               }`}
             >
               List View
@@ -911,7 +911,7 @@ function CalendarPhase({
             <button
               onClick={() => setViewMode("calendar")}
               className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all ${
-                viewMode === "calendar" ? "bg-white/[0.08] text-white" : "text-white/30 hover:text-white/50"
+                viewMode === "calendar" ? "bg-white/[0.08] text-white" : "text-white/70 hover:text-white/70"
               }`}
             >
               Calendar View
@@ -921,7 +921,7 @@ function CalendarPhase({
             <button onClick={approveAll} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-emerald-400 hover:bg-emerald-500/10 transition-all">
               <Check className="w-3 h-3" /> Approve All
             </button>
-            <button onClick={rejectAll} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-white/30 hover:text-white/50 hover:bg-white/[0.04] transition-all">
+            <button onClick={rejectAll} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium text-white/70 hover:text-white/70 hover:bg-white/[0.04] transition-all">
               <X className="w-3 h-3" /> Clear All
             </button>
           </div>
@@ -933,7 +933,7 @@ function CalendarPhase({
             <button
               onClick={() => setWeekOffset(Math.max(0, weekOffset - 1))}
               disabled={weekOffset === 0}
-              className="p-2 rounded-lg border border-white/[0.06] text-white/30 hover:text-white/60 disabled:opacity-20 transition-all"
+              className="p-2 rounded-lg border border-white/[0.06] text-white/70 hover:text-white/60 disabled:opacity-20 transition-all"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -941,7 +941,7 @@ function CalendarPhase({
             <button
               onClick={() => setWeekOffset(Math.min(weeks.length - 1, weekOffset + 1))}
               disabled={weekOffset >= weeks.length - 1}
-              className="p-2 rounded-lg border border-white/[0.06] text-white/30 hover:text-white/60 disabled:opacity-20 transition-all"
+              className="p-2 rounded-lg border border-white/[0.06] text-white/70 hover:text-white/60 disabled:opacity-20 transition-all"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -956,8 +956,8 @@ function CalendarPhase({
                 const globalIndex = weekOffset * 7 + localIdx;
                 const isApproved = approvedDays.has(globalIndex);
                 const isExpanded = expandedDay === globalIndex;
-                const plat = platformColors[day.platform] || { bg: "bg-white/[0.06]", text: "text-white/50", label: day.platform };
-                const catColor = categoryColors[day.category] || "bg-white/[0.06] text-white/40 border-white/[0.08]";
+                const plat = platformColors[day.platform] || { bg: "bg-white/[0.06]", text: "text-white/70", label: day.platform };
+                const catColor = categoryColors[day.category] || "bg-white/[0.06] text-white/70 border-white/[0.08]";
                 const dateObj = new Date(day.date + "T12:00:00");
                 const dayName = dateObj.toLocaleDateString("en-US", { weekday: "short" });
                 const dateLabel = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -981,7 +981,7 @@ function CalendarPhase({
                     >
                       {/* Date */}
                       <div className="w-14 flex-shrink-0 text-center">
-                        <div className="text-[11px] text-white/25 uppercase">{dayName}</div>
+                        <div className="text-[11px] text-white/60 uppercase">{dayName}</div>
                         <div className="text-[15px] font-bold text-white/70">{dateLabel}</div>
                       </div>
 
@@ -996,7 +996,7 @@ function CalendarPhase({
                             {day.category}
                           </span>
                         </div>
-                        <p className="text-[12px] text-white/35 mt-0.5 truncate">{day.hook}</p>
+                        <p className="text-[12px] text-white/70 mt-0.5 truncate">{day.hook}</p>
                       </div>
 
                       {/* Platform + Type */}
@@ -1004,7 +1004,7 @@ function CalendarPhase({
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${plat.bg} ${plat.text}`}>
                           {plat.label}
                         </span>
-                        <span className="text-[10px] text-white/20">
+                        <span className="text-[10px] text-white/70">
                           {contentTypeLabels[day.contentType] || day.contentType}
                         </span>
                       </div>
@@ -1015,7 +1015,7 @@ function CalendarPhase({
                         className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all flex-shrink-0 ${
                           isApproved
                             ? "bg-emerald-500/20 text-emerald-400"
-                            : "bg-white/[0.04] text-white/15 hover:text-white/30"
+                            : "bg-white/[0.04] text-white/70 hover:text-white/70"
                         }`}
                       >
                         <Check className="w-4 h-4" />
@@ -1036,7 +1036,7 @@ function CalendarPhase({
                               <>
                                 {/* Editable Hook */}
                                 <div>
-                                  <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Opening Hook</div>
+                                  <div className="text-[11px] text-white/60 uppercase tracking-wider mb-1.5">Opening Hook</div>
                                   <input
                                     type="text"
                                     value={editDraft.hook}
@@ -1047,7 +1047,7 @@ function CalendarPhase({
 
                                 {/* Editable Script */}
                                 <div>
-                                  <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Script Outline</div>
+                                  <div className="text-[11px] text-white/60 uppercase tracking-wider mb-1.5">Script Outline</div>
                                   <textarea
                                     value={editDraft.script}
                                     onChange={(e) => setEditDraft((d) => ({ ...d, script: e.target.value }))}
@@ -1067,7 +1067,7 @@ function CalendarPhase({
                                   </button>
                                   <button
                                     onClick={cancelEdit}
-                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/40 hover:bg-white/[0.06] transition-all"
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/70 hover:bg-white/[0.06] transition-all"
                                   >
                                     <X className="w-3.5 h-3.5" />
                                     Cancel
@@ -1078,7 +1078,7 @@ function CalendarPhase({
                               <>
                                 {/* Hook (read-only) */}
                                 <div>
-                                  <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Opening Hook</div>
+                                  <div className="text-[11px] text-white/60 uppercase tracking-wider mb-1.5">Opening Hook</div>
                                   <p className="text-[14px] text-indigo-300 font-medium leading-relaxed">
                                     &ldquo;{day.hook}&rdquo;
                                   </p>
@@ -1086,7 +1086,7 @@ function CalendarPhase({
 
                                 {/* Script outline (read-only) */}
                                 <div>
-                                  <div className="text-[11px] text-white/25 uppercase tracking-wider mb-1.5">Script</div>
+                                  <div className="text-[11px] text-white/60 uppercase tracking-wider mb-1.5">Script</div>
                                   <p className="text-[13px] text-white/60 leading-relaxed">{day.script || day.scriptOutline}</p>
                                 </div>
 
@@ -1100,7 +1100,7 @@ function CalendarPhase({
                                 <div className="grid grid-cols-2 gap-3">
                                   {/* Format selector */}
                                   <div>
-                                    <div className="text-[10px] text-white/20 uppercase tracking-wider mb-1">Format</div>
+                                    <div className="text-[10px] text-white/70 uppercase tracking-wider mb-1">Format</div>
                                     <select
                                       value={day.format || "talking_head_15"}
                                       onChange={(e) => updateDaySetting(globalIndex, "format", e.target.value)}
@@ -1116,7 +1116,7 @@ function CalendarPhase({
 
                                   {/* Model selector */}
                                   <div>
-                                    <div className="text-[10px] text-white/20 uppercase tracking-wider mb-1">Model</div>
+                                    <div className="text-[10px] text-white/70 uppercase tracking-wider mb-1">Model</div>
                                     <select
                                       value={day.model || "kling_2.6"}
                                       onChange={(e) => updateDaySetting(globalIndex, "model", e.target.value)}
@@ -1144,7 +1144,7 @@ function CalendarPhase({
                                           style={{ flex: 1 }}
                                         />
                                       ))}
-                                      <span className="text-[9px] text-white/15 ml-2">
+                                      <span className="text-[9px] text-white/70 ml-2">
                                         {fmt.cuts} cut{fmt.cuts > 1 ? "s" : ""} ~${fmt.cost}
                                       </span>
                                     </div>
@@ -1153,7 +1153,7 @@ function CalendarPhase({
 
                                 {/* Post-processing toggles */}
                                 <div className="flex items-center gap-4">
-                                  <label className="flex items-center gap-1.5 text-[10px] text-white/30 cursor-pointer">
+                                  <label className="flex items-center gap-1.5 text-[10px] text-white/70 cursor-pointer">
                                     <input
                                       type="checkbox"
                                       checked={day.postProcess?.upscale ?? false}
@@ -1167,7 +1167,7 @@ function CalendarPhase({
                                     />
                                     Upscale 2x
                                   </label>
-                                  <label className="flex items-center gap-1.5 text-[10px] text-white/30 cursor-pointer">
+                                  <label className="flex items-center gap-1.5 text-[10px] text-white/70 cursor-pointer">
                                     <input
                                       type="checkbox"
                                       checked={day.postProcess?.captions ?? false}
@@ -1181,7 +1181,7 @@ function CalendarPhase({
                                     />
                                     Auto captions
                                   </label>
-                                  <label className="flex items-center gap-1.5 text-[10px] text-white/30 cursor-pointer">
+                                  <label className="flex items-center gap-1.5 text-[10px] text-white/70 cursor-pointer">
                                     <input
                                       type="checkbox"
                                       checked={day.postProcess?.speedCorrect ?? false}
@@ -1204,7 +1204,7 @@ function CalendarPhase({
                                     className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium transition-all ${
                                       isApproved
                                         ? "bg-emerald-500/15 text-emerald-400"
-                                        : "bg-white/[0.04] text-white/40 hover:bg-white/[0.06]"
+                                        : "bg-white/[0.04] text-white/70 hover:bg-white/[0.06]"
                                     }`}
                                   >
                                     <Check className="w-3.5 h-3.5" />
@@ -1212,14 +1212,14 @@ function CalendarPhase({
                                   </button>
                                   <button
                                     onClick={() => startEdit(globalIndex)}
-                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/40 hover:bg-white/[0.06] transition-all"
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/70 hover:bg-white/[0.06] transition-all"
                                   >
                                     Edit
                                   </button>
                                   <button
                                     onClick={() => handleRegenerate(globalIndex)}
                                     disabled={regeneratingDay !== null}
-                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/40 hover:bg-white/[0.06] disabled:opacity-30 transition-all"
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-medium bg-white/[0.04] text-white/70 hover:bg-white/[0.06] disabled:opacity-30 transition-all"
                                   >
                                     {regeneratingDay === globalIndex ? (
                                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1255,7 +1255,7 @@ function CalendarPhase({
           </div>
           <div className="flex flex-wrap gap-2">
             {Object.entries(categoryCounts).map(([cat, count]) => (
-              <span key={cat} className={`px-3 py-1.5 rounded-lg border text-[11px] font-medium ${categoryColors[cat] || "bg-white/[0.04] text-white/30 border-white/[0.06]"}`}>
+              <span key={cat} className={`px-3 py-1.5 rounded-lg border text-[11px] font-medium ${categoryColors[cat] || "bg-white/[0.04] text-white/70 border-white/[0.06]"}`}>
                 {cat}: {count}
               </span>
             ))}
@@ -1269,7 +1269,7 @@ function CalendarPhase({
               <p className="text-[15px] font-semibold text-white">
                 {approvedCount} of {totalCount} posts approved
               </p>
-              <p className="text-[12px] text-white/30 mt-0.5">
+              <p className="text-[12px] text-white/70 mt-0.5">
                 You can always edit your calendar later from the dashboard.
               </p>
             </div>
@@ -1334,7 +1334,7 @@ function CalendarGrid({
       {/* Header */}
       <div className="grid grid-cols-7 border-b border-white/[0.04]">
         {DAYS.map((d) => (
-          <div key={d} className="px-2 py-2.5 text-[11px] text-white/25 uppercase tracking-wider text-center">{d}</div>
+          <div key={d} className="px-2 py-2.5 text-[11px] text-white/60 uppercase tracking-wider text-center">{d}</div>
         ))}
       </div>
 
@@ -1349,8 +1349,8 @@ function CalendarGrid({
           const isApproved = approvedDays.has(i);
           const dateObj = new Date(day.date + "T12:00:00");
           const dayNum = dateObj.getDate();
-          const plat = platformColors[day.platform] || { bg: "bg-white/[0.06]", text: "text-white/50", label: day.platform };
-          const catColor = categoryColors[day.category] || "bg-white/[0.06] text-white/40 border-white/[0.06]";
+          const plat = platformColors[day.platform] || { bg: "bg-white/[0.06]", text: "text-white/70", label: day.platform };
+          const catColor = categoryColors[day.category] || "bg-white/[0.06] text-white/70 border-white/[0.06]";
 
           return (
             <div
@@ -1361,11 +1361,11 @@ function CalendarGrid({
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[12px] text-white/30">{dayNum}</span>
+                <span className="text-[12px] text-white/70">{dayNum}</span>
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleApprove(i); }}
                   className={`w-4 h-4 rounded flex items-center justify-center ${
-                    isApproved ? "bg-emerald-500/30 text-emerald-400" : "bg-white/[0.04] text-transparent hover:text-white/20"
+                    isApproved ? "bg-emerald-500/30 text-emerald-400" : "bg-white/[0.04] text-transparent hover:text-white/70"
                   }`}
                 >
                   <Check className="w-2.5 h-2.5" />
@@ -1497,7 +1497,7 @@ function WelcomeFlow() {
   if (phase === "researching" && !research) {
     return (
       <div className="min-h-screen bg-[#060610] flex items-center justify-center">
-        <Loader2 className="w-6 h-6 text-white/30 animate-spin" />
+        <Loader2 className="w-6 h-6 text-white/70 animate-spin" />
       </div>
     );
   }
@@ -1525,8 +1525,8 @@ function WelcomeFlow() {
   return (
     <div className="min-h-screen bg-[#060610] flex items-center justify-center">
       <div className="text-center space-y-4">
-        <AlertCircle className="w-8 h-8 text-white/20 mx-auto" />
-        <p className="text-[14px] text-white/40">Something went wrong loading your calendar.</p>
+        <AlertCircle className="w-8 h-8 text-white/70 mx-auto" />
+        <p className="text-[14px] text-white/70">Something went wrong loading your calendar.</p>
         <button
           onClick={handleBack}
           className="text-[13px] text-indigo-400 hover:text-indigo-300 font-medium"

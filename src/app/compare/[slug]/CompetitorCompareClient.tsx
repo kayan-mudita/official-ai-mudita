@@ -29,16 +29,16 @@ function Cell({ value, highlight }: { value: string; highlight?: boolean }) {
   if (value === "yes") {
     return (
       <Check
-        className={`w-4 h-4 mx-auto ${highlight ? "text-positive-400" : "text-white/35"}`}
+        className={`w-4 h-4 mx-auto ${highlight ? "text-positive-400" : "text-white/70"}`}
       />
     );
   }
   if (value === "no") {
-    return <X className="w-4 h-4 mx-auto text-white/15" />;
+    return <X className="w-4 h-4 mx-auto text-white/70" />;
   }
   return (
     <span
-      className={`text-p3 ${highlight ? "text-white font-semibold" : "text-white/40"}`}
+      className={`text-p3 ${highlight ? "text-white font-semibold" : "text-white/70"}`}
     >
       {value}
     </span>
@@ -98,7 +98,7 @@ export default function CompetitorCompareClient({
               <h3 className="text-p2 font-semibold text-white/85 mb-2">
                 Where {competitor.name} fits
               </h3>
-              <p className="text-p3 text-white/45 leading-relaxed">
+              <p className="text-p3 text-white/70 leading-relaxed">
                 {competitor.whoItsFor}
               </p>
             </div>
@@ -107,7 +107,7 @@ export default function CompetitorCompareClient({
               <h3 className="text-p2 font-semibold text-white/85 mb-2">
                 Where it falls short
               </h3>
-              <p className="text-p3 text-white/45 leading-relaxed">
+              <p className="text-p3 text-white/70 leading-relaxed">
                 {competitor.whereItFalls}
               </p>
             </div>
@@ -122,10 +122,10 @@ export default function CompetitorCompareClient({
             <div className="grid grid-cols-3 gap-3 mb-2">
               <div />
               <div className="p-5 rounded-t-2xl border border-white/[0.06] border-b-0 bg-white/[0.02] text-center">
-                <div className="text-p3 text-white/30 uppercase tracking-wider font-semibold mb-2">
+                <div className="text-p3 text-white/70 uppercase tracking-wider font-semibold mb-2">
                   Them
                 </div>
-                <h3 className="text-p2 font-semibold text-white/65">
+                <h3 className="text-p2 font-semibold text-white/70">
                   {competitor.name}
                 </h3>
               </div>
@@ -151,7 +151,7 @@ export default function CompetitorCompareClient({
                     className="grid grid-cols-3 gap-3 group/row"
                   >
                     <div
-                      className={`flex items-center px-4 py-4 text-p3 text-white/55 font-semibold transition-colors group-hover/row:text-white/85 ${
+                      className={`flex items-center px-4 py-4 text-p3 text-white/70 font-semibold transition-colors group-hover/row:text-white/85 ${
                         i === 0 ? "" : "border-t border-white/[0.06]"
                       }`}
                     >
@@ -232,7 +232,7 @@ export default function CompetitorCompareClient({
                     <h3 className="text-p1 font-semibold text-white/90 mb-2">
                       {faq.q}
                     </h3>
-                    <p className="text-p2 text-white/45 leading-relaxed">
+                    <p className="text-p2 text-white/70 leading-relaxed">
                       {faq.a}
                     </p>
                   </div>
@@ -300,7 +300,7 @@ export default function CompetitorCompareClient({
                       >
                         <GitCompareArrows
                           className={`w-4 h-4 ${
-                            isCurrent ? "text-special-300" : "text-white/50"
+                            isCurrent ? "text-special-300" : "text-white/70"
                           }`}
                         />
                       </div>
@@ -312,11 +312,11 @@ export default function CompetitorCompareClient({
                         vs {c.name}
                       </h3>
                     </div>
-                    <p className="text-p3 text-white/40 leading-relaxed line-clamp-2">
+                    <p className="text-p3 text-white/70 leading-relaxed line-clamp-2">
                       {c.tagline}
                     </p>
                     {!isCurrent && (
-                      <span className="mt-4 inline-flex items-center gap-1.5 text-p3 text-white/55 group-hover:text-white/85 transition-colors">
+                      <span className="mt-4 inline-flex items-center gap-1.5 text-p3 text-white/70 group-hover:text-white/85 transition-colors">
                         See comparison
                         <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                       </span>
@@ -399,7 +399,7 @@ export default function CompetitorCompareClient({
                             <h3 className="text-p1 font-semibold text-white/90 mb-1">
                               {feature.shortLabel}
                             </h3>
-                            <p className="text-p2 text-white/45 leading-relaxed">
+                            <p className="text-p2 text-white/70 leading-relaxed">
                               {feature.subtitle}
                             </p>
                           </div>
@@ -435,7 +435,7 @@ export default function CompetitorCompareClient({
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Get 30 professional videos a month, posted across every platform,
               for $79.
             </p>

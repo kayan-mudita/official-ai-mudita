@@ -112,7 +112,7 @@ export default function PaywallModal({
             <div className="w-14 h-14 rounded-full bg-white/[0.08] border border-white/[0.12] flex items-center justify-center">
               <Lock className="w-6 h-6 text-white/60" />
             </div>
-            <p className="text-[13px] text-white/40 font-medium">
+            <p className="text-[13px] text-white/70 font-medium">
               Upgrade to {triggerText}
             </p>
           </div>
@@ -124,7 +124,7 @@ export default function PaywallModal({
             <h3 className="text-[18px] font-semibold text-white mb-2">
               Love what you see?
             </h3>
-            <p className="text-[14px] text-white/35 leading-relaxed">
+            <p className="text-[14px] text-white/70 leading-relaxed">
               Unlock downloads, sharing, and auto-posting for{" "}
               <span className="text-white/60 font-medium">$79/mo</span>
             </p>
@@ -138,7 +138,7 @@ export default function PaywallModal({
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06]"
               >
                 <pill.icon className="w-3.5 h-3.5 text-blue-400/70" />
-                <span className="text-[12px] text-white/50 font-medium">
+                <span className="text-[12px] text-white/70 font-medium">
                   {pill.label}
                 </span>
               </div>
@@ -157,7 +157,7 @@ export default function PaywallModal({
           {/* Dismiss */}
           <button
             onClick={handleClose}
-            className="w-full text-center text-[13px] text-white/25 hover:text-white/40 transition-colors py-1"
+            className="w-full text-center text-[13px] text-white/60 hover:text-white/70 transition-colors py-1"
           >
             Maybe later
           </button>

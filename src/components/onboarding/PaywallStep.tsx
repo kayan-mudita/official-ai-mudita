@@ -146,7 +146,7 @@ export default function PaywallStep({ videoUrl, videoGenerating, demoMode }: Pay
 
             <div>
               <p className="text-[18px] font-extrabold text-white">Your AI twin is ready</p>
-              <p className="text-[13px] text-white/40 mt-1">
+              <p className="text-[13px] text-white/70 mt-1">
                 {videoGenerating ? "Preview video generating in background..." : "Start your free trial to see it in action"}
               </p>
             </div>
@@ -168,7 +168,7 @@ export default function PaywallStep({ videoUrl, videoGenerating, demoMode }: Pay
                   <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
                     <Check className="w-2.5 h-2.5 text-emerald-400" />
                   </div>
-                  <span className="text-[11px] text-white/50 font-medium">{item.label}</span>
+                  <span className="text-[11px] text-white/70 font-medium">{item.label}</span>
                 </motion.div>
               ))}
             </div>
@@ -201,7 +201,7 @@ export default function PaywallStep({ videoUrl, videoGenerating, demoMode }: Pay
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-[36px] font-black text-white leading-none">$79</span>
-                <span className="text-[13px] text-white/30 font-medium">/mo after</span>
+                <span className="text-[13px] text-white/70 font-medium">/mo after</span>
               </div>
             </div>
             <div className="flex flex-col items-end gap-1">
@@ -210,7 +210,7 @@ export default function PaywallStep({ videoUrl, videoGenerating, demoMode }: Pay
                   <Star key={i} className="w-3 h-3 text-amber-400 fill-amber-400" />
                 ))}
               </div>
-              <span className="text-[10px] text-white/25">4.9 · 200+ users</span>
+              <span className="text-[10px] text-white/60">4.9 · 200+ users</span>
             </div>
           </div>
 
@@ -225,7 +225,7 @@ export default function PaywallStep({ videoUrl, videoGenerating, demoMode }: Pay
                 className="flex items-center gap-2"
               >
                 <span className="text-[13px]">{f.icon}</span>
-                <span className="text-[11px] text-white/50 font-medium">{f.text}</span>
+                <span className="text-[11px] text-white/70 font-medium">{f.text}</span>
               </motion.div>
             ))}
           </div>
@@ -250,14 +250,14 @@ export default function PaywallStep({ videoUrl, videoGenerating, demoMode }: Pay
             transition={{ delay: 0.3 + i * 0.1 }}
             className="flex-1 rounded-xl bg-white/[0.02] border border-white/[0.05] p-3 space-y-1.5"
           >
-            <p className="text-[11px] text-white/45 leading-relaxed italic">&ldquo;{sp.quote}&rdquo;</p>
+            <p className="text-[11px] text-white/70 leading-relaxed italic">&ldquo;{sp.quote}&rdquo;</p>
             <div className="flex items-center gap-1.5">
               <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
                 <span className="text-[7px] font-bold text-white">{sp.avatar}</span>
               </div>
               <div>
-                <p className="text-[10px] font-semibold text-white/50">{sp.name}</p>
-                <p className="text-[9px] text-white/20">{sp.role}</p>
+                <p className="text-[10px] font-semibold text-white/70">{sp.name}</p>
+                <p className="text-[9px] text-white/70">{sp.role}</p>
               </div>
             </div>
           </motion.div>
@@ -313,14 +313,14 @@ export default function PaywallStep({ videoUrl, videoGenerating, demoMode }: Pay
         </motion.button>
 
         <div className="flex items-center justify-center gap-2">
-          <Clock className="w-3 h-3 text-white/20" />
-          <p className="text-[11px] text-white/25">Free for 7 days. No charge today. Cancel anytime.</p>
+          <Clock className="w-3 h-3 text-white/70" />
+          <p className="text-[11px] text-white/60">Free for 7 days. No charge today. Cancel anytime.</p>
         </div>
 
         <button
           onClick={skipToDashboard}
           disabled={loading}
-          className="w-full py-2 text-[11px] text-white/15 hover:text-white/30 transition-colors"
+          className="w-full py-2 text-[11px] text-white/70 hover:text-white/70 transition-colors"
         >
           Skip for now
         </button>

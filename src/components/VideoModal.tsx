@@ -119,8 +119,8 @@ export default function VideoModal({
         <div className="relative rounded-xl overflow-hidden bg-black w-full sm:w-auto" style={{ aspectRatio: "9/16", maxHeight: "75vh" }}>
           {isDemoOrInvalidUrl(src) ? (
             <div className="w-full h-full flex flex-col items-center justify-center min-h-[300px]">
-              <p className="text-sm text-white/25 font-medium">Demo mode — no real video</p>
-              <p className="text-xs text-white/15 mt-1">This video was generated without API keys configured.</p>
+              <p className="text-sm text-white/60 font-medium">Demo mode — no real video</p>
+              <p className="text-xs text-white/70 mt-1">This video was generated without API keys configured.</p>
             </div>
           ) : (
             <>

@@ -169,7 +169,7 @@ export default function ReportsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
+        <Loader2 className="w-5 h-5 text-white/70 animate-spin" />
       </div>
     );
   }
@@ -179,10 +179,10 @@ export default function ReportsPage() {
       <div className="max-w-5xl mx-auto">
         <div className="text-center py-24">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/[0.03] mb-5">
-            <FileText className="w-6 h-6 text-white/15" />
+            <FileText className="w-6 h-6 text-white/70" />
           </div>
           <h3 className="text-[17px] font-semibold text-white/80 mb-1">No report available</h3>
-          <p className="text-[14px] text-white/30 max-w-sm mx-auto">
+          <p className="text-[14px] text-white/70 max-w-sm mx-auto">
             Start creating and publishing videos to generate your monthly performance report.
           </p>
         </div>
@@ -194,13 +194,13 @@ export default function ReportsPage() {
     ? <TrendingUp className="w-4 h-4 text-green-400" />
     : report.growth.trend === "down"
     ? <TrendingDown className="w-4 h-4 text-red-400" />
-    : <Minus className="w-4 h-4 text-white/30" />;
+    : <Minus className="w-4 h-4 text-white/70" />;
 
   const trendColor = report.growth.trend === "up"
     ? "text-green-400"
     : report.growth.trend === "down"
     ? "text-red-400"
-    : "text-white/40";
+    : "text-white/70";
 
   const contentTypes = Object.entries(report.contentTypeBreakdown).sort(([, a], [, b]) => b - a);
   const maxContentCount = contentTypes.length > 0 ? contentTypes[0][1] : 1;
@@ -211,7 +211,7 @@ export default function ReportsPage() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold">Monthly Report</h1>
-          <p className="text-sm text-white/40 mt-1">
+          <p className="text-sm text-white/70 mt-1">
             {report.period.month} {report.period.year} Performance Summary
           </p>
         </div>
@@ -228,24 +228,24 @@ export default function ReportsPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-5">
           <div className="flex items-center justify-between mb-3">
-            <Video className="w-4 h-4 text-white/20" />
+            <Video className="w-4 h-4 text-white/70" />
           </div>
           <div className="text-[24px] font-bold text-white">{report.summary.totalVideosPosted}</div>
-          <div className="text-[13px] text-white/30 mt-0.5">Videos Posted</div>
+          <div className="text-[13px] text-white/70 mt-0.5">Videos Posted</div>
         </div>
         <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-5">
           <div className="flex items-center justify-between mb-3">
-            <Eye className="w-4 h-4 text-white/20" />
+            <Eye className="w-4 h-4 text-white/70" />
           </div>
           <div className="text-[24px] font-bold text-white">{formatNumber(report.summary.totalEstimatedReach)}</div>
-          <div className="text-[13px] text-white/30 mt-0.5">Est. Reach</div>
+          <div className="text-[13px] text-white/70 mt-0.5">Est. Reach</div>
         </div>
         <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-5">
           <div className="flex items-center justify-between mb-3">
-            <Eye className="w-4 h-4 text-white/20" />
+            <Eye className="w-4 h-4 text-white/70" />
           </div>
           <div className="text-[24px] font-bold text-white">{formatNumber(report.summary.totalViews)}</div>
-          <div className="text-[13px] text-white/30 mt-0.5">Total Views</div>
+          <div className="text-[13px] text-white/70 mt-0.5">Total Views</div>
         </div>
         <div className="rounded-xl border border-white/[0.04] bg-white/[0.015] p-5">
           <div className="flex items-center justify-between mb-3">
@@ -254,7 +254,7 @@ export default function ReportsPage() {
           <div className={`text-[24px] font-bold ${trendColor}`}>
             {report.growth.growthRate > 0 ? "+" : ""}{report.growth.growthRate}%
           </div>
-          <div className="text-[13px] text-white/30 mt-0.5">Growth Rate</div>
+          <div className="text-[13px] text-white/70 mt-0.5">Growth Rate</div>
         </div>
       </div>
 
@@ -270,7 +270,7 @@ export default function ReportsPage() {
                 </div>
                 <div>
                   <div className="text-[14px] font-semibold text-white/90">{formatNumber(report.summary.totalViews)}</div>
-                  <div className="text-[11px] text-white/30">Views</div>
+                  <div className="text-[11px] text-white/70">Views</div>
                 </div>
               </div>
             </div>
@@ -281,7 +281,7 @@ export default function ReportsPage() {
                 </div>
                 <div>
                   <div className="text-[14px] font-semibold text-white/90">{formatNumber(report.summary.totalLikes)}</div>
-                  <div className="text-[11px] text-white/30">Likes</div>
+                  <div className="text-[11px] text-white/70">Likes</div>
                 </div>
               </div>
             </div>
@@ -292,7 +292,7 @@ export default function ReportsPage() {
                 </div>
                 <div>
                   <div className="text-[14px] font-semibold text-white/90">{formatNumber(report.summary.totalShares)}</div>
-                  <div className="text-[11px] text-white/30">Shares</div>
+                  <div className="text-[11px] text-white/70">Shares</div>
                 </div>
               </div>
             </div>
@@ -303,7 +303,7 @@ export default function ReportsPage() {
                 </div>
                 <div>
                   <div className="text-[14px] font-semibold text-white/90">{formatNumber(report.summary.totalComments)}</div>
-                  <div className="text-[11px] text-white/30">Comments</div>
+                  <div className="text-[11px] text-white/70">Comments</div>
                 </div>
               </div>
             </div>
@@ -317,15 +317,15 @@ export default function ReportsPage() {
             <h2 className="text-[15px] font-semibold text-white/80 mb-4">Month-over-Month Growth</h2>
             <div className="flex items-center gap-6">
               <div>
-                <div className="text-[11px] text-white/30 mb-1">This Month</div>
+                <div className="text-[11px] text-white/70 mb-1">This Month</div>
                 <div className="text-[20px] font-bold text-white">{report.growth.thisMonth} videos</div>
               </div>
               <div className="flex items-center gap-2">
                 <ArrowUpRight className={`w-5 h-5 ${trendColor}`} />
               </div>
               <div>
-                <div className="text-[11px] text-white/30 mb-1">Last Month</div>
-                <div className="text-[20px] font-bold text-white/50">{report.growth.lastMonth} videos</div>
+                <div className="text-[11px] text-white/70 mb-1">Last Month</div>
+                <div className="text-[20px] font-bold text-white/70">{report.growth.lastMonth} videos</div>
               </div>
             </div>
           </div>
@@ -338,16 +338,16 @@ export default function ReportsPage() {
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <div className="text-[11px] text-white/30 mb-1">Est. Cost</div>
+                <div className="text-[11px] text-white/70 mb-1">Est. Cost</div>
                 <div className="text-[16px] font-bold text-white">{formatCurrency(report.roi.estimatedCost)}</div>
               </div>
               <div>
-                <div className="text-[11px] text-white/30 mb-1">Eng. Value</div>
+                <div className="text-[11px] text-white/70 mb-1">Eng. Value</div>
                 <div className="text-[16px] font-bold text-white">{formatCurrency(report.roi.estimatedEngagementValue)}</div>
               </div>
               <div>
-                <div className="text-[11px] text-white/30 mb-1">ROI</div>
-                <div className={`text-[16px] font-bold ${report.roi.roiPercentage > 0 ? "text-green-400" : "text-white/40"}`}>
+                <div className="text-[11px] text-white/70 mb-1">ROI</div>
+                <div className={`text-[16px] font-bold ${report.roi.roiPercentage > 0 ? "text-green-400" : "text-white/70"}`}>
                   {report.roi.roiPercentage}%
                 </div>
               </div>
@@ -370,9 +370,9 @@ export default function ReportsPage() {
             <div className="flex-1 min-w-0">
               <h3 className="text-[14px] font-semibold text-white/90 truncate">{report.bestPerformingVideo.title}</h3>
               <div className="flex items-center gap-3 mt-1">
-                <span className="text-[12px] text-white/30">{formatContentType(report.bestPerformingVideo.contentType)}</span>
-                <span className="text-[12px] text-white/20">|</span>
-                <span className="text-[12px] text-white/30">{report.bestPerformingVideo.engagement} engagements</span>
+                <span className="text-[12px] text-white/70">{formatContentType(report.bestPerformingVideo.contentType)}</span>
+                <span className="text-[12px] text-white/70">|</span>
+                <span className="text-[12px] text-white/70">{report.bestPerformingVideo.engagement} engagements</span>
               </div>
             </div>
           </div>
@@ -402,7 +402,7 @@ export default function ReportsPage() {
                       />
                     </div>
                   </div>
-                  <span className="text-[12px] text-white/30 w-8 text-right">{count}</span>
+                  <span className="text-[12px] text-white/70 w-8 text-right">{count}</span>
                 </div>
               );
             })}
@@ -424,7 +424,7 @@ export default function ReportsPage() {
                 className="flex items-start gap-3 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.04]"
               >
                 <span className="text-[12px] font-bold text-blue-400 mt-0.5 flex-shrink-0">{i + 1}.</span>
-                <p className="text-[13px] text-white/50 leading-relaxed">{rec}</p>
+                <p className="text-[13px] text-white/70 leading-relaxed">{rec}</p>
               </div>
             ))}
           </div>
@@ -433,8 +433,8 @@ export default function ReportsPage() {
 
       {/* Report generation time */}
       <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
-        <Calendar className="w-3.5 h-3.5 text-white/20" />
-        <p className="text-[11px] text-white/25">
+        <Calendar className="w-3.5 h-3.5 text-white/70" />
+        <p className="text-[11px] text-white/60">
           Report generated on {new Date(report.generatedAt).toLocaleDateString("en-US", {
             month: "long",
             day: "numeric",

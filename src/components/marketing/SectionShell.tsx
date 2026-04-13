@@ -75,7 +75,7 @@ export default function SectionShell({
               )}
               {description && (
                 <p
-                  className={`text-title text-white/40 leading-relaxed mt-6 ${
+                  className={`text-title text-white/70 leading-relaxed mt-6 ${
                     align === "center" ? "max-w-2xl mx-auto" : "max-w-2xl"
                   }`}
                 >

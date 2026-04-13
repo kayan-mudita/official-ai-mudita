@@ -8,7 +8,7 @@ export default function TopBar() {
   const { data: session } = useSession();
 
   return (
-    <header className="h-14 sm:h-16 border-b border-white/5 bg-[#060911]/80 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6">
+    <header className="h-14 sm:h-16 border-b border-white/5 bg-[#0c0f11]/80 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6">
       {/* Mobile logo (visible only on mobile) */}
       <Link href="/dashboard/generate" className="flex lg:hidden items-center gap-2 mr-3">
         <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
@@ -21,7 +21,7 @@ export default function TopBar() {
 
       {/* Search */}
       <div className="relative max-w-md flex-1 hidden sm:block">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
         <input
           type="text"
           placeholder="Search videos, content..."
@@ -33,12 +33,12 @@ export default function TopBar() {
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Mobile search button */}
         <button className="sm:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors">
-          <Search className="w-5 h-5 text-white/50" />
+          <Search className="w-5 h-5 text-white/70" />
         </button>
 
         {/* Notifications */}
         <button className="relative p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-white/5 active:bg-white/10 transition-colors">
-          <Bell className="w-5 h-5 text-white/50" />
+          <Bell className="w-5 h-5 text-white/70" />
           <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-500" />
         </button>
 
@@ -58,7 +58,7 @@ export default function TopBar() {
             <div className="text-sm font-medium text-white leading-none">
               {session?.user?.name || "User"}
             </div>
-            <div className="text-xs text-white/40 mt-0.5">
+            <div className="text-xs text-white/70 mt-0.5">
               {session?.user?.email || ""}
             </div>
           </div>

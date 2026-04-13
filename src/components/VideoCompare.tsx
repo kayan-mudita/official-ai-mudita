@@ -79,10 +79,10 @@ function ComparisonPlayer({
     <div className="flex-1 min-w-0">
       {/* Label */}
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold uppercase tracking-wider text-white/40">
+        <span className="text-xs font-semibold uppercase tracking-wider text-white/70">
           {label}
         </span>
-        <span className="text-[10px] text-white/25">
+        <span className="text-[10px] text-white/60">
           {new Date(video.createdAt).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
@@ -119,7 +119,7 @@ function ComparisonPlayer({
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center">
             <Film className="w-8 h-8 text-white/[0.08] mb-2" />
-            <span className="text-[11px] text-white/20">
+            <span className="text-[11px] text-white/70">
               {video.status === "generating" ? "Generating..." : "No video"}
             </span>
           </div>
@@ -144,7 +144,7 @@ function ComparisonPlayer({
       <div className="mt-3 mb-3">
         <h4 className="text-sm font-medium text-white/80 truncate">{video.title}</h4>
         {video.description && (
-          <p className="text-[11px] text-white/30 mt-1 line-clamp-2">{video.description}</p>
+          <p className="text-[11px] text-white/70 mt-1 line-clamp-2">{video.description}</p>
         )}
       </div>
 
@@ -214,7 +214,7 @@ export default function VideoCompare({
         <div className="flex items-center justify-between p-6 pb-4 border-b border-white/[0.04]">
           <div>
             <h2 className="text-lg font-semibold text-white/90">Compare Versions</h2>
-            <p className="text-xs text-white/30 mt-1">
+            <p className="text-xs text-white/70 mt-1">
               Compare different generations side by side. Choose which one to keep.
             </p>
           </div>
@@ -222,7 +222,7 @@ export default function VideoCompare({
             onClick={handleClose}
             className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/[0.06] flex items-center justify-center hover:bg-white/[0.06] transition-colors"
           >
-            <X className="w-4 h-4 text-white/50" />
+            <X className="w-4 h-4 text-white/70" />
           </button>
         </div>
 
@@ -238,14 +238,14 @@ export default function VideoCompare({
           {/* Divider */}
           <div className="hidden md:flex flex-col items-center justify-center">
             <div className="w-px h-full bg-white/[0.06]" />
-            <span className="text-[10px] text-white/20 uppercase tracking-widest my-4 -rotate-90 whitespace-nowrap">
+            <span className="text-[10px] text-white/70 uppercase tracking-widest my-4 -rotate-90 whitespace-nowrap">
               vs
             </span>
             <div className="w-px h-full bg-white/[0.06]" />
           </div>
           <div className="md:hidden flex items-center gap-3 py-2">
             <div className="flex-1 h-px bg-white/[0.06]" />
-            <span className="text-[10px] text-white/20 uppercase tracking-widest">vs</span>
+            <span className="text-[10px] text-white/70 uppercase tracking-widest">vs</span>
             <div className="flex-1 h-px bg-white/[0.06]" />
           </div>
 

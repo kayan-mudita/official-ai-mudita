@@ -49,7 +49,7 @@ export default function ScriptMockup() {
                 className={`px-2 py-0.5 rounded-full border text-[9px] font-medium ${
                   i === 2
                     ? "bg-special-500/[0.14] border-special-500/40 text-special-200"
-                    : "bg-white/[0.03] border-white/[0.08] text-white/40"
+                    : "bg-white/[0.03] border-white/[0.08] text-white/70"
                 }`}
               >
                 {f}
@@ -89,7 +89,7 @@ export default function ScriptMockup() {
 
           {/* BODY section */}
           <div className="mb-4">
-            <span className="text-[9px] font-mono font-semibold text-white/40 tracking-widest mb-2 block">
+            <span className="text-[9px] font-mono font-semibold text-white/70 tracking-widest mb-2 block">
               BODY
             </span>
             <div className="space-y-1.5">
@@ -106,7 +106,7 @@ export default function ScriptMockup() {
               <span className="text-[9px] font-mono font-semibold text-utility-300 tracking-widest">
                 CTA
               </span>
-              <span className="text-[9px] font-mono text-white/35">
+              <span className="text-[9px] font-mono text-white/70">
                 01:48 runtime
               </span>
             </div>
@@ -126,12 +126,12 @@ export default function ScriptMockup() {
           {/* Bottom action row */}
           <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center gap-1.5">
             <div className="px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08]">
-              <span className="text-[9px] text-white/45 font-medium">
+              <span className="text-[9px] text-white/70 font-medium">
                 + AI rewrite
               </span>
             </div>
             <div className="px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08]">
-              <span className="text-[9px] text-white/45 font-medium">
+              <span className="text-[9px] text-white/70 font-medium">
                 Vary tone
               </span>
             </div>

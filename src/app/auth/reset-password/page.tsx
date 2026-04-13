@@ -68,7 +68,7 @@ function ResetPasswordForm() {
           <CheckCircle2 className="w-6 h-6 text-green-400" />
         </div>
         <h2 className="text-lg font-semibold mb-2">Password updated</h2>
-        <p className="text-sm text-white/40 mb-6">
+        <p className="text-sm text-white/70 mb-6">
           Your password has been reset successfully. Redirecting you to login...
         </p>
         <Link
@@ -97,7 +97,7 @@ function ResetPasswordForm() {
             Email address
           </label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
             <input
               type="email"
               value={email}
@@ -114,7 +114,7 @@ function ResetPasswordForm() {
             New password
           </label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
             <input
               type="password"
               value={password}
@@ -132,7 +132,7 @@ function ResetPasswordForm() {
             Confirm new password
           </label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
             <input
               type="password"
               value={confirmPassword}
@@ -173,16 +173,16 @@ export default function ResetPasswordPage() {
             </span>
           </Link>
           <h1 className="text-3xl font-bold mb-2">Set new password</h1>
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-white/70">
             Choose a strong password for your account
           </p>
         </div>
 
-        <Suspense fallback={<div className="glass-card p-8 text-center text-white/40">Loading...</div>}>
+        <Suspense fallback={<div className="glass-card p-8 text-center text-white/70">Loading...</div>}>
           <ResetPasswordForm />
         </Suspense>
 
-        <p className="text-center text-white/40 mt-6 text-sm">
+        <p className="text-center text-white/70 mt-6 text-sm">
           <Link href="/auth/login" className="text-blue-400 hover:text-blue-300 font-medium inline-flex items-center gap-1">
             <ArrowLeft className="w-3 h-3" />
             Back to login

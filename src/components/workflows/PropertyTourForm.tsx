@@ -58,7 +58,7 @@ export function PropertyTourForm({ onSubmit, isGenerating }: PropertyTourFormPro
           value={address}
           onChange={(e) => { setAddress(e.target.value); if (errors.address) setErrors({}); }}
           placeholder="123 Main St, Austin, TX 78701"
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 focus:outline-none focus:border-white/[0.12] transition-colors"
+          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 focus:outline-none focus:border-white/[0.12] transition-colors"
         />
         {errors.address && (
           <p className="text-[11px] text-red-400/80 mt-1.5">{errors.address}</p>
@@ -77,9 +77,9 @@ export function PropertyTourForm({ onSubmit, isGenerating }: PropertyTourFormPro
               value={bedrooms}
               onChange={(e) => setBedrooms(e.target.value)}
               placeholder="Beds"
-              className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 focus:outline-none focus:border-white/[0.12] transition-colors text-center"
+              className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 focus:outline-none focus:border-white/[0.12] transition-colors text-center"
             />
-            <p className="text-[10px] text-white/15 text-center mt-1">Bedrooms</p>
+            <p className="text-[10px] text-white/70 text-center mt-1">Bedrooms</p>
           </div>
           <div>
             <input
@@ -87,9 +87,9 @@ export function PropertyTourForm({ onSubmit, isGenerating }: PropertyTourFormPro
               value={bathrooms}
               onChange={(e) => setBathrooms(e.target.value)}
               placeholder="Baths"
-              className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 focus:outline-none focus:border-white/[0.12] transition-colors text-center"
+              className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 focus:outline-none focus:border-white/[0.12] transition-colors text-center"
             />
-            <p className="text-[10px] text-white/15 text-center mt-1">Bathrooms</p>
+            <p className="text-[10px] text-white/70 text-center mt-1">Bathrooms</p>
           </div>
           <div>
             <input
@@ -97,9 +97,9 @@ export function PropertyTourForm({ onSubmit, isGenerating }: PropertyTourFormPro
               value={sqft}
               onChange={(e) => setSqft(e.target.value)}
               placeholder="Sq Ft"
-              className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 focus:outline-none focus:border-white/[0.12] transition-colors text-center"
+              className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 focus:outline-none focus:border-white/[0.12] transition-colors text-center"
             />
-            <p className="text-[10px] text-white/15 text-center mt-1">Square Feet</p>
+            <p className="text-[10px] text-white/70 text-center mt-1">Square Feet</p>
           </div>
           <div>
             <input
@@ -107,9 +107,9 @@ export function PropertyTourForm({ onSubmit, isGenerating }: PropertyTourFormPro
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="$499K"
-              className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 focus:outline-none focus:border-white/[0.12] transition-colors text-center"
+              className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 focus:outline-none focus:border-white/[0.12] transition-colors text-center"
             />
-            <p className="text-[10px] text-white/15 text-center mt-1">Price</p>
+            <p className="text-[10px] text-white/70 text-center mt-1">Price</p>
           </div>
         </div>
       </div>
@@ -117,13 +117,13 @@ export function PropertyTourForm({ onSubmit, isGenerating }: PropertyTourFormPro
       {/* Key Features */}
       <div>
         <label className="block text-[13px] font-medium text-white/60 mb-2">
-          Key Features <span className="text-white/20">(optional)</span>
+          Key Features <span className="text-white/70">(optional)</span>
         </label>
         <textarea
           value={keyFeatures}
           onChange={(e) => setKeyFeatures(e.target.value)}
           placeholder="Updated kitchen, pool, large backyard, walk to downtown..."
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[80px]"
+          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[80px]"
           rows={3}
         />
       </div>

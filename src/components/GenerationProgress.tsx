@@ -30,7 +30,7 @@ export function GenerationProgressBar({ progress, compact = false }: ProgressBar
           {label}
         </span>
         {!compact && !isFailed && (
-          <span className="text-[11px] text-white/25 tabular-nums">
+          <span className="text-[11px] text-white/60 tabular-nums">
             {percent}%
           </span>
         )}
@@ -92,7 +92,7 @@ export function GenerationStepIndicator({ progress }: StepIndicatorProps) {
                   isFailed ? (
                     <span className="w-2 h-2 rounded-full bg-red-400/60" />
                   ) : (
-                    <Loader2 className="w-3 h-3 text-white/50 animate-spin" />
+                    <Loader2 className="w-3 h-3 text-white/70 animate-spin" />
                   )
                 ) : (
                   <span className={`w-1.5 h-1.5 rounded-full ${isPending ? "bg-white/10" : "bg-white/20"}`} />
@@ -103,12 +103,12 @@ export function GenerationStepIndicator({ progress }: StepIndicatorProps) {
               <span
                 className={`text-[10px] mt-1.5 transition-colors duration-300 ${
                   isCompleted
-                    ? "text-white/40"
+                    ? "text-white/70"
                     : isCurrent
                       ? isFailed
                         ? "text-red-400/60"
                         : "text-white/60 font-medium"
-                      : "text-white/15"
+                      : "text-white/70"
                 }`}
               >
                 {pipelineStep.label}
@@ -136,16 +136,16 @@ export function GenerationStepIndicator({ progress }: StepIndicatorProps) {
 
       {/* Current step detail */}
       <div className="text-center">
-        <p className={`text-[13px] ${isFailed ? "text-red-400/70" : "text-white/50"}`}>
+        <p className={`text-[13px] ${isFailed ? "text-red-400/70" : "text-white/70"}`}>
           {getStepLabel(progress)}
         </p>
         {progress?.step === "cut" && progress.totalCuts > 0 && (
-          <p className="text-[11px] text-white/20 mt-1">
+          <p className="text-[11px] text-white/70 mt-1">
             Scene {progress.currentCut + 1} of {progress.totalCuts}
           </p>
         )}
         {progress?.step === "poll_all_cuts" && progress.totalCuts > 0 && (
-          <p className="text-[11px] text-white/20 mt-1">
+          <p className="text-[11px] text-white/70 mt-1">
             {progress.currentCut} of {progress.totalCuts} scenes complete
           </p>
         )}
@@ -178,9 +178,9 @@ export function GenerationProgressDisplay({
             <span className="w-2 h-2 rounded-full bg-red-400" />
           </span>
         ) : progress?.step === "done" ? (
-          <Check className="w-5 h-5 text-white/40" />
+          <Check className="w-5 h-5 text-white/70" />
         ) : (
-          <Loader2 className="w-5 h-5 text-white/40 animate-spin" />
+          <Loader2 className="w-5 h-5 text-white/70 animate-spin" />
         )}
       </div>
 
@@ -188,7 +188,7 @@ export function GenerationProgressDisplay({
         {isFailed ? "Generation issue" : progress?.step === "done" ? "Video ready" : title}
       </h1>
 
-      <p className="text-[14px] text-white/30 max-w-xs mx-auto mb-8">
+      <p className="text-[14px] text-white/70 max-w-xs mx-auto mb-8">
         {isFailed
           ? "Something went wrong during generation."
           : progress?.step === "done"

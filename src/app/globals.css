@@ -9,7 +9,7 @@
   body {
     font-family: var(--font-sans);
     font-feature-settings: 'cv01', 'cv02', 'cv03';
-    background-color: #060911;
+    background-color: #0c0f11;
     color: #ffffff;
     -webkit-font-smoothing: antialiased;
   }
@@ -17,55 +17,57 @@
     letter-spacing: -0.03em;
     font-variation-settings: 'opsz' 32;
   }
-  ::selection { background-color: rgba(92, 124, 250, 0.3); }
+  ::selection { background-color: rgba(0, 116, 158, 0.3); }
 }
 
 @layer components {
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400;
+    color: #0fcbff;
   }
   .glass-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: #181a1e;
+    border: 1px solid #37393e;
     border-radius: 12px;
   }
   .glass-card-hover {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: #181a1e;
+    border: 1px solid #37393e;
     border-radius: 12px;
     transition: all 0.2s;
   }
   .glass-card-hover:hover {
-    border-color: rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: #9f9f9f;
+    background: #181a1e;
   }
   .glow-effect {
-    box-shadow: 0 0 40px rgba(92, 124, 250, 0.15), 0 0 80px rgba(139, 92, 246, 0.08);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white rounded-xl transition-all duration-200;
-    background: linear-gradient(135deg, #4c6ef5 0%, #7c3aed 100%);
-    box-shadow: 0 4px 20px rgba(76, 110, 245, 0.25);
+    @apply inline-flex items-center justify-center px-3 py-3 font-bold rounded-[12px] transition-all duration-200;
+    font-size: 12px;
+    background: #ffffff;
+    color: #0c0f11;
   }
   .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 30px rgba(76, 110, 245, 0.35);
+    background: #153856;
+    color: #e1f6ff;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white rounded-xl transition-all duration-200;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    @apply inline-flex items-center justify-center px-3 py-2 font-bold rounded-[12px] transition-all duration-200;
+    font-size: 12px;
+    background: #0c1926;
+    color: #e1f6ff;
   }
   .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
+    color: #0fcbff;
   }
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl text-white transition-colors;
+    @apply w-full rounded-[12px] transition-colors;
+    padding: 12px 24px;
     font-size: 16px; /* Prevents iOS zoom on focus */
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #181a1e;
+    border: 1px solid transparent;
+    color: #e1f6ff;
   }
   @screen sm {
     .input-field {
@@ -74,22 +76,20 @@
   }
   .input-field:focus {
     outline: none;
-    border-color: rgba(76, 110, 245, 0.5);
-    background: rgba(255, 255, 255, 0.07);
+    border-color: #0fcbff;
   }
-  .input-field::placeholder { color: rgba(255, 255, 255, 0.3); }
+  .input-field::placeholder { color: #9f9f9f; }
   .sidebar-link {
-    @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200;
-    color: rgba(255, 255, 255, 0.5);
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-[12px] text-sm font-medium transition-all duration-200;
+    color: #37393e;
   }
   .sidebar-link:hover {
-    color: rgba(255, 255, 255, 0.8);
-    background: rgba(255, 255, 255, 0.05);
+    color: #00749e;
+    background: #e1f6ff;
   }
   .sidebar-link.active {
-    color: #fff;
-    background: rgba(76, 110, 245, 0.15);
-    border: 1px solid rgba(76, 110, 245, 0.2);
+    color: #e1f6ff;
+    background: #0c0f11;
   }
 }
 
@@ -106,49 +106,33 @@ body::before {
   background-size: 256px 256px;
 }
 
-/* ─── Neon glow on primary CTA buttons ───────────────────── */
+/* ─── CTA button (Figma — no glow, uses elevation only) ── */
 .btn-cta-glow {
   position: relative;
   isolation: isolate;
 }
-.btn-cta-glow::after {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  z-index: -1;
-  border-radius: inherit;
-  background: linear-gradient(135deg, #4c6ef5 0%, #7c3aed 50%, #06b6d4 100%);
-  opacity: 0;
-  filter: blur(16px);
-  transition: opacity 0.4s cubic-bezier(0.25, 0.4, 0.25, 1);
-}
-.btn-cta-glow:hover::after {
-  opacity: 0.5;
+.btn-cta-glow:hover {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
 }
 
-/* ─── Hairline border card ───────────────────────────────── */
+/* ─── Card with subtle border (Figma — solid fill) ──────── */
 .card-hairline {
-  background: rgba(255, 255, 255, 0.015);
-  backdrop-filter: blur(12px);
-  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  background: #181a1e;
+  border: 1px solid #37393e;
   border-radius: 12px;
   transition: border-color 0.3s cubic-bezier(0.25, 0.4, 0.25, 1),
               background 0.3s cubic-bezier(0.25, 0.4, 0.25, 1);
 }
 .card-hairline:hover {
-  border-color: rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: #383d47;
 }
 
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #060911; }
-::-webkit-scrollbar-thumb { background: rgba(92, 124, 250, 0.3); border-radius: 3px; }
+::-webkit-scrollbar-track { background: #0c0f11; }
+::-webkit-scrollbar-thumb { background: #37393e; border-radius: 3px; }
 
 .mesh-gradient {
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(76, 110, 245, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 40% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+  background: #0c0f11;
 }
 
 /* Safe area for mobile bottom nav (iOS notch devices) */
@@ -174,7 +158,7 @@ select.input-field {
 
 /* Ensure select options have dark background on mobile */
 select option {
-  background: #0c1018;
+  background: #0c0f11;
   color: rgba(255, 255, 255, 0.8);
 }
 

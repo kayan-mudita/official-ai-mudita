@@ -213,7 +213,7 @@ function useCountdown() {
 
 function CellValue({ value }: { value: boolean | string }) {
   if (typeof value === "string") {
-    return <span className="text-p3 text-white/65 font-medium">{value}</span>;
+    return <span className="text-p3 text-white/70 font-medium">{value}</span>;
   }
   return value ? (
     <Check
@@ -221,7 +221,7 @@ function CellValue({ value }: { value: boolean | string }) {
       strokeWidth={3}
     />
   ) : (
-    <Minus className="w-4 h-4 text-white/15 mx-auto" />
+    <Minus className="w-4 h-4 text-white/70 mx-auto" />
   );
 }
 
@@ -322,7 +322,7 @@ export default function PricingClient() {
           <FadeIn>
             <div className="relative rounded-2xl card-hairline overflow-hidden p-8">
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-utility-400/30 via-special-500/20 to-transparent" />
-              <p className="text-p3 font-semibold text-white/45 uppercase tracking-widest mb-6 text-center">
+              <p className="text-p3 font-semibold text-white/70 uppercase tracking-widest mb-6 text-center">
                 What this would cost elsewhere
               </p>
 
@@ -332,11 +332,11 @@ export default function PricingClient() {
                     key={i}
                     className="flex items-center justify-between gap-4"
                   >
-                    <span className="text-p2 text-white/55">{anchor.label}</span>
+                    <span className="text-p2 text-white/70">{anchor.label}</span>
                     <span
                       className={`text-p2 font-semibold ${
                         anchor.noStrike
-                          ? "text-white/35 italic"
+                          ? "text-white/70 italic"
                           : "text-negative-300/80 line-through decoration-negative-400/50 decoration-2"
                       }`}
                     >
@@ -352,7 +352,7 @@ export default function PricingClient() {
                   <GradientText tone="brand">$79/month</GradientText> for 30
                   videos.
                 </p>
-                <p className="text-p2 text-white/40 mt-1">
+                <p className="text-p2 text-white/70 mt-1">
                   Zero hours of your time.
                 </p>
               </div>
@@ -382,14 +382,14 @@ export default function PricingClient() {
                   <span className="text-h2 font-bold text-white tracking-tight">
                     $59
                   </span>
-                  <span className="text-p3 text-white/35">/mo</span>
-                  <span className="text-p3 text-white/35 line-through ml-2">
+                  <span className="text-p3 text-white/70">/mo</span>
+                  <span className="text-p3 text-white/70 line-through ml-2">
                     $79/mo
                   </span>
                 </div>
 
                 <div className="flex items-center justify-center gap-3 mb-4 flex-wrap">
-                  <div className="flex items-center gap-1.5 text-white/65">
+                  <div className="flex items-center gap-1.5 text-white/70">
                     <Clock className="w-3.5 h-3.5 text-utility-300" />
                     <span className="text-p3 font-medium">Offer expires in</span>
                   </div>
@@ -404,11 +404,11 @@ export default function PricingClient() {
                         <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.06] border border-white/[0.10] text-p3 font-bold text-white tabular-nums">
                           {String(unit.value).padStart(2, "0")}
                         </span>
-                        <span className="text-[10px] text-white/30 font-medium">
+                        <span className="text-[10px] text-white/70 font-medium">
                           {unit.label}
                         </span>
                         {i < 3 && (
-                          <span className="text-white/15 text-p3 mx-0.5">
+                          <span className="text-white/70 text-p3 mx-0.5">
                             :
                           </span>
                         )}
@@ -447,15 +447,15 @@ export default function PricingClient() {
                 <span className="text-h1 font-bold text-white tracking-tight">
                   {mainPlan.price}
                 </span>
-                <span className="text-p2 text-white/35">{mainPlan.period}</span>
+                <span className="text-p2 text-white/70">{mainPlan.period}</span>
               </div>
-              <p className="text-p3 text-white/40 mb-8">{mainPlan.description}</p>
+              <p className="text-p3 text-white/70 mb-8">{mainPlan.description}</p>
 
               <ul className="space-y-3 mb-8">
                 {mainPlan.features.map((f, j) => (
                   <li
                     key={j}
-                    className="flex items-center gap-2.5 text-p2 text-white/55"
+                    className="flex items-center gap-2.5 text-p2 text-white/70"
                   >
                     <Check
                       className="w-3.5 h-3.5 text-utility-300 flex-shrink-0"
@@ -481,7 +481,7 @@ export default function PricingClient() {
                 )}
               </button>
 
-              <p className="text-p3 text-white/30 text-center mt-3">
+              <p className="text-p3 text-white/70 text-center mt-3">
                 Try free for 7 days. Cancel anytime.
               </p>
             </div>
@@ -496,13 +496,13 @@ export default function PricingClient() {
                   <h3 className="text-p1 font-semibold text-white/85">
                     {enterprisePlan.name}
                   </h3>
-                  <p className="text-p3 text-white/40 mt-0.5">
+                  <p className="text-p3 text-white/70 mt-0.5">
                     {enterprisePlan.description}
                   </p>
                 </div>
                 <Link
-                  href="mailto:hello@officialai.com?subject=Enterprise%20Inquiry"
-                  className="text-p3 font-medium px-5 py-2.5 min-h-[40px] flex items-center justify-center rounded-xl transition-all border border-white/[0.10] text-white/65 hover:text-white hover:border-white/[0.20]"
+                  href="mailto:hello@theofficial.ai?subject=Enterprise%20Inquiry"
+                  className="text-p3 font-medium px-5 py-2.5 min-h-[40px] flex items-center justify-center rounded-xl transition-all border border-white/[0.10] text-white/70 hover:text-white hover:border-white/[0.20]"
                 >
                   {enterprisePlan.cta}
                 </Link>
@@ -527,7 +527,7 @@ export default function PricingClient() {
                 Scale across{" "}
                 <GradientText tone="brand">your firm.</GradientText>
               </h2>
-              <p className="text-p1 text-white/45 max-w-lg mx-auto">
+              <p className="text-p1 text-white/70 max-w-lg mx-auto">
                 Add team members at{" "}
                 <span className="text-white/85 font-semibold">
                   $79/seat per month
@@ -541,21 +541,21 @@ export default function PricingClient() {
           <FadeIn delay={0.1}>
             <div className="relative rounded-2xl card-hairline overflow-hidden p-8 text-center">
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-utility-400/40 via-special-500/30 to-transparent" />
-              <p className="text-p3 text-white/45 uppercase tracking-widest mb-4 font-semibold">
+              <p className="text-p3 text-white/70 uppercase tracking-widest mb-4 font-semibold">
                 Example
               </p>
               <div className="flex items-center justify-center gap-3 text-white mb-4 flex-wrap">
                 <span className="text-h3 font-bold tracking-tight">
                   5 attorneys
                 </span>
-                <span className="text-p1 text-white/30">×</span>
+                <span className="text-p1 text-white/70">×</span>
                 <span className="text-h3 font-bold tracking-tight">$79</span>
-                <span className="text-p1 text-white/30">=</span>
+                <span className="text-p1 text-white/70">=</span>
                 <span className="text-h3 font-bold tracking-tight">
                   <GradientText tone="brand">$395/mo</GradientText>
                 </span>
               </div>
-              <p className="text-p2 text-white/40 mb-6">for your entire firm</p>
+              <p className="text-p2 text-white/70 mb-6">for your entire firm</p>
 
               <ul className="inline-flex flex-col items-start gap-2 text-left mb-8">
                 {[
@@ -566,7 +566,7 @@ export default function PricingClient() {
                 ].map((f, i) => (
                   <li
                     key={i}
-                    className="flex items-center gap-2.5 text-p2 text-white/55"
+                    className="flex items-center gap-2.5 text-p2 text-white/70"
                   >
                     <Check
                       className="w-3.5 h-3.5 text-utility-300 flex-shrink-0"
@@ -611,11 +611,11 @@ export default function PricingClient() {
               <table className="w-full min-w-[420px]">
                 <thead>
                   <tr className="border-b border-white/[0.06]">
-                    <th className="text-left py-4 pr-4 text-p3 font-semibold text-white/40 w-[50%]" />
+                    <th className="text-left py-4 pr-4 text-p3 font-semibold text-white/70 w-[50%]" />
                     <th className="text-center py-4 px-4 text-p3 font-semibold text-white/85 w-[25%]">
                       $79/mo
                     </th>
-                    <th className="text-center py-4 px-4 text-p3 font-semibold text-white/55 w-[25%]">
+                    <th className="text-center py-4 px-4 text-p3 font-semibold text-white/70 w-[25%]">
                       Enterprise
                     </th>
                   </tr>
@@ -636,7 +636,7 @@ export default function PricingClient() {
                           key={`${group.category}-${i}`}
                           className="border-b border-white/[0.04] hover:bg-white/[0.015] transition-colors"
                         >
-                          <td className="py-3.5 pr-4 text-p2 text-white/55">
+                          <td className="py-3.5 pr-4 text-p2 text-white/70">
                             {feature.name}
                           </td>
                           <td className="py-3.5 px-4 text-center">
@@ -729,7 +729,7 @@ export default function PricingClient() {
                           <h3 className="text-p1 font-semibold text-white/90 mb-1">
                             {feature.shortLabel}
                           </h3>
-                          <p className="text-p2 text-white/45 leading-relaxed">
+                          <p className="text-p2 text-white/70 leading-relaxed">
                             {feature.subtitle}
                           </p>
                         </div>
@@ -773,7 +773,7 @@ export default function PricingClient() {
                       {faq.q}
                     </span>
                     <ChevronDown
-                      className={`w-5 h-5 text-white/35 flex-shrink-0 transition-transform duration-200 ${
+                      className={`w-5 h-5 text-white/70 flex-shrink-0 transition-transform duration-200 ${
                         openFaq === i ? "rotate-180" : ""
                       }`}
                     />
@@ -783,7 +783,7 @@ export default function PricingClient() {
                       openFaq === i ? "max-h-40" : "max-h-0"
                     }`}
                   >
-                    <p className="px-5 pb-5 text-p2 text-white/45 leading-relaxed">
+                    <p className="px-5 pb-5 text-p2 text-white/70 leading-relaxed">
                       {faq.a}
                     </p>
                   </div>
@@ -815,7 +815,7 @@ export default function PricingClient() {
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Full access for 7 days. Cancel anytime. See what AI content looks
               like with your face and voice.
             </p>

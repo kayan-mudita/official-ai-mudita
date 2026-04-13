@@ -100,7 +100,7 @@ export default function AnalyticsMockup() {
                   <div className="text-[14px] font-bold text-white tracking-tight leading-none mb-1">
                     {kpi.value}
                   </div>
-                  <div className="text-[8px] text-white/35 mb-1.5">
+                  <div className="text-[8px] text-white/70 mb-1.5">
                     {kpi.label}
                   </div>
                   <svg
@@ -166,7 +166,7 @@ export default function AnalyticsMockup() {
             </div>
             <div className="flex items-center justify-between mt-2 px-0.5">
               {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-                <span key={i} className="text-[8px] text-white/30 font-mono">
+                <span key={i} className="text-[8px] text-white/70 font-mono">
                   {d}
                 </span>
               ))}
@@ -176,7 +176,7 @@ export default function AnalyticsMockup() {
           {/* Platform legend */}
           <div className="pt-3 border-t border-white/[0.06]">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[9px] font-mono font-semibold text-white/40 tracking-widest">
+              <span className="text-[9px] font-mono font-semibold text-white/70 tracking-widest">
                 BY PLATFORM
               </span>
             </div>

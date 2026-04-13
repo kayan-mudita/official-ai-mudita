@@ -178,7 +178,7 @@ function FeatureCard({
             {feature.shortLabel}
           </h3>
           <p
-            className={`text-white/45 leading-relaxed mb-5 ${
+            className={`text-white/70 leading-relaxed mb-5 ${
               hero ? "text-p1 max-w-xl" : "text-p2"
             }`}
           >
@@ -186,7 +186,7 @@ function FeatureCard({
           </p>
 
           {hero && (
-            <p className="text-p2 text-white/40 leading-relaxed mb-6 max-w-xl">
+            <p className="text-p2 text-white/70 leading-relaxed mb-6 max-w-xl">
               {feature.description}
             </p>
           )}
@@ -359,7 +359,7 @@ export default function FeaturesClient() {
                       <h3 className="text-p1 font-semibold text-white/90 mb-2">
                         {item.label}
                       </h3>
-                      <p className="text-p2 text-white/45 leading-relaxed">
+                      <p className="text-p2 text-white/70 leading-relaxed">
                         {item.text}
                       </p>
                     </div>
@@ -397,7 +397,7 @@ export default function FeaturesClient() {
                       and others don&apos;t.
                     </GradientText>
                   </h3>
-                  <p className="text-p2 text-white/50 leading-relaxed mb-5">
+                  <p className="text-p2 text-white/70 leading-relaxed mb-5">
                     Multi-cut composition, character sheets, format-first
                     writing, directed starting frames. Every other AI video tool
                     skips at least one of these — that&apos;s why their videos
@@ -413,10 +413,10 @@ export default function FeaturesClient() {
                         Official AI
                       </span>
                     </div>
-                    <span className="text-p3 text-white/30">vs</span>
+                    <span className="text-p3 text-white/70">vs</span>
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08]">
-                      <X className="w-3 h-3 text-white/40" strokeWidth={3} />
-                      <span className="text-p3 text-white/40">
+                      <X className="w-3 h-3 text-white/70" strokeWidth={3} />
+                      <span className="text-p3 text-white/70">
                         Other AI tools
                       </span>
                     </div>
@@ -460,7 +460,7 @@ export default function FeaturesClient() {
           </FadeIn>
 
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-2xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-2xl mx-auto mb-8">
               Every feature is included in every plan — the difference is
               volume. Your first video in under five minutes.
             </p>

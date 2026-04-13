@@ -101,7 +101,7 @@ export default function FeaturePageTemplate({
               </div>
             </FadeIn>
             <FadeIn delay={0.15}>
-              <p className="mt-8 max-w-3xl mx-auto text-center text-p1 text-white/45 leading-relaxed">
+              <p className="mt-8 max-w-3xl mx-auto text-center text-p1 text-white/70 leading-relaxed">
                 {feature.description}
               </p>
             </FadeIn>
@@ -182,7 +182,7 @@ export default function FeaturePageTemplate({
                   <h3 className="text-p1 sm:text-h5 font-semibold text-white/90 mb-2">
                     {cap.label}
                   </h3>
-                  <p className="text-p2 text-white/45 leading-relaxed">
+                  <p className="text-p2 text-white/70 leading-relaxed">
                     {cap.text}
                   </p>
                 </motion.div>
@@ -236,13 +236,13 @@ export default function FeaturePageTemplate({
                     </span>
                   </div>
                   {i < feature.howItWorks.length - 1 && (
-                    <ArrowRight className="w-3.5 h-3.5 text-white/20" />
+                    <ArrowRight className="w-3.5 h-3.5 text-white/70" />
                   )}
                 </div>
                 <h3 className="text-p1 font-semibold text-white/90 mb-2">
                   {step.label}
                 </h3>
-                <p className="text-p2 text-white/45 leading-relaxed">
+                <p className="text-p2 text-white/70 leading-relaxed">
                   {step.text}
                 </p>
               </motion.div>
@@ -311,11 +311,11 @@ export default function FeaturePageTemplate({
                           <h3 className="text-p1 font-semibold text-white/90 mb-1">
                             {rel.shortLabel}
                           </h3>
-                          <p className="text-p2 text-white/45 leading-relaxed">
+                          <p className="text-p2 text-white/70 leading-relaxed">
                             {rel.subtitle}
                           </p>
                         </div>
-                        <ArrowRight className="flex-shrink-0 w-4 h-4 text-white/30 group-hover:text-white/70 group-hover:translate-x-0.5 transition-all mt-1" />
+                        <ArrowRight className="flex-shrink-0 w-4 h-4 text-white/70 group-hover:text-white/70 group-hover:translate-x-0.5 transition-all mt-1" />
                       </div>
                     </Link>
                   </motion.div>
@@ -347,7 +347,7 @@ export default function FeaturePageTemplate({
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Every feature is included on every plan. The difference is volume.
               Your first video in under five minutes.
             </p>

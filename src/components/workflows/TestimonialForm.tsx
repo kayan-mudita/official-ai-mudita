@@ -37,14 +37,14 @@ export function TestimonialForm({ onSubmit, isGenerating }: TestimonialFormProps
       {/* Customer Name */}
       <div>
         <label className="block text-[13px] font-medium text-white/60 mb-2">
-          Customer Name <span className="text-white/20">(optional)</span>
+          Customer Name <span className="text-white/70">(optional)</span>
         </label>
         <input
           type="text"
           value={customerName}
           onChange={(e) => { setCustomerName(e.target.value); if (errors.customerName) setErrors((prev) => { const next = {...prev}; delete next.customerName; return next; }); }}
           placeholder="Jane D."
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 focus:outline-none focus:border-white/[0.12] transition-colors"
+          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 focus:outline-none focus:border-white/[0.12] transition-colors"
         />
         {errors.customerName && (
           <p className="text-[11px] text-red-400/80 mt-1.5">{errors.customerName}</p>
@@ -60,21 +60,21 @@ export function TestimonialForm({ onSubmit, isGenerating }: TestimonialFormProps
           value={testimonialText}
           onChange={(e) => { setTestimonialText(e.target.value); if (errors.testimonialText) setErrors((prev) => { const next = {...prev}; delete next.testimonialText; return next; }); }}
           placeholder="Paste or type the customer review here..."
-          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/15 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[140px]"
+          className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 text-[14px] text-white/80 placeholder:text-white/70 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[140px]"
           rows={6}
         />
         {errors.testimonialText && (
           <p className="text-[11px] text-red-400/80 mt-1.5">{errors.testimonialText}</p>
         )}
-        <p className="text-[11px] text-white/20 mt-1.5">
+        <p className="text-[11px] text-white/70 mt-1.5">
           {testimonialText.length}/5000 characters
         </p>
       </div>
 
       {/* Tip */}
       <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-        <Quote className="w-4 h-4 text-white/20 mt-0.5 flex-shrink-0" />
-        <p className="text-[12px] text-white/30 leading-relaxed">
+        <Quote className="w-4 h-4 text-white/70 mt-0.5 flex-shrink-0" />
+        <p className="text-[12px] text-white/70 leading-relaxed">
           Paste the exact review text. We will generate a video with your AI avatar reading it in a natural, testimonial style.
         </p>
       </div>

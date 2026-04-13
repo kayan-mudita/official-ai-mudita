@@ -104,10 +104,10 @@ export default function GuidesIndexClient() {
                   description={pillar.navDescription}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-p3 font-semibold text-white/35">
+                    <span className="text-p3 font-semibold text-white/70">
                       {pillar.subTopics.length} chapters
                     </span>
-                    <span className="inline-flex items-center gap-1.5 text-p3 font-semibold text-white/55 group-hover:text-white/95 transition-colors">
+                    <span className="inline-flex items-center gap-1.5 text-p3 font-semibold text-white/70 group-hover:text-white/95 transition-colors">
                       Explore
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                     </span>
@@ -140,7 +140,7 @@ export default function GuidesIndexClient() {
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               The guides will still be here. Try the platform that does the
               work for you.
             </p>

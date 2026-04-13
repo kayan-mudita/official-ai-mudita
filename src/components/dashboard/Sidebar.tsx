@@ -125,7 +125,7 @@ export default function Sidebar() {
                 className={`relative flex flex-col items-center gap-0.5 py-2 px-3 min-w-[48px] min-h-[48px] justify-center rounded-lg transition-colors ${
                   isActive
                     ? "text-blue-400"
-                    : "text-white/30 active:text-white/50"
+                    : "text-white/70 active:text-white/70"
                 }`}
               >
                 <item.icon className="w-5 h-5" />

@@ -391,7 +391,7 @@ function GeneratePageInner() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 flex-shrink-0">
         <div className="min-w-0">
           <h1 className="text-xl font-bold">Create Video</h1>
-          <p className="text-xs text-white/30 mt-0.5">
+          <p className="text-xs text-white/70 mt-0.5">
             {showWorkflows && !showManualMode
               ? "Choose a workflow to get started"
               : "Describe what you want and we will generate it"}
@@ -436,13 +436,13 @@ function GeneratePageInner() {
                   <Cpu className="w-3.5 h-3.5 text-indigo-400" />
                   <span className="hidden sm:inline">{modelLabels[selectedModel] || selectedModel}</span>
                   <span className="sm:hidden">{(modelLabels[selectedModel] || selectedModel).split(" ")[0]}</span>
-                  <ChevronDown className="w-3 h-3 text-white/20" />
+                  <ChevronDown className="w-3 h-3 text-white/70" />
                 </button>
                 {showModelPicker && (
                   <div className="absolute right-0 top-full mt-1 w-64 rounded-xl border border-white/[0.06] bg-[#0c1018] p-1.5 z-50 shadow-2xl max-h-80 overflow-y-auto">
                     {modelGroups.map((group) => (
                       <div key={group.label}>
-                        <div className="px-3 py-1.5 text-[10px] text-white/20 uppercase tracking-wider">{group.label}</div>
+                        <div className="px-3 py-1.5 text-[10px] text-white/70 uppercase tracking-wider">{group.label}</div>
                         {group.models.map((m) => (
                           <button
                             key={m}
@@ -466,17 +466,17 @@ function GeneratePageInner() {
 
             {/* Post-processing toggles */}
             <div className="flex items-center gap-4 px-1">
-              <label className="flex items-center gap-1.5 text-[10px] text-white/25 cursor-pointer hover:text-white/40">
+              <label className="flex items-center gap-1.5 text-[10px] text-white/60 cursor-pointer hover:text-white/70">
                 <input type="checkbox" checked={postProcess.upscale} onChange={(e) => setPostProcess((p) => ({ ...p, upscale: e.target.checked }))}
                   className="rounded border-white/[0.15] bg-white/[0.04] text-indigo-500 focus:ring-0 w-3 h-3" />
                 Upscale 2x
               </label>
-              <label className="flex items-center gap-1.5 text-[10px] text-white/25 cursor-pointer hover:text-white/40">
+              <label className="flex items-center gap-1.5 text-[10px] text-white/60 cursor-pointer hover:text-white/70">
                 <input type="checkbox" checked={postProcess.captions} onChange={(e) => setPostProcess((p) => ({ ...p, captions: e.target.checked }))}
                   className="rounded border-white/[0.15] bg-white/[0.04] text-indigo-500 focus:ring-0 w-3 h-3" />
                 Auto captions
               </label>
-              <label className="flex items-center gap-1.5 text-[10px] text-white/25 cursor-pointer hover:text-white/40">
+              <label className="flex items-center gap-1.5 text-[10px] text-white/60 cursor-pointer hover:text-white/70">
                 <input type="checkbox" checked={postProcess.speedCorrect} onChange={(e) => setPostProcess((p) => ({ ...p, speedCorrect: e.target.checked }))}
                   className="rounded border-white/[0.15] bg-white/[0.04] text-indigo-500 focus:ring-0 w-3 h-3" />
                 Speed correct
@@ -506,7 +506,7 @@ function GeneratePageInner() {
       {!showWorkflows && messages.length <= 1 && !showManualMode && (
         <button
           onClick={() => setShowWorkflows(true)}
-          className="flex items-center gap-2 text-xs text-white/25 hover:text-white/40 transition-colors mb-3 flex-shrink-0"
+          className="flex items-center gap-2 text-xs text-white/60 hover:text-white/70 transition-colors mb-3 flex-shrink-0"
         >
           <Sparkles className="w-3 h-3" />
           Show workflows
@@ -520,7 +520,7 @@ function GeneratePageInner() {
             setShowManualMode(false);
             setShowWorkflows(true);
           }}
-          className="flex items-center gap-2 text-xs text-white/25 hover:text-white/40 transition-colors mb-3 flex-shrink-0"
+          className="flex items-center gap-2 text-xs text-white/60 hover:text-white/70 transition-colors mb-3 flex-shrink-0"
         >
           <Sparkles className="w-3 h-3" />
           Back to workflows
@@ -535,7 +535,7 @@ function GeneratePageInner() {
               <div className="flex items-start gap-3">
                 {msg.role === "assistant" && (
                   <div className="w-7 h-7 rounded-lg bg-white/[0.06] flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Sparkles className="w-3.5 h-3.5 text-white/40" />
+                    <Sparkles className="w-3.5 h-3.5 text-white/70" />
                   </div>
                 )}
                 <div className="flex-1">
@@ -584,8 +584,8 @@ function GeneratePageInner() {
                             />
                           ) : msg.videoData.status === "generating" ? (
                             <div className="flex flex-col items-center gap-2">
-                              <Loader2 className="w-6 h-6 text-white/20 animate-spin" />
-                              <span className="text-[11px] text-white/20">
+                              <Loader2 className="w-6 h-6 text-white/70 animate-spin" />
+                              <span className="text-[11px] text-white/70">
                                 {msg.id === activeStatusMsgIdRef.current ? stepLabel : "Generating..."}
                               </span>
                             </div>
@@ -634,7 +634,7 @@ function GeneratePageInner() {
                           <button
                             onClick={() => handleRegenerate(msg.id, msg.videoData!.videoId)}
                             disabled={isGenerating}
-                            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-white/[0.06] text-[13px] text-white/50 hover:bg-white/[0.03] transition-all"
+                            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-white/[0.06] text-[13px] text-white/70 hover:bg-white/[0.03] transition-all"
                           >
                             <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? "animate-spin" : ""}`} />{" "}
                             Regenerate
@@ -686,7 +686,7 @@ function GeneratePageInner() {
                   }
                 }}
                 placeholder="Describe what you want to create..."
-                className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 pr-14 text-[14px] text-white/80 placeholder:text-white/15 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[48px] max-h-[120px]"
+                className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3 pr-14 text-[14px] text-white/80 placeholder:text-white/70 resize-none focus:outline-none focus:border-white/[0.12] transition-colors min-h-[48px] max-h-[120px]"
                 rows={1}
                 enterKeyHint="send"
               />
@@ -699,7 +699,7 @@ function GeneratePageInner() {
               </button>
             </div>
           </div>
-          <div className="flex items-center gap-3 mt-2 text-[11px] text-white/15">
+          <div className="flex items-center gap-3 mt-2 text-[11px] text-white/70">
             <span className="flex items-center gap-1">
               {selectedModel === "kling_2.6" ? <Cpu className="w-3 h-3" /> : <Zap className="w-3 h-3" />}
               {modelLabels[selectedModel]}
@@ -718,7 +718,7 @@ function GeneratePageInner() {
               setShowWorkflows(true);
               setShowManualMode(false);
             }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-white/[0.06] text-[13px] text-white/40 hover:text-white/60 hover:bg-white/[0.02] hover:border-white/[0.10] transition-all"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-white/[0.06] text-[13px] text-white/70 hover:text-white/60 hover:bg-white/[0.02] hover:border-white/[0.10] transition-all"
           >
             <Sparkles className="w-4 h-4" />
             Create another video
@@ -736,7 +736,7 @@ export default function GeneratePage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center py-32">
-          <Loader2 className="w-5 h-5 text-white/20 animate-spin" />
+          <Loader2 className="w-5 h-5 text-white/70 animate-spin" />
         </div>
       }
     >

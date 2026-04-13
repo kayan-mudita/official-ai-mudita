@@ -51,7 +51,7 @@ export default function FunnelDashboard() {
 
   if (!data) {
     return (
-      <div className="text-center py-20 text-white/40">
+      <div className="text-center py-20 text-white/70">
         Failed to load funnel data
       </div>
     );
@@ -71,7 +71,7 @@ export default function FunnelDashboard() {
           <BarChart3 className="w-6 h-6 text-indigo-400" />
           Onboarding Funnel
         </h1>
-        <p className="text-sm text-white/40 mt-1">
+        <p className="text-sm text-white/70 mt-1">
           Drop-off analysis per onboarding step. Unique users who reached each stage.
         </p>
       </div>
@@ -79,14 +79,14 @@ export default function FunnelDashboard() {
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4">
         <div className="rounded-xl bg-white/[0.03] border border-white/[0.07] p-4">
-          <div className="flex items-center gap-2 text-sm text-white/40 mb-1">
+          <div className="flex items-center gap-2 text-sm text-white/70 mb-1">
             <Users className="w-4 h-4" />
             Total Signups
           </div>
           <p className="text-3xl font-bold text-white">{data.totalSignups}</p>
         </div>
         <div className="rounded-xl bg-white/[0.03] border border-white/[0.07] p-4">
-          <div className="flex items-center gap-2 text-sm text-white/40 mb-1">
+          <div className="flex items-center gap-2 text-sm text-white/70 mb-1">
             <TrendingDown className="w-4 h-4" />
             Trial Conversions
           </div>
@@ -95,7 +95,7 @@ export default function FunnelDashboard() {
           </p>
         </div>
         <div className="rounded-xl bg-white/[0.03] border border-white/[0.07] p-4">
-          <div className="flex items-center gap-2 text-sm text-white/40 mb-1">
+          <div className="flex items-center gap-2 text-sm text-white/70 mb-1">
             <BarChart3 className="w-4 h-4" />
             Conversion Rate
           </div>
@@ -107,7 +107,7 @@ export default function FunnelDashboard() {
 
       {/* Funnel visualization */}
       <div className="rounded-xl bg-white/[0.02] border border-white/[0.07] p-6 space-y-1">
-        <h2 className="text-sm font-semibold text-white/50 mb-4">Step-by-Step Drop-off</h2>
+        <h2 className="text-sm font-semibold text-white/70 mb-4">Step-by-Step Drop-off</h2>
 
         {/* Signup baseline */}
         <div className="flex items-center gap-4 py-3">
@@ -123,7 +123,7 @@ export default function FunnelDashboard() {
               {data.totalSignups}
             </span>
           </div>
-          <div className="w-16 text-right text-sm font-mono text-white/30">100%</div>
+          <div className="w-16 text-right text-sm font-mono text-white/70">100%</div>
         </div>
 
         {primaryFunnel.map((step, i) => {
@@ -179,7 +179,7 @@ export default function FunnelDashboard() {
                     {step.uniqueUsers}
                   </span>
                 </div>
-                <div className="w-16 text-right text-sm font-mono text-white/30">
+                <div className="w-16 text-right text-sm font-mono text-white/70">
                   {step.conversionFromSignup}%
                 </div>
               </div>
@@ -190,10 +190,10 @@ export default function FunnelDashboard() {
 
       {/* All events table */}
       <div className="rounded-xl bg-white/[0.02] border border-white/[0.07] p-6">
-        <h2 className="text-sm font-semibold text-white/50 mb-4">All Tracked Events</h2>
+        <h2 className="text-sm font-semibold text-white/70 mb-4">All Tracked Events</h2>
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-white/30 border-b border-white/[0.05]">
+            <tr className="text-left text-white/70 border-b border-white/[0.05]">
               <th className="py-2 font-medium">Event</th>
               <th className="py-2 font-medium text-right">Users</th>
               <th className="py-2 font-medium text-right">% of Signups</th>
@@ -211,7 +211,7 @@ export default function FunnelDashboard() {
                 <td className="py-2.5 text-right text-white/80 font-semibold">
                   {step.uniqueUsers}
                 </td>
-                <td className="py-2.5 text-right text-white/40">
+                <td className="py-2.5 text-right text-white/70">
                   {step.conversionFromSignup}%
                 </td>
               </tr>

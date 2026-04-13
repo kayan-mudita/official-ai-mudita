@@ -150,7 +150,7 @@ export default function SettingsPage() {
   return (
     <Suspense
       fallback={
-        <div className="max-w-5xl mx-auto p-6 text-white/40">Loading settings...</div>
+        <div className="max-w-5xl mx-auto p-6 text-white/70">Loading settings...</div>
       }
     >
       <SettingsContent />
@@ -421,7 +421,7 @@ function SettingsContent() {
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-sm text-white/40 mt-1">
+        <p className="text-sm text-white/70 mt-1">
           Manage your account, plan, and connected platforms
         </p>
       </div>
@@ -443,7 +443,7 @@ function SettingsContent() {
           <span className="flex-1">{toast.message}</span>
           <button
             onClick={() => setToast(null)}
-            className="ml-auto text-white/40 hover:text-white/60 transition-colors p-1"
+            className="ml-auto text-white/70 hover:text-white/60 transition-colors p-1"
           >
             <XCircle className="w-3.5 h-3.5" />
           </button>
@@ -459,7 +459,7 @@ function SettingsContent() {
               <Link
                 key={tab.id}
                 href={tabHref}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all text-white/40 hover:text-white/60 border border-transparent hover:border-white/[0.06]"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all text-white/70 hover:text-white/60 border border-transparent hover:border-white/[0.06]"
               >
                 <tab.icon className="w-4 h-4" />
                 {tab.label}
@@ -473,7 +473,7 @@ function SettingsContent() {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
                 activeTab === tab.id
                   ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
-                  : "text-white/40 hover:text-white/60 border border-transparent"
+                  : "text-white/70 hover:text-white/60 border border-transparent"
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -488,7 +488,7 @@ function SettingsContent() {
         <div className="glass-card p-6 space-y-6">
           <h3 className="font-semibold">Personal Information</h3>
           {loadingProfile ? (
-            <div className="py-12 flex flex-col items-center justify-center gap-3 text-white/40">
+            <div className="py-12 flex flex-col items-center justify-center gap-3 text-white/70">
               <Loader2 className="w-5 h-5 animate-spin" />
               <span className="text-sm">Loading profile...</span>
             </div>
@@ -502,14 +502,14 @@ function SettingsContent() {
                   <button className="text-sm text-blue-400 hover:text-blue-300">
                     Change avatar
                   </button>
-                  <p className="text-xs text-white/30 mt-0.5">
+                  <p className="text-xs text-white/70 mt-0.5">
                     JPG, PNG or GIF. Max 2MB.
                   </p>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-white/40 mb-1.5">
+                  <label className="block text-xs text-white/70 mb-1.5">
                     First Name
                   </label>
                   <input
@@ -520,7 +520,7 @@ function SettingsContent() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-white/40 mb-1.5">
+                  <label className="block text-xs text-white/70 mb-1.5">
                     Last Name
                   </label>
                   <input
@@ -531,7 +531,7 @@ function SettingsContent() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-white/40 mb-1.5">
+                  <label className="block text-xs text-white/70 mb-1.5">
                     Email
                   </label>
                   <input
@@ -542,7 +542,7 @@ function SettingsContent() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-white/40 mb-1.5">
+                  <label className="block text-xs text-white/70 mb-1.5">
                     Company
                   </label>
                   <input
@@ -570,7 +570,7 @@ function SettingsContent() {
       {activeTab === "plan" && (
         <div className="space-y-6">
           {loadingUsage ? (
-            <div className="glass-card p-12 flex flex-col items-center justify-center gap-3 text-white/40">
+            <div className="glass-card p-12 flex flex-col items-center justify-center gap-3 text-white/70">
               <Loader2 className="w-5 h-5 animate-spin" />
               <span className="text-sm">Loading billing information...</span>
             </div>
@@ -591,13 +591,13 @@ function SettingsContent() {
                         </span>
                       )}
                       {!isPaidPlan && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-white/5 text-white/40 border border-white/10">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-white/5 text-white/70 border border-white/10">
                           Free tier
                         </span>
                       )}
                     </div>
                     {usage?.currentPeriodEnd && (
-                      <p className="text-xs text-white/30 mt-1">
+                      <p className="text-xs text-white/70 mt-1">
                         Current period ends{" "}
                         {new Date(usage.currentPeriodEnd).toLocaleDateString("en-US", {
                           month: "long",
@@ -607,7 +607,7 @@ function SettingsContent() {
                       </p>
                     )}
                     {!isPaidPlan && (
-                      <p className="text-xs text-white/30 mt-1">
+                      <p className="text-xs text-white/70 mt-1">
                         Upgrade to unlock more videos and features.
                       </p>
                     )}
@@ -636,7 +636,7 @@ function SettingsContent() {
                 {usage && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-white/40">Videos this month</span>
+                      <span className="text-white/70">Videos this month</span>
                       <span className="text-white/60 font-medium">
                         {isPaidPlan
                           ? `${usage.videosUsed} created (${usage.softLimit} videos included, unlimited generation)`
@@ -682,7 +682,7 @@ function SettingsContent() {
 
               {/* Plan cards */}
               <div>
-                <h4 className="text-sm font-medium text-white/50 mb-4">
+                <h4 className="text-sm font-medium text-white/70 mb-4">
                   {isPaidPlan ? "Change plan" : "Choose a plan"}
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -713,14 +713,14 @@ function SettingsContent() {
                         <div className="flex items-baseline gap-1 mt-2">
                           <span className="text-3xl font-bold">{plan.price}</span>
                           {plan.period && (
-                            <span className="text-sm text-white/30">{plan.period}</span>
+                            <span className="text-sm text-white/70">{plan.period}</span>
                           )}
                         </div>
                         <ul className="mt-4 space-y-2">
                           {plan.features.map((f, i) => (
                             <li
                               key={i}
-                              className="flex items-center gap-2 text-xs text-white/50"
+                              className="flex items-center gap-2 text-xs text-white/70"
                             >
                               <Check className="w-3 h-3 text-green-400 flex-shrink-0" />
                               {f}
@@ -738,7 +738,7 @@ function SettingsContent() {
                           </button>
                         ) : isEnterprise ? (
                           <a
-                            href="mailto:hello@officialai.com?subject=Enterprise%20Inquiry"
+                            href="mailto:hello@theofficial.ai?subject=Enterprise%20Inquiry"
                             className="mt-5 w-full btn-secondary gap-2 text-sm !py-2.5 inline-flex items-center justify-center"
                           >
                             Contact sales
@@ -794,13 +794,13 @@ function SettingsContent() {
           {/* Header with connection count */}
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-white/30">
+              <p className="text-xs text-white/70">
                 Connect your social media accounts for automatic content
                 publishing.
               </p>
             </div>
             {!isLoading && (
-              <div className="flex items-center gap-2 text-xs text-white/40">
+              <div className="flex items-center gap-2 text-xs text-white/70">
                 <div
                   className={`w-2 h-2 rounded-full ${
                     connectedCount > 0 ? "bg-green-400" : "bg-white/20"
@@ -812,7 +812,7 @@ function SettingsContent() {
           </div>
 
           {isLoading ? (
-            <div className="glass-card p-12 flex flex-col items-center justify-center gap-3 text-white/40">
+            <div className="glass-card p-12 flex flex-col items-center justify-center gap-3 text-white/70">
               <Loader2 className="w-5 h-5 animate-spin" />
               <span className="text-sm">Loading connected accounts...</span>
             </div>
@@ -877,7 +877,7 @@ function SettingsContent() {
                           <div className="text-xs text-green-400/70 mt-0.5 truncate">
                             {account.handle}
                             {account.expiresAt && (
-                              <span className="text-white/20 ml-2">
+                              <span className="text-white/70 ml-2">
                                 Expires{" "}
                                 {new Date(
                                   account.expiresAt
@@ -886,7 +886,7 @@ function SettingsContent() {
                             )}
                           </div>
                         ) : (
-                          <div className="text-xs text-white/30 mt-0.5">
+                          <div className="text-xs text-white/70 mt-0.5">
                             {!isConfigured
                               ? `Requires ${status?.missingVars.join(", ") || "OAuth credentials"}`
                               : meta.description}
@@ -928,13 +928,13 @@ function SettingsContent() {
                                 {(status?.missingVars || []).map((v) => (
                                   <code
                                     key={v}
-                                    className="block text-[10px] text-white/50 bg-white/5 px-2 py-1 rounded-md font-mono"
+                                    className="block text-[10px] text-white/70 bg-white/5 px-2 py-1 rounded-md font-mono"
                                   >
                                     {v}
                                   </code>
                                 ))}
                               </div>
-                              <div className="text-[10px] text-white/30 mt-2">
+                              <div className="text-[10px] text-white/70 mt-2">
                                 Add these to your .env file to enable this
                                 connection.
                               </div>
@@ -969,7 +969,7 @@ function SettingsContent() {
           {!isLoading && (
             <div className="glass-card p-4 flex items-start gap-3">
               <Info className="w-4 h-4 text-blue-400/60 mt-0.5 flex-shrink-0" />
-              <div className="text-xs text-white/30 leading-relaxed">
+              <div className="text-xs text-white/70 leading-relaxed">
                 <p>
                   Social account connections use OAuth 2.0 for secure
                   authorization. Official AI never stores your social media
@@ -1016,7 +1016,7 @@ function SettingsContent() {
             <div key={i} className="flex items-center justify-between py-2">
               <div>
                 <div className="text-sm font-medium">{item.label}</div>
-                <div className="text-xs text-white/30 mt-0.5">{item.desc}</div>
+                <div className="text-xs text-white/70 mt-0.5">{item.desc}</div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -1038,7 +1038,7 @@ function SettingsContent() {
             <h3 className="font-semibold flex items-center gap-2">
               <Shield className="w-4 h-4 text-green-400" /> Data & Privacy
             </h3>
-            <p className="text-sm text-white/40">
+            <p className="text-sm text-white/70">
               You own all content generated by Official AI. We never sell,
               share, or train on your data.
             </p>
@@ -1090,7 +1090,7 @@ const roleColors: Record<string, string> = {
   owner: "text-amber-400 bg-amber-500/10",
   admin: "text-blue-400 bg-blue-500/10",
   editor: "text-green-400 bg-green-500/10",
-  viewer: "text-white/40 bg-white/[0.06]",
+  viewer: "text-white/70 bg-white/[0.06]",
 };
 
 function TeamTabContent() {
@@ -1146,7 +1146,7 @@ function TeamTabContent() {
 
   if (loading) {
     return (
-      <div className="py-12 flex flex-col items-center justify-center gap-3 text-white/40">
+      <div className="py-12 flex flex-col items-center justify-center gap-3 text-white/70">
         <Loader2 className="w-5 h-5 animate-spin" />
         <span className="text-sm">Loading team...</span>
       </div>
@@ -1163,7 +1163,7 @@ function TeamTabContent() {
             <div className="text-[14px] sm:text-[15px] font-medium text-white/85">
               Team & Agency Mode
             </div>
-            <div className="text-xs sm:text-sm text-white/30">
+            <div className="text-xs sm:text-sm text-white/70">
               $79/seat/month. Add team members to collaborate on video creation.
             </div>
           </div>
@@ -1237,7 +1237,7 @@ function TeamTabContent() {
       <div className="glass-card overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.04]">
           <h3 className="font-semibold text-white/90">Team Members</h3>
-          <span className="text-xs text-white/30">
+          <span className="text-xs text-white/70">
             {teamData?.seats.used || 0} / {teamData?.seats.limit || 1} seats
           </span>
         </div>
@@ -1260,7 +1260,7 @@ function TeamTabContent() {
                   <div className="text-sm font-medium text-white/85 truncate">
                     {member.name}
                   </div>
-                  <div className="text-xs text-white/30 truncate">
+                  <div className="text-xs text-white/70 truncate">
                     {member.email}
                   </div>
                 </div>
@@ -1270,7 +1270,7 @@ function TeamTabContent() {
                   <div className="text-sm font-medium text-white/60">
                     {member.videosCreated}
                   </div>
-                  <div className="text-[10px] text-white/25">videos</div>
+                  <div className="text-[10px] text-white/60">videos</div>
                 </div>
 
                 {/* Role badge */}

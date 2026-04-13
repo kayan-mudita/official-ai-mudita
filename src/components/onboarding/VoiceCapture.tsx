@@ -194,7 +194,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
             {/* Script card */}
             <div className="rounded-2xl bg-white/[0.03] border border-white/[0.07] p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.12em]">
+                <p className="text-[11px] font-bold text-white/70 uppercase tracking-[0.12em]">
                   Read this aloud
                 </p>
                 <button
@@ -207,7 +207,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
               <p className="text-[14px] text-white/70 leading-relaxed font-medium">
                 &ldquo;{SAMPLE_SCRIPTS[scriptIndex]}&rdquo;
               </p>
-              <p className="text-[11px] text-white/20">~10 seconds is ideal. 2 seconds minimum.</p>
+              <p className="text-[11px] text-white/70">~10 seconds is ideal. 2 seconds minimum.</p>
             </div>
 
             {/* Record button */}
@@ -241,7 +241,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
 
               <div className="ml-auto z-10">
                 <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                  <span className="text-[10px] text-white/40">{"\u2192"}</span>
+                  <span className="text-[10px] text-white/70">{"\u2192"}</span>
                 </div>
               </div>
             </motion.button>
@@ -259,7 +259,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
               </motion.div>
             )}
 
-            <p className="text-[11px] text-white/20 text-center">
+            <p className="text-[11px] text-white/70 text-center">
               Your voice is cloned locally and never shared with third parties.
             </p>
           </motion.div>
@@ -277,7 +277,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
           >
             {/* Script reference */}
             <div className="rounded-2xl bg-white/[0.03] border border-white/[0.07] p-4">
-              <p className="text-[13px] text-white/50 leading-relaxed">
+              <p className="text-[13px] text-white/70 leading-relaxed">
                 &ldquo;{SAMPLE_SCRIPTS[scriptIndex]}&rdquo;
               </p>
             </div>
@@ -292,7 +292,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
                   transition={{ duration: 1, repeat: Infinity }}
                 />
                 <span className="text-[13px] font-bold text-red-400">Recording</span>
-                <span className="text-[13px] font-mono text-white/40">{formatTime(elapsed)}</span>
+                <span className="text-[13px] font-mono text-white/70">{formatTime(elapsed)}</span>
               </div>
 
               {/* Waveform bars */}
@@ -318,7 +318,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
                 <Square className="w-5 h-5 text-white fill-white" />
               </motion.button>
 
-              <p className="text-[11px] text-white/25">Tap to stop</p>
+              <p className="text-[11px] text-white/60">Tap to stop</p>
             </div>
           </motion.div>
         )}
@@ -340,7 +340,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
                   <Mic className="w-4 h-4 text-indigo-400" />
                   <span className="text-[14px] font-semibold text-white/70">Your recording</span>
                 </div>
-                <span className="text-[13px] font-mono text-white/30">{formatTime(duration)}</span>
+                <span className="text-[13px] font-mono text-white/70">{formatTime(duration)}</span>
               </div>
 
               {/* Playback button + static waveform */}
@@ -394,7 +394,7 @@ export default function VoiceCapture({ onCapture, uploading = false }: VoiceCapt
             <div className="flex items-center gap-3">
               <button
                 onClick={reRecord}
-                className="flex items-center justify-center gap-1.5 flex-1 py-3.5 rounded-xl border border-white/[0.08] text-[13px] font-medium text-white/35 hover:text-white/55 transition-colors"
+                className="flex items-center justify-center gap-1.5 flex-1 py-3.5 rounded-xl border border-white/[0.08] text-[13px] font-medium text-white/70 hover:text-white/70 transition-colors"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 Re-record

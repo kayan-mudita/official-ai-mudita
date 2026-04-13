@@ -79,7 +79,7 @@ export default function SubTopicSidebar({
         {/* Back to pillar */}
         <Link
           href={`/${pillarSlug}`}
-          className="flex items-center gap-2 text-p3 text-white/30 hover:text-white/60 transition-colors"
+          className="flex items-center gap-2 text-p3 text-white/70 hover:text-white/60 transition-colors"
         >
           <ArrowLeft className="w-3 h-3" />
           {pillarTitle}
@@ -89,7 +89,7 @@ export default function SubTopicSidebar({
         <div>
           <button
             onClick={() => setTopicsOpen(!topicsOpen)}
-            className="w-full flex items-center justify-between text-p3 font-medium text-white/40 uppercase tracking-wider mb-2"
+            className="w-full flex items-center justify-between text-p3 font-medium text-white/70 uppercase tracking-wider mb-2"
           >
             Topics in this guide
             <ChevronDown className={`w-3 h-3 transition-transform ${topicsOpen ? "rotate-180" : ""}`} />
@@ -105,7 +105,7 @@ export default function SubTopicSidebar({
                       className={`block text-p3 py-2 px-3 rounded-lg transition-colors ${
                         isActive
                           ? `text-white/80 font-medium border-l-2 ${accentBorder} ${activeBg}`
-                          : "text-white/30 hover:text-white/60 hover:bg-white/[0.03]"
+                          : "text-white/70 hover:text-white/60 hover:bg-white/[0.03]"
                       }`}
                     >
                       {st.title}
@@ -120,7 +120,7 @@ export default function SubTopicSidebar({
         {/* Related blog posts */}
         {relatedBlogSlugs.length > 0 && (
           <div>
-            <div className="text-p3 font-medium text-white/40 uppercase tracking-wider mb-2">
+            <div className="text-p3 font-medium text-white/70 uppercase tracking-wider mb-2">
               Related Articles
             </div>
             <ul className="space-y-1">
@@ -128,7 +128,7 @@ export default function SubTopicSidebar({
                 <li key={slug}>
                   <Link
                     href={`/blog/${slug}`}
-                    className="block text-p3 text-white/30 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
+                    className="block text-p3 text-white/70 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
                   >
                     {formatBlogSlug(slug)}
                   </Link>
@@ -141,7 +141,7 @@ export default function SubTopicSidebar({
         {/* Industry pages */}
         {relatedIndustryPageSlugs.length > 0 && (
           <div>
-            <div className="text-p3 font-medium text-white/40 uppercase tracking-wider mb-2">
+            <div className="text-p3 font-medium text-white/70 uppercase tracking-wider mb-2">
               For Your Industry
             </div>
             <ul className="space-y-1">
@@ -149,7 +149,7 @@ export default function SubTopicSidebar({
                 <li key={slug}>
                   <Link
                     href={`/for/${slug}`}
-                    className="block text-p3 text-white/30 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
+                    className="block text-p3 text-white/70 hover:text-white/60 py-1.5 px-2 rounded-md hover:bg-white/[0.03] transition-colors"
                   >
                     {industryLabels[slug] || slug}
                   </Link>
@@ -171,7 +171,7 @@ export default function SubTopicSidebar({
           <p className="text-p3 font-semibold text-white/70 mb-1">
             Try Official AI
           </p>
-          <p className="text-p3 text-white/30 mb-3 leading-relaxed">
+          <p className="text-p3 text-white/70 mb-3 leading-relaxed">
             See your AI twin in 30 seconds.
           </p>
           <Link

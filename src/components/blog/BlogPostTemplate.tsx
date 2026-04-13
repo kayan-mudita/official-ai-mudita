@@ -15,6 +15,7 @@ import Eyebrow from "@/components/marketing/Eyebrow";
 import MeshMockup from "@/components/marketing/MeshMockup";
 import { getRelatedPosts, type BlogCategory } from "@/data/blog-posts";
 import { getFeaturesForCategory } from "@/data/blog-feature-map";
+import { siteUrl } from "@/lib/site-config";
 
 interface BlogPostProps {
   title: string;
@@ -60,7 +61,6 @@ export default function BlogPostTemplate({
   children,
   featuredImage,
 }: BlogPostProps) {
-  const siteUrl = "https://officialai.com";
   const postUrl = `${siteUrl}/blog/${slug}`;
   const brand = categoryBrand[category] ?? categoryBrand["AI Video"];
   const { lead, tail } = splitHeadline(title, 3);
@@ -74,12 +74,14 @@ export default function BlogPostTemplate({
     publisher: {
       "@type": "Organization",
       name: "Official AI",
-      logo: { "@type": "ImageObject", url: `${siteUrl}/og-image.png` },
+      logo: { "@type": "ImageObject", url: `${siteUrl}/logo.png` },
     },
     datePublished: date,
     dateModified: date,
     mainEntityOfPage: { "@type": "WebPage", "@id": postUrl },
-    image: `${siteUrl}/og-image.png`,
+    image: featuredImage?.src
+      ? `${siteUrl}${featuredImage.src}`
+      : `${siteUrl}/og-image.png`,
   };
 
   return (
@@ -114,7 +116,7 @@ export default function BlogPostTemplate({
         }
         description={description}
         belowActions={
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-3 text-p3 text-white/45">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3 text-p3 text-white/70">
             <span className="inline-flex items-center gap-1.5">
               <User className="w-3.5 h-3.5" />
               {author}
@@ -156,7 +158,7 @@ export default function BlogPostTemplate({
 
           {/* Content */}
           <FadeIn delay={0.05} duration={0.6}>
-            <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:tracking-[-0.02em] prose-p:text-white/55 prose-p:leading-relaxed prose-a:text-utility-300 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/85 prose-li:text-white/55 prose-code:text-utility-300 prose-blockquote:border-special-500/40 prose-blockquote:bg-white/[0.02] prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-white/65 prose-h2:text-h3 prose-h2:mt-14 prose-h2:mb-4 prose-h3:text-title prose-h3:mt-10 prose-h3:mb-3 prose-figcaption:text-p3 prose-figcaption:text-white/35 prose-figcaption:text-center prose-figcaption:mt-2">
+            <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:tracking-[-0.02em] prose-p:text-white/70 prose-p:leading-relaxed prose-a:text-utility-300 prose-a:no-underline hover:prose-a:underline prose-strong:text-white/85 prose-li:text-white/70 prose-code:text-utility-300 prose-blockquote:border-special-500/40 prose-blockquote:bg-white/[0.02] prose-blockquote:rounded-r-xl prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:not-italic prose-blockquote:text-white/70 prose-h2:text-h3 prose-h2:mt-14 prose-h2:mb-4 prose-h3:text-title prose-h3:mt-10 prose-h3:mb-3 prose-figcaption:text-p3 prose-figcaption:text-white/70 prose-figcaption:text-center prose-figcaption:mt-2">
               {children}
             </div>
           </FadeIn>
@@ -166,7 +168,7 @@ export default function BlogPostTemplate({
             <div className="flex items-center justify-between mt-16 pt-8 border-t border-white/[0.06]">
               <Link
                 href="/blog"
-                className="group inline-flex items-center gap-2 text-p3 font-medium text-white/45 hover:text-white/85 transition-colors"
+                className="group inline-flex items-center gap-2 text-p3 font-medium text-white/70 hover:text-white/85 transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
                 Back to blog
@@ -221,13 +223,13 @@ export default function BlogPostTemplate({
                         <div className="absolute inset-0 bg-gradient-to-t from-[#050508]/80 via-transparent to-transparent" />
                       </div>
                       <div className="p-5">
-                        <div className="text-p3 text-white/30 mb-2">
+                        <div className="text-p3 text-white/70 mb-2">
                           {post.date}
                         </div>
                         <h3 className="text-p1 font-semibold text-white/90 leading-snug mb-2 group-hover:text-white transition-colors line-clamp-2">
                           {post.title}
                         </h3>
-                        <span className="inline-flex items-center gap-1.5 text-p3 text-white/50 group-hover:text-white/85 transition-colors">
+                        <span className="inline-flex items-center gap-1.5 text-p3 text-white/70 group-hover:text-white/85 transition-colors">
                           Read article
                           <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                         </span>
@@ -303,7 +305,7 @@ export default function BlogPostTemplate({
                             <h3 className="text-p1 font-semibold text-white/90 mb-1">
                               {feature.shortLabel}
                             </h3>
-                            <p className="text-p2 text-white/45 leading-relaxed">
+                            <p className="text-p2 text-white/70 leading-relaxed">
                               {feature.subtitle}
                             </p>
                           </div>
@@ -339,7 +341,7 @@ export default function BlogPostTemplate({
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="text-p1 text-white/45 max-w-xl mx-auto mb-8">
+            <p className="text-p1 text-white/70 max-w-xl mx-auto mb-8">
               Upload a photo and see AI create a video of you in 30 seconds. No
               credit card needed.
             </p>

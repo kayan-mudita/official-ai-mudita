@@ -222,7 +222,7 @@ export default function UnifiedOnboarding({ demoMode = false }: UnifiedOnboardin
                 ) : (
                   <span>{s.emoji}</span>
                 )}
-                <span className={active ? "text-indigo-300" : done ? "text-white/40" : "text-white/15"}>{s.label}</span>
+                <span className={active ? "text-indigo-300" : done ? "text-white/70" : "text-white/70"}>{s.label}</span>
               </motion.div>
             </div>
           );
@@ -269,7 +269,7 @@ export default function UnifiedOnboarding({ demoMode = false }: UnifiedOnboardin
               <motion.div key={step + "-h"} initial={{ opacity: 0, y: 16, filter: "blur(4px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -16, filter: "blur(4px)" }} transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }} className="text-center mb-8">
                 <h1 className="text-[28px] font-extrabold text-white tracking-tight leading-tight">{heading}</h1>
-                <p className="text-[14px] text-white/40 mt-2 font-medium">{sub}</p>
+                <p className="text-[14px] text-white/70 mt-2 font-medium">{sub}</p>
               </motion.div>
             </AnimatePresence>
           )}
@@ -291,7 +291,7 @@ export default function UnifiedOnboarding({ demoMode = false }: UnifiedOnboardin
             {step === "voice" && (
               <motion.div key="voice" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="space-y-3">
                 <VoiceCapture onCapture={handleVoiceCapture} uploading={voiceUploading} />
-                <button onClick={handleSkipVoice} className="w-full py-2 text-[12px] text-white/15 hover:text-white/30 transition-colors">
+                <button onClick={handleSkipVoice} className="w-full py-2 text-[12px] text-white/70 hover:text-white/70 transition-colors">
                   Skip for now — you can add your voice later
                 </button>
               </motion.div>

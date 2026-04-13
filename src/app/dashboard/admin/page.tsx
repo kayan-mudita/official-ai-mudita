@@ -183,7 +183,7 @@ export default function AdminPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">System Configuration</h1>
-        <p className="text-white/40 text-sm mt-1">
+        <p className="text-white/70 text-sm mt-1">
           Manage AI models, prompts, and onboarding settings
         </p>
       </div>
@@ -197,7 +197,7 @@ export default function AdminPage() {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex-1 justify-center ${
               activeTab === tab.id
                 ? "bg-white/10 text-white shadow-sm"
-                : "text-white/40 hover:text-white/60"
+                : "text-white/70 hover:text-white/60"
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -209,7 +209,7 @@ export default function AdminPage() {
       {/* Loading for config tabs */}
       {loading && activeTab !== "costs" && (
         <div className="flex items-center justify-center py-20">
-          <RefreshCw className="w-5 h-5 text-white/30 animate-spin" />
+          <RefreshCw className="w-5 h-5 text-white/70 animate-spin" />
         </div>
       )}
 
@@ -218,7 +218,7 @@ export default function AdminPage() {
         <div>
           {costLoading && (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-5 h-5 text-white/30 animate-spin" />
+              <Loader2 className="w-5 h-5 text-white/70 animate-spin" />
             </div>
           )}
 
@@ -229,14 +229,14 @@ export default function AdminPage() {
                 <div className="bg-[#0f1420] border border-white/5 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Users className="w-4 h-4 text-blue-400/60" />
-                    <span className="text-[11px] text-white/30 uppercase tracking-wider">
+                    <span className="text-[11px] text-white/70 uppercase tracking-wider">
                       Total Users
                     </span>
                   </div>
                   <p className="text-2xl font-bold text-white">
                     {costData.summary.totalUsers}
                   </p>
-                  <p className="text-[11px] text-white/25 mt-1">
+                  <p className="text-[11px] text-white/60 mt-1">
                     {costData.summary.payingUsers} paying
                   </p>
                 </div>
@@ -244,14 +244,14 @@ export default function AdminPage() {
                 <div className="bg-[#0f1420] border border-white/5 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Film className="w-4 h-4 text-purple-400/60" />
-                    <span className="text-[11px] text-white/30 uppercase tracking-wider">
+                    <span className="text-[11px] text-white/70 uppercase tracking-wider">
                       Videos This Month
                     </span>
                   </div>
                   <p className="text-2xl font-bold text-white">
                     {costData.summary.totalVideosThisMonth}
                   </p>
-                  <p className="text-[11px] text-white/25 mt-1">
+                  <p className="text-[11px] text-white/60 mt-1">
                     {costData.summary.totalVideosAllTime} all time
                   </p>
                 </div>
@@ -259,14 +259,14 @@ export default function AdminPage() {
                 <div className="bg-[#0f1420] border border-white/5 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <DollarSign className="w-4 h-4 text-red-400/60" />
-                    <span className="text-[11px] text-white/30 uppercase tracking-wider">
+                    <span className="text-[11px] text-white/70 uppercase tracking-wider">
                       API Cost (Month)
                     </span>
                   </div>
                   <p className="text-2xl font-bold text-white">
                     {formatCurrency(costData.summary.totalApiCostThisMonth)}
                   </p>
-                  <p className="text-[11px] text-white/25 mt-1">
+                  <p className="text-[11px] text-white/60 mt-1">
                     {formatCurrency(costData.summary.totalApiCostAllTime)} all time
                   </p>
                 </div>
@@ -278,7 +278,7 @@ export default function AdminPage() {
                     ) : (
                       <TrendingDown className="w-4 h-4 text-red-400/60" />
                     )}
-                    <span className="text-[11px] text-white/30 uppercase tracking-wider">
+                    <span className="text-[11px] text-white/70 uppercase tracking-wider">
                       Gross Margin
                     </span>
                   </div>
@@ -291,7 +291,7 @@ export default function AdminPage() {
                   >
                     {costData.summary.grossMargin}%
                   </p>
-                  <p className="text-[11px] text-white/25 mt-1">
+                  <p className="text-[11px] text-white/60 mt-1">
                     Revenue: {formatCurrency(costData.summary.revenueThisMonth)}
                   </p>
                 </div>
@@ -304,7 +304,7 @@ export default function AdminPage() {
                 </h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/50">
+                    <span className="text-sm text-white/70">
                       Revenue ({costData.summary.payingUsers} users x $
                       {costData.summary.mrrPerUser}/mo)
                     </span>
@@ -313,7 +313,7 @@ export default function AdminPage() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/50">
+                    <span className="text-sm text-white/70">
                       API Costs ({costData.summary.totalVideosThisMonth} videos x $
                       {costData.summary.costPerMinute}/min)
                     </span>
@@ -349,7 +349,7 @@ export default function AdminPage() {
                   <h3 className="text-sm font-semibold text-white">
                     Per-User Cost Breakdown
                   </h3>
-                  <p className="text-[11px] text-white/30 mt-0.5">
+                  <p className="text-[11px] text-white/70 mt-0.5">
                     Estimated cost = $5 x (duration / 60s) per generated video
                   </p>
                 </div>
@@ -358,22 +358,22 @@ export default function AdminPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-white/5">
-                        <th className="text-left px-5 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                        <th className="text-left px-5 py-3 text-[11px] text-white/70 uppercase tracking-wider font-medium">
                           User
                         </th>
-                        <th className="text-left px-3 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                        <th className="text-left px-3 py-3 text-[11px] text-white/70 uppercase tracking-wider font-medium">
                           Plan
                         </th>
-                        <th className="text-right px-3 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                        <th className="text-right px-3 py-3 text-[11px] text-white/70 uppercase tracking-wider font-medium">
                           Videos (Total)
                         </th>
-                        <th className="text-right px-3 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                        <th className="text-right px-3 py-3 text-[11px] text-white/70 uppercase tracking-wider font-medium">
                           Videos (Month)
                         </th>
-                        <th className="text-right px-3 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                        <th className="text-right px-3 py-3 text-[11px] text-white/70 uppercase tracking-wider font-medium">
                           Cost (Month)
                         </th>
-                        <th className="text-right px-5 py-3 text-[11px] text-white/30 uppercase tracking-wider font-medium">
+                        <th className="text-right px-5 py-3 text-[11px] text-white/70 uppercase tracking-wider font-medium">
                           Cost (All Time)
                         </th>
                       </tr>
@@ -389,7 +389,7 @@ export default function AdminPage() {
                               <p className="text-white/80 font-medium text-[13px]">
                                 {u.name}
                               </p>
-                              <p className="text-white/25 text-[11px]">
+                              <p className="text-white/60 text-[11px]">
                                 {u.email}
                               </p>
                             </div>
@@ -398,7 +398,7 @@ export default function AdminPage() {
                             <span
                               className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium ${
                                 u.plan === "free"
-                                  ? "bg-white/5 text-white/30"
+                                  ? "bg-white/5 text-white/70"
                                   : u.plan === "authority"
                                   ? "bg-purple-500/15 text-purple-400"
                                   : "bg-blue-500/15 text-blue-400"
@@ -407,10 +407,10 @@ export default function AdminPage() {
                               {u.plan}
                             </span>
                           </td>
-                          <td className="px-3 py-3 text-right text-white/50 font-mono text-[13px]">
+                          <td className="px-3 py-3 text-right text-white/70 font-mono text-[13px]">
                             {u.totalVideos}
                           </td>
-                          <td className="px-3 py-3 text-right text-white/50 font-mono text-[13px]">
+                          <td className="px-3 py-3 text-right text-white/70 font-mono text-[13px]">
                             {u.videosThisMonth}
                           </td>
                           <td className="px-3 py-3 text-right text-white/70 font-mono text-[13px]">
@@ -425,7 +425,7 @@ export default function AdminPage() {
                         <tr>
                           <td
                             colSpan={6}
-                            className="text-center py-10 text-white/25"
+                            className="text-center py-10 text-white/60"
                           >
                             No user data available
                           </td>
@@ -443,7 +443,7 @@ export default function AdminPage() {
                     setCostData(null);
                     loadCosts();
                   }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 text-white/40 text-sm hover:bg-white/10 hover:text-white/60 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 text-white/70 text-sm hover:bg-white/10 hover:text-white/60 transition-all"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   Refresh Data
@@ -453,7 +453,7 @@ export default function AdminPage() {
           )}
 
           {!costLoading && !costData && (
-            <div className="text-center py-20 text-white/30">
+            <div className="text-center py-20 text-white/70">
               Failed to load cost data. You may not have admin access.
             </div>
           )}
@@ -464,7 +464,7 @@ export default function AdminPage() {
       {!loading && activeTab !== "costs" && (
         <div className="space-y-4">
           {filtered.length === 0 && (
-            <div className="text-center py-12 text-white/30">
+            <div className="text-center py-12 text-white/70">
               No configuration found for this category.
             </div>
           )}
@@ -479,7 +479,7 @@ export default function AdminPage() {
                   <h3 className="text-sm font-semibold text-white">
                     {config.label}
                   </h3>
-                  <p className="text-xs text-white/30 font-mono mt-0.5">
+                  <p className="text-xs text-white/70 font-mono mt-0.5">
                     {config.key}
                   </p>
                 </div>
@@ -493,7 +493,7 @@ export default function AdminPage() {
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                       isChanged(config.key)
                         ? "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30"
-                        : "bg-white/5 text-white/20 cursor-not-allowed"
+                        : "bg-white/5 text-white/70 cursor-not-allowed"
                     }`}
                   >
                     {saving === config.key ? (
@@ -592,7 +592,7 @@ export default function AdminPage() {
               )}
 
               {/* Timestamp */}
-              <p className="text-[10px] text-white/20 mt-2">
+              <p className="text-[10px] text-white/70 mt-2">
                 Last updated: {new Date(config.updatedAt).toLocaleString()}
               </p>
             </div>
