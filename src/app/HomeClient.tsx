@@ -42,6 +42,8 @@ const demoVideos = [
   },
 ];
 
+const APP_HOST = process.env.NEXT_PUBLIC_APP_HOST ?? "https://app-dev.theofficial.ai";
+
 export default function HomeClient() {
   const [activeVideo, setActiveVideo] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -91,7 +93,7 @@ export default function HomeClient() {
           <FadeIn delay={0.3} duration={0.7}>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
               <Link
-                href="/demo"
+                href={`${APP_HOST}/onboarding`}
                 className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
               >
                 Try it free — no signup
@@ -1125,7 +1127,7 @@ export default function HomeClient() {
                 presence, automated.
               </p>
               <Link
-                href="/demo"
+                href={`${APP_HOST}/onboarding`}
                 className="btn-cta-glow group inline-flex items-center justify-center gap-2.5 px-8 py-4 min-h-[48px] w-full sm:w-auto rounded-xl bg-white text-[#050508] text-p2 font-semibold hover:bg-white/90 active:bg-white/80 transition-all"
               >
                 Try it free — no signup

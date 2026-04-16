@@ -35,6 +35,8 @@ import {
   GitCompareArrows,
 } from "lucide-react";
 
+const APP_HOST = process.env.NEXT_PUBLIC_APP_HOST ?? "https://app-dev.theofficial.ai";
+
 interface NavLink {
   label: string;
   href: string;
@@ -523,13 +525,13 @@ export default function Navbar() {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3 z-10">
             <Link
-              href="/auth/login"
+              href={`${APP_HOST}/dashboard`}
               className="text-p2 text-white/60 hover:text-white/70 transition-colors px-3 py-2"
             >
               Log in
             </Link>
             <Link
-              href="/auth/signup"
+              href={`${APP_HOST}/onboarding`}
               className="text-p2 px-4 py-2 rounded-lg bg-white text-[#050508] font-medium hover:bg-white/90 transition-colors"
             >
               Start free trial
@@ -628,13 +630,13 @@ export default function Navbar() {
               </Link>
               <div className="flex items-center gap-3">
                 <Link
-                  href="/auth/login"
+                  href={`${APP_HOST}/dashboard`}
                   className="flex-1 text-center text-p2 text-white/60 active:text-white/70 transition-colors py-3 px-4 rounded-lg border border-white/[0.06]"
                 >
                   Log in
                 </Link>
                 <Link
-                  href="/auth/signup"
+                  href={`${APP_HOST}/onboarding`}
                   className="flex-1 text-center text-p2 text-white/60 active:text-white/90 transition-colors py-3 px-4 rounded-lg border border-white/[0.08] bg-white/[0.04]"
                 >
                   Sign up
