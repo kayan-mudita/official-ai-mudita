@@ -80,12 +80,13 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
     }
   }, []);
 
-  useEffect(() => {
-    if (stream && videoRef.current) {
-      videoRef.current.srcObject = stream;
-      videoRef.current.onloadedmetadata = () => setCameraReady(true);
+  const attachVideo = useCallback((node: HTMLVideoElement | null) => {
+    videoRef.current = node;
+    if (node && stream) {
+      node.srcObject = stream;
+      node.onloadedmetadata = () => setCameraReady(true);
     }
-  }, [stream, mode]);
+  }, [stream]);
 
   useEffect(() => {
     return () => { stream?.getTracks().forEach((t) => t.stop()); };
@@ -273,7 +274,7 @@ export default function CameraCapture({ onCapture, uploading = false }: CameraCa
           >
             <div className="relative rounded-3xl overflow-hidden bg-black aspect-[3/4] shadow-[0_0_40px_rgba(99,102,241,0.2)]">
               <video
-                ref={videoRef}
+                ref={attachVideo}
                 autoPlay
                 playsInline
                 muted
