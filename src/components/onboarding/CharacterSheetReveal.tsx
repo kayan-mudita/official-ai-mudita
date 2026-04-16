@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Check, RefreshCw, Plus, Camera, ImagePlus, Shield } from "lucide-react";
+import { Check, RefreshCw, Plus, Camera, ImagePlus, Shield, Eye, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface CharacterSheetRevealProps {
@@ -118,6 +118,8 @@ export default function CharacterSheetReveal({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const lightboxCloseBtnRef = useRef<HTMLButtonElement | null>(null);
   const hasFetched = useRef(false);
   const elapsed = useRef(0);
 
@@ -422,7 +424,7 @@ export default function CharacterSheetReveal({
                         <button
                           key={i}
                           onClick={() => handlePoseSelect(i)}
-                          className={`relative transition-all duration-200 ${
+                          className={`group relative transition-all duration-200 border-0 outline-none focus:outline-none focus-visible:outline-none ${
                             isSelected
                               ? "ring-2 ring-inset ring-indigo-400 bg-indigo-500/10"
                               : "hover:bg-white/[0.06]"
@@ -442,6 +444,28 @@ export default function CharacterSheetReveal({
                               </motion.div>
                             )}
                           </AnimatePresence>
+
+                          {/* View / preview icon (bottom-right, hover-revealed) */}
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Preview pose ${i + 1}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setLightboxIndex(i);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setLightboxIndex(i);
+                              }
+                            }}
+                            className="absolute bottom-1.5 right-1.5 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white/90 hover:text-white hover:bg-black/80 ring-1 ring-white/20 opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:opacity-100 transition-opacity z-10 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </span>
                         </button>
                       );
                     })}
@@ -658,6 +682,145 @@ export default function CharacterSheetReveal({
         )}
 
       </AnimatePresence>
+
+      <PoseLightbox
+        compositeUrl={compositeUrl}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onChange={setLightboxIndex}
+        closeButtonRef={lightboxCloseBtnRef}
+      />
     </div>
+  );
+}
+
+// ── Pose lightbox ────────────────────────────────────────────────────
+interface PoseLightboxProps {
+  compositeUrl: string | null;
+  index: number | null;
+  onClose: () => void;
+  onChange: (i: number) => void;
+  closeButtonRef: React.RefObject<HTMLButtonElement | null>;
+}
+
+function PoseLightbox({ compositeUrl, index, onClose, onChange, closeButtonRef }: PoseLightboxProps) {
+  const open = index !== null && compositeUrl !== null;
+  const [cellAspect, setCellAspect] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!compositeUrl) return;
+    const img = new Image();
+    img.onload = () => {
+      if (img.naturalWidth && img.naturalHeight) {
+        // Each of the 9 cells shares the composite's aspect ratio (W/3 ÷ H/3 = W/H)
+        setCellAspect(img.naturalWidth / img.naturalHeight);
+      }
+    };
+    img.src = compositeUrl;
+  }, [compositeUrl]);
+
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        onChange(((index as number) + 1) % 9);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        onChange(((index as number) + 8) % 9);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    const focusTimer = setTimeout(() => closeButtonRef.current?.focus(), 50);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", handleKey);
+      clearTimeout(focusTimer);
+    };
+  }, [open, index, onClose, onChange, closeButtonRef]);
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Pose preview"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-md flex items-center justify-center p-6"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 280, damping: 26 }}
+            className="relative w-full max-w-[min(90vw,720px)] max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="relative w-full overflow-hidden rounded-2xl bg-black/40 border border-white/[0.08] mx-auto"
+              style={{
+                aspectRatio: cellAspect ?? 1,
+                maxHeight: "90vh",
+                // Keep the width bounded so the container fits within viewport height when cells are tall
+                maxWidth: cellAspect ? `calc(90vh * ${cellAspect})` : undefined,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={compositeUrl as string}
+                alt={`Pose ${(index as number) + 1}`}
+                className="absolute"
+                style={{
+                  width: "300%",
+                  height: "300%",
+                  left: `-${((index as number) % 3) * 100}%`,
+                  top: `-${Math.floor((index as number) / 3) * 100}%`,
+                  maxWidth: "none",
+                }}
+              />
+            </div>
+
+            <button
+              ref={closeButtonRef}
+              onClick={onClose}
+              aria-label="Close preview"
+              className="absolute -top-3 -right-3 w-10 h-10 rounded-full bg-white/[0.10] hover:bg-white/[0.18] border border-white/[0.12] backdrop-blur-md flex items-center justify-center text-white/90 hover:text-white transition outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => onChange(((index as number) + 8) % 9)}
+              aria-label="Previous pose"
+              className="absolute top-1/2 -translate-y-1/2 left-2 sm:-left-5 w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 border border-white/[0.12] backdrop-blur-sm flex items-center justify-center text-white/90 hover:text-white transition outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => onChange(((index as number) + 1) % 9)}
+              aria-label="Next pose"
+              className="absolute top-1/2 -translate-y-1/2 right-2 sm:-right-5 w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 border border-white/[0.12] backdrop-blur-sm flex items-center justify-center text-white/90 hover:text-white transition outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+            <p className="mt-3 text-center text-[12px] text-white/60 font-medium">
+              Pose {(index as number) + 1} of 9
+            </p>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
